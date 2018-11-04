@@ -15,6 +15,17 @@ public class Users {
     private String profile_picture;
     private String password;
 
+    public Users(int user_id,int user_type_id, String first_name, String last_name, String email, String phone_number, String cnic_number, String profile_picture, String password) {
+        this.user_id = user_id;
+        this.first_name = first_name;
+        this.last_name = last_name;
+        this.email = email;
+        this.phone_number = phone_number;
+        this.cnic_number = cnic_number;
+        this.profile_picture = profile_picture;
+        this.password = password;
+    }
+
     public int getUser_id() {
         return user_id;
     }
