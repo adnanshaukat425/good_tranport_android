@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="forgot_password">&lt;u>FORGOT PASSWORD?&lt;/u></string>
+    <string name="create_new_account">&lt;u>CREATE NEW ACCOUNT&lt;u></string>
+</resources>
