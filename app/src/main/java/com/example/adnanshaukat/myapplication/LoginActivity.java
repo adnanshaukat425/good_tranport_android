@@ -1,6 +1,7 @@
 package com.example.adnanshaukat.myapplication;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
@@ -29,7 +30,7 @@ public class LoginActivity extends AppCompatActivity {
     Button btn_login;
     EditText et_email;
     EditText et_password;
-
+    TextView tv_already_have_account;
     //String base_url = "http://192.168.0.105:8080/api/";
 
     @Override
@@ -37,23 +38,32 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
 
+        populateUI();
+
         TextView txtForgotPassword = (TextView)findViewById(R.id.tv_login_forgot_password);
         txtForgotPassword.setText(Html.fromHtml(String.format(getString(R.string.forgot_password))));
 
         TextView txtCreateNewAccount = (TextView)findViewById(R.id.tv_login_create_new_account);
         txtCreateNewAccount.setText(Html.fromHtml(String.format(getString(R.string.create_new_account))));
 
-        btn_login = (Button)findViewById(R.id.btn_login);
-        et_email = (EditText)findViewById(R.id.ev_login_email);
-        et_password = (EditText)findViewById(R.id.ev_login_password);
-
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getLogin();
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(intent);
+                //getLogin();
+            }
+        });
+
+        tv_already_have_account.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
+                startActivity(intent);
             }
         });
     }
+
 //    public void GetLoggedIn(){
 //        String email = et_email.getText().toString();
 //
@@ -84,6 +94,13 @@ public class LoginActivity extends AppCompatActivity {
 //            }
 //        });
 //    }
+
+    private void populateUI(){
+        btn_login = (Button)findViewById(R.id.btn_login);
+        et_email = (EditText)findViewById(R.id.ev_login_email);
+        et_password = (EditText)findViewById(R.id.ev_login_password);
+        tv_already_have_account = (TextView)findViewById(R.id.tv_login_create_new_account);
+    }
 
     private void getLogin() {
         try {

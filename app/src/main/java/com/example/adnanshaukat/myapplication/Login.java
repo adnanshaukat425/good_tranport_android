@@ -11,11 +11,10 @@ import retrofit2.http.Query;
  */
 
 public interface Login {
-    String ip = "192.168.0.105";//mobile
-    public String BASE_URL = "http://" + ip + "/";
-    @GET("smart_transport/api/login/login_details")
+    String ip = "192.168.0.106";//mobile
+    public String BASE_URL = "http://" + ip + "/smart_transport/api/login/";
+    @GET("login_details")
     Call<Users> get_login();
-
     //String ip = "192.168.0.105";//home
 //    String BASE_URL = "http://localhost:52687/api/Location/";
 //    String BASE_URL = "https://jsonplaceholder.typicode.com/";
