@@ -1,10 +1,10 @@
 package com.example.adnanshaukat.myapplication;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Html;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -12,18 +12,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.net.Socket;
-import java.net.SocketException;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-import retrofit2.http.Query;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -31,6 +26,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText et_email;
     EditText et_password;
     TextView tv_already_have_account;
+
     //String base_url = "http://192.168.0.105:8080/api/";
 
     @Override
@@ -49,9 +45,26 @@ public class LoginActivity extends AppCompatActivity {
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(intent);
-                //getLogin();
+
+                if( TextUtils.isEmpty(et_email.getText())){
+                    //Toast.makeText(LoginActivity.this, "Email required", Toast.LENGTH_SHORT).show();
+                    et_email.setError("Email required", getResources().getDrawable(R.drawable.error_icon));
+                    et_email.requestFocus();
+                }
+                else if(!android.util.Patterns.EMAIL_ADDRESS.matcher(et_email.getText()).matches()){
+                    //Toast.makeText(LoginActivity.this, "Email not valid", Toast.LENGTH_SHORT).show();
+                    et_email.setError("Email not valid", getResources().getDrawable(R.drawable.error_icon));
+                    et_email.requestFocus();
+                }
+                else if(TextUtils.isEmpty(et_password.getText())){
+                    //Toast.makeText(LoginActivity.this, "Password required", Toast.LENGTH_SHORT).show();
+                    et_password.setError("Password required", getResources().getDrawable(R.drawable.error_icon));
+                    et_password.requestFocus();
+                }
+                else{
+                    ProgressDialogManager.showProgressDialogWithTitle(LoginActivity.this, "", "Please wait");
+                    getLogin();
+                }
             }
         });
 
@@ -77,19 +90,19 @@ public class LoginActivity extends AppCompatActivity {
 //
 //        Retrofit retrofit = builder.build();
 //
-//        Login login = retrofit.create(Login.class);
-//        Call<Users> call = login.get_login(email, password);
+//        ILogin login = retrofit.create(ILogin.class);
+//        Call<User> call = login.get_login(email, password);
 //
-//        call.enqueue(new Callback<Users>() {
+//        call.enqueue(new Callback<User>() {
 //            @Override
-//            public void onResponse(Call<Users> call, Response<Users> response) {
+//            public void onResponse(Call<User> call, Response<User> response) {
 //                Object result = response.body();
 //                Log.e("RESPONSE", result.toString());
 //                Toast.makeText(LoginActivity.this, result.toString(), Toast.LENGTH_LONG).show();
 //            }
 //
 //            @Override
-//            public void onFailure(Call<Users> call, Throwable t) {
+//            public void onFailure(Call<User> call, Throwable t) {
 //                Log.e("RESPONSE", t.toString());
 //            }
 //        });
@@ -110,27 +123,37 @@ public class LoginActivity extends AppCompatActivity {
             client.writeTimeout(15, TimeUnit.SECONDS);
 
             retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
-                    .baseUrl(Login.BASE_URL)
+                    .baseUrl(ILogin.BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(client.build())
                     .build();
 
-            Login api = retrofit.create(Login.class);
+            ILogin api = retrofit.create(ILogin.class);
 
-            Call<Users> call = api.get_login();
+            Call<User> call = api.get_login(et_email.getText().toString(), et_password.getText().toString());
 
-            call.enqueue(new Callback<Users>() {
+            call.enqueue(new Callback<User>() {
                 @Override
-                public void onResponse(Call<Users> call, Response<Users> response) {
-                    Users ls_locations = response.body();
-                    Log.e("RESPONSE", ls_locations.toString());
+                public void onResponse(Call<User> call, Response<User> response) {
+                    User user = response.body();
+                    int user_id = user.getUser_id();
+                    if(user_id != 0){
+                        Toast.makeText(LoginActivity.this, "Welcome " + user.getFirst_name().toString(), Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                    }
+                    else {
+                        Toast.makeText(LoginActivity.this, "Username or password is not correct", Toast.LENGTH_SHORT).show();
+                    }
+                    ProgressDialogManager.closeProgressDialog();
                 }
 
                 @Override
-                public void onFailure(Call<Users> call, Throwable t) {
+                public void onFailure(Call<User> call, Throwable t) {
                     Log.e("FAILURE", t.getMessage());
                     Log.e("FAILURE", t.toString());
                     Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                    ProgressDialogManager.closeProgressDialog();
                 }
             });
         }
