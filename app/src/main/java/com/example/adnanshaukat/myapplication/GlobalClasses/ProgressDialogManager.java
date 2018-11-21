@@ -11,7 +11,7 @@ public class ProgressDialogManager {
 
     private static ProgressDialog progressDialog;
 
-    public static void showProgressDialogWithTitle(Context c, String message, String title) {
+    public static ProgressDialog showProgressDialogWithTitle(Context c, String message, String title) {
         progressDialog = new ProgressDialog(c);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCancelable(false);
@@ -22,8 +22,9 @@ public class ProgressDialogManager {
             progressDialog.setMessage(message);
         }
         progressDialog.show();
+        return progressDialog;
     }
-    public static void closeProgressDialog() {
-        progressDialog.dismiss();
+    public static void closeProgressDialog(ProgressDialog _progressDialog) {
+        _progressDialog.dismiss();
     }
 }

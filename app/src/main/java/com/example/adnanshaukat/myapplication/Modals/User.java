@@ -1,9 +1,10 @@
 package com.example.adnanshaukat.myapplication.Modals;
 
+import java.io.Serializable;
+
 /**
  * Created by AdnanShaukat on 04/11/2018.
  */
-
 public class User {
     private int user_id;
     private int user_type_id;
@@ -17,6 +18,7 @@ public class User {
 
     public User(int user_id, int user_type_id, String first_name, String last_name, String email, String phone_number, String cnic_number, String profile_picture, String password) {
         this.user_id = user_id;
+        this.user_type_id = user_type_id;
         this.first_name = first_name;
         this.last_name = last_name;
         this.email = email;

@@ -1,5 +1,6 @@
 package com.example.adnanshaukat.myapplication;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,7 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText et_email;
     EditText et_password;
     TextView tv_already_have_account;
-
+    ProgressDialog progressDialog;
     //String base_url = "http://192.168.0.105:8080/api/";
 
     @Override
@@ -66,7 +67,7 @@ public class LoginActivity extends AppCompatActivity {
                     et_password.requestFocus();
                 }
                 else{
-                    ProgressDialogManager.showProgressDialogWithTitle(LoginActivity.this, "", "Please wait");
+                    progressDialog = ProgressDialogManager.showProgressDialogWithTitle(LoginActivity.this, "", "Please wait");
                     getLogin();
                 }
             }
@@ -141,7 +142,7 @@ public class LoginActivity extends AppCompatActivity {
                 public void onResponse(Call<User> call, Response<User> response) {
                     User user = response.body();
                     int user_id = user.getUser_id();
-                    if(user_id != 0){
+                    if (user_id != 0) {
                         Toast.makeText(LoginActivity.this, "Welcome " + user.getFirst_name().toString(), Toast.LENGTH_LONG).show();
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                         startActivity(intent);
@@ -149,7 +150,7 @@ public class LoginActivity extends AppCompatActivity {
                     else {
                         Toast.makeText(LoginActivity.this, "Username or password is not correct", Toast.LENGTH_SHORT).show();
                     }
-                    ProgressDialogManager.closeProgressDialog();
+                    ProgressDialogManager.closeProgressDialog(progressDialog);
                 }
 
                 @Override
@@ -157,7 +158,7 @@ public class LoginActivity extends AppCompatActivity {
                     Log.e("FAILURE", t.getMessage());
                     Log.e("FAILURE", t.toString());
                     Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
-                    ProgressDialogManager.closeProgressDialog();
+                    ProgressDialogManager.closeProgressDialog(progressDialog);
                 }
             });
         }

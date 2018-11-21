@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">Smart Transport</string>
     <string name="forgot_password">&lt;u>FORGOT PASSWORD?&lt;/u></string>
     <string name="create_new_account">&lt;u>CREATE NEW ACCOUNT&lt;u></string>
     <string name="title_activity_main">MainActivity</string>
@@ -8,4 +8,6 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="menu_skip">skip</string>
+    <string name="title_activity_capture_image">Upload photo</string>
 </resources>
