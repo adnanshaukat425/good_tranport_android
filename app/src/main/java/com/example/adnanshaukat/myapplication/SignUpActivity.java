@@ -12,7 +12,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import java.io.Console;
+import com.example.adnanshaukat.myapplication.GlobalClasses.ProgressDialogManager;
+import com.example.adnanshaukat.myapplication.Modals.User;
+import com.example.adnanshaukat.myapplication.RetrofitInterfaces.ISignUp;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;

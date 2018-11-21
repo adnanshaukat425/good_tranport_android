@@ -1,4 +1,6 @@
-package com.example.adnanshaukat.myapplication;
+package com.example.adnanshaukat.myapplication.RetrofitInterfaces;
+
+import com.example.adnanshaukat.myapplication.Modals.User;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

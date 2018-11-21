@@ -1,4 +1,4 @@
-package com.example.adnanshaukat.myapplication;
+package com.example.adnanshaukat.myapplication.GlobalClasses;
 
 import android.app.ProgressDialog;
 import android.content.Context;

@@ -1,4 +1,4 @@
-package com.example.adnanshaukat.myapplication;
+package com.example.adnanshaukat.myapplication.RetrofitInterfaces;
 
 /**
  * Created by AdnanShaukat on 18/11/2018.

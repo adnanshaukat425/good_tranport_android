@@ -1,4 +1,4 @@
-package com.example.adnanshaukat.myapplication;
+package com.example.adnanshaukat.myapplication.Modals;
 
 /**
  * Created by AdnanShaukat on 04/11/2018.
