@@ -1,4 +1,4 @@
-package com.example.adnanshaukat.myapplication;
+package com.example.adnanshaukat.myapplication.View;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,7 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 
-import static com.example.adnanshaukat.myapplication.R.id.btn_newOrder;
+import com.example.adnanshaukat.myapplication.R;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {

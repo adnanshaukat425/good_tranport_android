@@ -1,4 +1,4 @@
-package com.example.adnanshaukat.myapplication;
+package com.example.adnanshaukat.myapplication.View;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.example.adnanshaukat.myapplication.GlobalClasses.ProgressDialogManager;
 import com.example.adnanshaukat.myapplication.Modals.User;
+import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.ILogin;
 
 import java.util.concurrent.TimeUnit;
@@ -81,37 +82,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
-
-//    public void GetLoggedIn(){
-//        String email = et_email.getText().toString();
-//
-//        String password = et_password.getText().toString();
-//        Log.e("EMAIL", email);
-//        Log.e("PASSWORD", password);
-//
-//        Retrofit.Builder builder = new Retrofit.Builder().
-//                baseUrl(base_url).
-//                addConverterFactory(GsonConverterFactory.create());
-//
-//        Retrofit retrofit = builder.build();
-//
-//        ILogin login = retrofit.create(ILogin.class);
-//        Call<User> call = login.get_login(email, password);
-//
-//        call.enqueue(new Callback<User>() {
-//            @Override
-//            public void onResponse(Call<User> call, Response<User> response) {
-//                Object result = response.body();
-//                Log.e("RESPONSE", result.toString());
-//                Toast.makeText(LoginActivity.this, result.toString(), Toast.LENGTH_LONG).show();
-//            }
-//
-//            @Override
-//            public void onFailure(Call<User> call, Throwable t) {
-//                Log.e("RESPONSE", t.toString());
-//            }
-//        });
-//    }
 
     private void populateUI(){
         btn_login = (Button)findViewById(R.id.btn_login);
