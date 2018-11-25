@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -32,6 +32,16 @@
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".TransporterMainActivity"
+            android:label="@string/title_activity_transporter_main"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ListOrdersCustomersActivity"
+            android:label="@string/title_activity_list_orders_customers"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".CreateOrderActivity" />
+        <activity android:name=".UserProfileActivity"></activity>
     </application>
 
 </manifest>
