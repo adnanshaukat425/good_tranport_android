@@ -2,6 +2,7 @@ package com.example.adnanshaukat.myapplication;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -17,6 +18,26 @@ import com.example.adnanshaukat.myapplication.GlobalClasses.ProgressDialogManage
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.ISignUp;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -45,9 +66,6 @@ public class SignUpActivity extends AppCompatActivity {
         btn_signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                progressDialog = ProgressDialogManager.showProgressDialogWithTitle(SignUpActivity.this, "Please wait", "Please wait");
-                //Toast.makeText(SignUpActivity.this, Long.toString(cbo_user_type.getSelectedItemId() + 1), Toast.LENGTH_SHORT).show();
-                //Log.e("Cutomer type", Long.toString(cbo_user_type.getSelectedItemId()));
                 first_name = et_first_name.getText().toString();
                 last_name = et_last_name.getText().toString();
                 email = et_email.getText().toString();
@@ -58,20 +76,13 @@ public class SignUpActivity extends AppCompatActivity {
 
                 if (checkValidity()) {
 
+                    progressDialog = ProgressDialogManager.showProgressDialogWithTitle(SignUpActivity.this, "Please wait", "Please wait");
                     String temp = Long.toString(cbo_user_type.getSelectedItemId() + 1);
-
                     int user_type_id = Integer.parseInt(temp);
 
-                    Toast.makeText(SignUpActivity.this, temp, Toast.LENGTH_SHORT).show();
-
                     User user = new User(0, user_type_id, first_name, last_name, email, phone_number, cnic, "profile_picture_path", password);
-
-//                    Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
-//                    intent.putExtra("user", user);
-//                    startActivity(intent);
-//                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     getSignup(user);
-                    //Toast.makeText(SignUpActivity.this, "OKKKKKKK", Toast.LENGTH_SHORT).show();
+
                 }
             }
         });
@@ -142,7 +153,7 @@ public class SignUpActivity extends AppCompatActivity {
         }
         return true;
     }
-
+    //
     private void getSignup(User user) {
         try {
             OkHttpClient.Builder client = new OkHttpClient.Builder();
@@ -167,8 +178,10 @@ public class SignUpActivity extends AppCompatActivity {
                     int user_id = user.getUser_id();
                     if (user_id != 0) {
                         Toast.makeText(SignUpActivity.this, "Welcome " + user.getFirst_name().toString(), Toast.LENGTH_LONG).show();
-                        Intent intent = new Intent(SignUpActivity.this, MainActivity.class);
+                        Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
+                        intent.putExtra("user", user);
                         startActivity(intent);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     }
                     else {
                         Toast.makeText(SignUpActivity.this, "Username or password is not correct", Toast.LENGTH_SHORT).show();
@@ -186,6 +199,9 @@ public class SignUpActivity extends AppCompatActivity {
             });
         } catch (Exception ex) {
             Log.e("ERROR", ex.toString());
+            ProgressDialogManager.closeProgressDialog(progressDialog);
+            Toast.makeText(this, "Some error occour, please try again", Toast.LENGTH_SHORT).show();
         }
     }
+
 }

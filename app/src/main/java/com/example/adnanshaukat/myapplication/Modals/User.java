@@ -1,22 +1,54 @@
 package com.example.adnanshaukat.myapplication.Modals;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 
 /**
  * Created by AdnanShaukat on 04/11/2018.
  */
-public class User {
+@SuppressWarnings("serial")
+public class User implements Serializable {
+
+    @SerializedName("user_id")
+    @Expose
     private int user_id;
+
+    @SerializedName("user_type_id")
+    @Expose
     private int user_type_id;
+
+    @SerializedName("first_name")
+    @Expose
     private String first_name;
+
+    @SerializedName("last_name")
+    @Expose
     private String last_name;
+
+    @SerializedName("email")
+    @Expose
     private String email;
+
+    @SerializedName("phone_number")
+    @Expose
     private String phone_number;
+
+    @SerializedName("cnic_number")
+    @Expose
     private String cnic_number;
+
+    @SerializedName("profile_picture")
+    @Expose
     private String profile_picture;
+
+    @SerializedName("password")
+    @Expose
     private String password;
 
     public User(int user_id, int user_type_id, String first_name, String last_name, String email, String phone_number, String cnic_number, String profile_picture, String password) {
+
         this.user_id = user_id;
         this.user_type_id = user_type_id;
         this.first_name = first_name;
