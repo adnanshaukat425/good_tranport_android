@@ -13,6 +13,7 @@ import retrofit2.http.Query;
 public interface ILogin {
 
     public String BASE_URL = "http://" + RetrofitManager.ip + "/"  + RetrofitManager.domain + "/api/login/";
+
     @GET("login_details")
     Call<User> get_login(@Query("email") String email, @Query("password") String password);
     //String ip = "192.168.0.105";//home

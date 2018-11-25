@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorAccent"
+    android:scrollbars="vertical">
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_create_order"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.adnanshaukat.myapplication.CreateOrderActivity">
+
+
+    <TextView
+        android:id="@+id/heading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create New Order"
+        android:textStyle="bold"
+        android:layout_marginBottom="20dp"
+        android:textSize="20dp"/>
+
+    <RelativeLayout
+        android:layout_below="@+id/heading"
+        android:id="@+id/cargo_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_cargo_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_centerVertical="true"
+            android:textStyle="bold"
+            style="@style/edit_text_style"
+            android:text="Cargo Type:"/>
+
+        <Spinner
+            android:be="@id/tv_cargo_type"
+            android:id="@+id/lv_cargo_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            style="@style/edit_text_style">
+        </Spinner>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+    android:layout_below="@+id/cargo_type"
+    android:id="@+id/container_type"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_container_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_centerVertical="true"
+            android:textStyle="bold"
+            style="@style/edit_text_style"
+            android:text="Container Type:"/>
+
+        <Spinner
+            android:layout_toRightOf="@id/tv_container_type"
+            android:id="@+id/lv_container_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            style="@style/edit_text_style">
+        </Spinner>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_below="@+id/container_type"
+        android:id="@+id/cargo_weight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_cargo_weight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_centerVertical="true"
+            android:textStyle="bold"
+            style="@style/edit_text_style"
+            android:text="Cargo Weight:"/>
+
+        <Spinner
+            android:layout_toRightOf="@id/tv_cargo_weight"
+            android:id="@+id/lv_cargo_weight"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            style="@style/edit_text_style">
+        </Spinner>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_below="@+id/cargo_weight"
+        android:id="@+id/cargo_volume"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_cargo_volume"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_centerVertical="true"
+            android:textStyle="bold"
+            style="@style/edit_text_style"
+            android:text="Cargo Volume:"/>
+
+        <Spinner
+            android:layout_toRightOf="@id/tv_cargo_volume"
+            android:id="@+id/lv_cargo_volume"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            style="@style/edit_text_style">
+        </Spinner>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_below="@+id/cargo_volume"
+        android:id="@+id/weight_unit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_weight_unit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_centerVertical="true"
+            android:textStyle="bold"
+            style="@style/edit_text_style"
+            android:text="Weight Unit:"/>
+
+        <Spinner
+            android:layout_toRightOf="@id/tv_weight_unit"
+            android:id="@+id/lv_weight_unit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            style="@style/edit_text_style">
+        </Spinner>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_below="@+id/weight_unit"
+        android:id="@+id/soucre_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_soucre_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_centerVertical="true"
+            android:textStyle="bold"
+            style="@style/edit_text_style"
+            android:text="Soucre:"/>
+
+        <Spinner
+            android:layout_toRightOf="@id/tv_soucre_id"
+            android:id="@+id/lv_source_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            style="@style/edit_text_style">
+        </Spinner>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_below="@+id/soucre_id"
+        android:id="@+id/destination_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_destination_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_centerVertical="true"
+            android:textStyle="bold"
+            style="@style/edit_text_style"
+            android:text="Destination:"/>
+
+        <Spinner
+            android:layout_toRightOf="@id/tv_destination_id"
+            android:id="@+id/lv_destination_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            style="@style/edit_text_style">
+        </Spinner>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_below="@+id/destination_id"
+        android:id="@+id/labour_req"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_labour_req"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_centerVertical="true"
+            android:textStyle="bold"
+            style="@style/edit_text_style"
+            android:text="Labour Required:"/>
+
+        <CheckBox
+            android:layout_toRightOf="@id/tv_labour_req"
+            android:gravity="right"
+            android:id="@+id/cb_labour_req"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="5dp"
+            style="@style/edit_text_style">
+        </CheckBox>
+
+        <TextView
+            android:layout_toRightOf="@+id/tv_labour_req"
+            android:gravity="right"
+            android:layout_centerVertical="true"
+            android:id="@+id/tv_labour_cost"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:paddingRight="40dp"
+            android:text="Labour Cost : Rs.200"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_below="@+id/labour_req"
+        android:id="@+id/payment_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_payment_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_centerVertical="true"
+            android:textStyle="bold"
+            style="@style/edit_text_style"
+            android:text="Payment Type:"/>
+
+        <Spinner
+            android:layout_toRightOf="@id/tv_payment_type"
+            android:id="@+id/lv_payment_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp"
+            style="@style/edit_text_style">
+        </Spinner>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_below="@+id/payment_type"
+        android:id="@+id/creation_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_creation_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_centerVertical="true"
+            android:textStyle="bold"
+            style="@style/edit_text_style"
+            android:text="Creation Date:"/>
+
+        <DatePicker
+            android:layout_toRightOf="@id/tv_creation_date"
+            android:id="@+id/lv_creation_date"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp">
+        </DatePicker>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_below="@+id/creation_date"
+        android:id="@+id/order_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tv_order_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_centerVertical="true"
+            android:textStyle="bold"
+            style="@style/edit_text_style"
+            android:text="Order Date:"/>
+
+        <DatePicker
+            android:layout_toRightOf="@id/tv_order_date"
+            android:id="@+id/lv_order_date"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="20dp">
+        </DatePicker>
+
+    </RelativeLayout>
+
+    <Button
+        android:layout_below="@+id/order_date"
+        android:id="@+id/btn_placeOrder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/login_margin_setting"
+        android:background="@drawable/side_nav_bar"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:text="Place Order"/>
+
+</RelativeLayout>
+
+</ScrollView>

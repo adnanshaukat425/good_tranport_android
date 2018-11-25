@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Smart Transport</string>
+    <string name="trans_app_name">Transporter</string>
+    <string name="cust_app_name">Customer</string>
     <string name="forgot_password">&lt;u>FORGOT PASSWORD?&lt;/u></string>
     <string name="create_new_account">&lt;u>CREATE NEW ACCOUNT&lt;u></string>
     <string name="title_activity_main">MainActivity</string>
@@ -10,4 +12,9 @@
     <string name="action_settings">Settings</string>
     <string name="menu_skip">skip</string>
     <string name="title_activity_capture_image">Upload photo</string>
+    <string name="title_activity_transporter_main">TransporterMainActivity</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="title_activity_list_orders_customers">ListOrdersCustomersActivity</string>
+
+
 </resources>
