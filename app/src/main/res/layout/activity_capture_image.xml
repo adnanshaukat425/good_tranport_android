@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_capture_image"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,8 +9,101 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:padding="30dp"
     tools:context="com.example.adnanshaukat.myapplication.View.CaptureImageActivity">
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/btn_capture_image">
 
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_image"
+            android:layout_width="200sp"
+            android:layout_height="150dp"
+            android:src="@drawable/default_profile_image"
+            android:layout_centerHorizontal="true"
+            app:civ_border_width="0.5sp"
+            app:civ_border_color="@color/colorPrimary"
+            />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:text="OR"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimary"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="16dp"
+        android:layout_toLeftOf="@id/tvText"
+        android:background="@color/colorPrimary"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="16dp"
+        android:layout_toRightOf="@id/tvText"
+        android:background="@color/colorPrimary"
+        />
+
+    <Button
+        android:id="@+id/btn_capture_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Capture Image"
+        android:background="@drawable/button_ripple_effect"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:layout_above="@id/tvText"
+        android:layout_marginBottom="20dp"
+        style="@style/login_margin_setting"/>
+
+    <Button
+        android:id="@+id/btn_gallery_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Upload from galary"
+        android:background="@drawable/button_ripple_effect"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:layout_below="@id/tvText"
+        style="@style/login_margin_setting"/>
+
+    <TextView
+        android:id="@+id/tvSkip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SKIP"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimary"
+        android:layout_below="@id/btn_gallery_image"/>
+
+    <Button
+        android:id="@+id/btn_signup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sign up"
+        android:background="@drawable/button_ripple_effect"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:layout_below="@id/tvSkip"
+        style="@style/login_margin_setting"/>
 
 </RelativeLayout>

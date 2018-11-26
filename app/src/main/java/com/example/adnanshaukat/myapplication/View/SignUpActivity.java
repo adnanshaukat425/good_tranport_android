@@ -34,7 +34,7 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText et_first_name, et_last_name, et_email, et_password, et_confirm_password, et_phone_number, et_cnic;
     private String first_name, last_name, email, password, confirm_password, phone_number, cnic;
     Spinner cbo_user_type;
-    Button btn_signup;
+    Button btn_signup_next;
     ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +43,7 @@ public class SignUpActivity extends AppCompatActivity {
         addItemsOnSpinner();
         populateUI();
 
-        btn_signup.setOnClickListener(new View.OnClickListener() {
+        btn_signup_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 first_name = et_first_name.getText().toString();
@@ -56,13 +56,14 @@ public class SignUpActivity extends AppCompatActivity {
 
                 if (checkValidity()) {
 
-                    progressDialog = ProgressDialogManager.showProgressDialogWithTitle(SignUpActivity.this, "Please wait", "Please wait");
                     String temp = Long.toString(cbo_user_type.getSelectedItemId() + 1);
                     int user_type_id = Integer.parseInt(temp);
 
                     User user = new User(0, user_type_id, first_name, last_name, email, phone_number, cnic, "profile_picture_path", password);
-                    getSignup(user);
-
+                    Intent intent = new Intent(SignUpActivity.this, CaptureImageActivity.class);
+                    intent.putExtra("user", user);
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 }
             }
         });
@@ -89,7 +90,7 @@ public class SignUpActivity extends AppCompatActivity {
         et_phone_number = (EditText) findViewById(R.id.txt_signup_phone_number);
         et_cnic = (EditText) findViewById(R.id.txt_signup_cnic);
         cbo_user_type = (Spinner) findViewById(R.id.list_view_user_type);
-        btn_signup = (Button) findViewById(R.id.btn_signup);
+        btn_signup_next = (Button) findViewById(R.id.btn_signup_next);
     }
 
     private boolean checkValidity() {
@@ -134,54 +135,4 @@ public class SignUpActivity extends AppCompatActivity {
         return true;
     }
     //
-    private void getSignup(User user) {
-        try {
-            OkHttpClient.Builder client = new OkHttpClient.Builder();
-            client.connectTimeout(30, TimeUnit.SECONDS);
-            client.readTimeout(30, TimeUnit.SECONDS);
-            client.writeTimeout(30, TimeUnit.SECONDS);
-
-            retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
-                    .baseUrl(ISignUp.BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .client(client.build())
-                    .build();
-
-            ISignUp api = retrofit.create(ISignUp.class);
-
-            Call<User> call = api.get_signup(user);
-
-            call.enqueue(new Callback<User>() {
-                @Override
-                public void onResponse(Call<User> call, Response<User> response) {
-                    User user = response.body();
-                    int user_id = user.getUser_id();
-                    if (user_id != 0) {
-                        Toast.makeText(SignUpActivity.this, "Welcome " + user.getFirst_name().toString(), Toast.LENGTH_LONG).show();
-                        Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
-                        intent.putExtra("user", user);
-                        startActivity(intent);
-                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                    }
-                    else {
-                        Toast.makeText(SignUpActivity.this, "Username or password is not correct", Toast.LENGTH_SHORT).show();
-                    }
-                    ProgressDialogManager.closeProgressDialog(progressDialog);
-                }
-
-                @Override
-                public void onFailure(Call<User> call, Throwable t) {
-                    Log.e("FAILURE", t.getMessage());
-                    Log.e("FAILURE", t.toString());
-                    Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
-                    ProgressDialogManager.closeProgressDialog(progressDialog);
-                }
-            });
-        } catch (Exception ex) {
-            Log.e("ERROR", ex.toString());
-            ProgressDialogManager.closeProgressDialog(progressDialog);
-            Toast.makeText(this, "Some error occour, please try again", Toast.LENGTH_SHORT).show();
-        }
-    }
-
 }

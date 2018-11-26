@@ -17,6 +17,9 @@
         android:id="@+id/btn_newOrder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:background="@drawable/button_ripple_effect"
         android:text="Create New Order"/>
 
 </RelativeLayout>
