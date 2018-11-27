@@ -14,7 +14,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.Toast;
 
+import com.example.adnanshaukat.myapplication.GlobalClasses.MyApplication;
+import com.example.adnanshaukat.myapplication.Modals.SQLiteDBUsersHandler;
 import com.example.adnanshaukat.myapplication.R;
 
 public class MainActivity extends AppCompatActivity
@@ -84,7 +87,6 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -107,9 +109,24 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_send) {
 
         }
-
+        else if(id == R.id.menu_logout){
+            if(logout()){
+                Toast.makeText(this, "Logged out Successfully", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+                startActivity(intent);
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+            }else{
+                Toast.makeText(this, "Try Again", Toast.LENGTH_SHORT).show();
+            }
+        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public boolean logout(){
+        SQLiteDBUsersHandler sqLiteDBUsersHandler = new SQLiteDBUsersHandler(MainActivity.this);
+        int user_id = ((MyApplication) this.getApplication()).get_user_id();
+        return sqLiteDBUsersHandler.update_logged_in_status(0, user_id);
     }
 }

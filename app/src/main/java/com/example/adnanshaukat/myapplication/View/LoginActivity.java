@@ -13,7 +13,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.adnanshaukat.myapplication.GlobalClasses.MyApplication;
 import com.example.adnanshaukat.myapplication.GlobalClasses.ProgressDialogManager;
+import com.example.adnanshaukat.myapplication.Modals.SQLiteDBUsersHandler;
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.ILogin;
@@ -113,9 +115,16 @@ public class LoginActivity extends AppCompatActivity {
                     User user = response.body();
                     int user_id = user.getUser_id();
                     if (user_id != 0) {
-                        Toast.makeText(LoginActivity.this, "Welcome " + user.getFirst_name().toString(), Toast.LENGTH_LONG).show();
-                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                        startActivity(intent);
+                        if(storeCredentialsToSQLite(user)){
+                            ((MyApplication) LoginActivity.this.getApplication()).set_user_id(user_id);
+                            Toast.makeText(LoginActivity.this, "Welcome " + user.getFirst_name().toString(), Toast.LENGTH_LONG).show();
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        }
+                        else{
+                            Toast.makeText(LoginActivity.this, "Username or password is not correct", Toast.LENGTH_SHORT).show();
+                        }
                     }
                     else {
                         Toast.makeText(LoginActivity.this, "Username or password is not correct", Toast.LENGTH_SHORT).show();
@@ -135,5 +144,10 @@ public class LoginActivity extends AppCompatActivity {
         catch (Exception ex){
             Log.e("ERROR", ex.toString());
         }
+    }
+
+    public boolean storeCredentialsToSQLite(User user){
+        SQLiteDBUsersHandler sqLiteDBUsersHandler = new SQLiteDBUsersHandler(LoginActivity.this);
+        return sqLiteDBUsersHandler.create(user);
     }
 }
