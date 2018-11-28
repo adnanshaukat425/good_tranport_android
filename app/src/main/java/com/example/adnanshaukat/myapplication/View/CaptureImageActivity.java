@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.adnanshaukat.myapplication.GlobalClasses.ProgressDialogManager;
+import com.example.adnanshaukat.myapplication.Modals.SQLiteDBUsersHandler;
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.ISignUp;
@@ -193,6 +194,9 @@ public class CaptureImageActivity extends AppCompatActivity {
                     int user_id = user.getUser_id();
                     if (user_id != 0) {
                         Toast.makeText(CaptureImageActivity.this, "Welcome " + user.getFirst_name().toString(), Toast.LENGTH_LONG).show();
+
+                        SQLiteDBUsersHandler sqLiteDBUsersHandler = new SQLiteDBUsersHandler(CaptureImageActivity.this);
+                        sqLiteDBUsersHandler.storeCredentialsToSQLite(user);
 
                         Intent intent = new Intent(CaptureImageActivity.this, MainActivity.class);
                         intent.putExtra("user", user);

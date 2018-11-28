@@ -14,6 +14,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.adnanshaukat.myapplication.GlobalClasses.ProgressDialogManager;
+import com.example.adnanshaukat.myapplication.Modals.SQLiteDBUsersHandler;
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.ISignUp;
@@ -36,6 +37,7 @@ public class SignUpActivity extends AppCompatActivity {
     Spinner cbo_user_type;
     Button btn_signup_next;
     ProgressDialog progressDialog;
+    SQLiteDBUsersHandler sqLiteDBUsersHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -134,5 +136,4 @@ public class SignUpActivity extends AppCompatActivity {
         }
         return true;
     }
-    //
 }

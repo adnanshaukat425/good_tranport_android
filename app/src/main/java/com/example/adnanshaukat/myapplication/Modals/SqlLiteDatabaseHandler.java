@@ -11,10 +11,11 @@ import android.util.Log;
 
 public class SqlLiteDatabaseHandler extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "users.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 5;
+    protected String table_name = "tbl_users";
 
     private static final String TABLE_CREATE = "CREATE TABLE tbl_users (id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            "user_id INTEGER, first_name TEXT, user_type_id INTEGER, phone_number TEXT, password TEXT, is_logged_in INTEGER)";
+            "user_id INTEGER, email TEXT, first_name TEXT, user_type_id INTEGER, phone_number TEXT, password TEXT, is_logged_in INTEGER)";
 
     public SqlLiteDatabaseHandler(Context context){
         super(context,DATABASE_NAME,null,DATABASE_VERSION);

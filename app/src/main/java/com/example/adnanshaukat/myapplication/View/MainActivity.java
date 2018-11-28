@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.example.adnanshaukat.myapplication.GlobalClasses.MyApplication;
 import com.example.adnanshaukat.myapplication.Modals.SQLiteDBUsersHandler;
+import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
 
 public class MainActivity extends AppCompatActivity
@@ -127,6 +128,8 @@ public class MainActivity extends AppCompatActivity
     public boolean logout(){
         SQLiteDBUsersHandler sqLiteDBUsersHandler = new SQLiteDBUsersHandler(MainActivity.this);
         int user_id = ((MyApplication) this.getApplication()).get_user_id();
-        return sqLiteDBUsersHandler.update_logged_in_status(0, user_id);
+        User user = new User();
+        user.setUser_id(user_id);
+        return sqLiteDBUsersHandler.update_logged_in_status(0, user);
     }
 }

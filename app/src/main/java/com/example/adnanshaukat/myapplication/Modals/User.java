@@ -47,6 +47,10 @@ public class User implements Serializable {
     @Expose
     private String password;
 
+    public User(){
+
+    }
+
     public User(int user_id, int user_type_id, String first_name, String last_name, String email, String phone_number, String cnic_number, String profile_picture, String password) {
 
         this.user_id = user_id;

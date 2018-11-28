@@ -37,11 +37,15 @@ public class LoginActivity extends AppCompatActivity {
     ProgressDialog progressDialog;
     //String base_url = "http://192.168.0.105:8080/api/";
 
+    SQLiteDBUsersHandler sqLiteDBUsersHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
+        sqLiteDBUsersHandler = new SQLiteDBUsersHandler(this);
 
+        progressDialog = ProgressDialogManager.showProgressDialogWithTitle(LoginActivity.this, "Few moments more", "Loading");
+        check_if_already_logged_in();
         populateUI();
 
         TextView txtForgotPassword = (TextView)findViewById(R.id.tv_login_forgot_password);
@@ -71,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 else{
                     progressDialog = ProgressDialogManager.showProgressDialogWithTitle(LoginActivity.this, "", "Please wait");
-                    getLogin();
+                    getLogin(et_email.getText().toString(), et_password.getText().toString(), false);
                 }
             }
         });
@@ -85,6 +89,12 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
+
     private void populateUI(){
         btn_login = (Button)findViewById(R.id.btn_login);
         et_email = (EditText)findViewById(R.id.ev_login_email);
@@ -92,7 +102,7 @@ public class LoginActivity extends AppCompatActivity {
         tv_already_have_account = (TextView)findViewById(R.id.tv_login_create_new_account);
     }
 
-    private void getLogin() {
+    private void getLogin(String email, String password, final boolean from_system) {
         try {
             OkHttpClient.Builder client = new OkHttpClient.Builder();
             client.connectTimeout(15, TimeUnit.SECONDS);
@@ -107,29 +117,39 @@ public class LoginActivity extends AppCompatActivity {
 
             ILogin api = retrofit.create(ILogin.class);
 
-            Call<User> call = api.get_login(et_email.getText().toString(), et_password.getText().toString());
+            Call<User> call = api.get_login(email, password);
 
             call.enqueue(new Callback<User>() {
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
                     User user = response.body();
-                    int user_id = user.getUser_id();
-                    if (user_id != 0) {
-                        if(storeCredentialsToSQLite(user)){
-                            ((MyApplication) LoginActivity.this.getApplication()).set_user_id(user_id);
-                            Toast.makeText(LoginActivity.this, "Welcome " + user.getFirst_name().toString(), Toast.LENGTH_LONG).show();
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            startActivity(intent);
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                    if(user!=null) {
+                        int user_id = user.getUser_id();
+                        String message = "";
+                        if (user_id != 0) {
+                            if (storeCredentialsToSQLite(user)) {
+                                ((MyApplication) LoginActivity.this.getApplication()).set_user_id(user_id);
+                                if (!from_system) {
+                                    Toast.makeText(LoginActivity.this, "Welcome " + user.getFirst_name().toString(), Toast.LENGTH_LONG).show();
+                                }
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                            } else {
+                                message = "Username or password is not correct";
+                            }
+                        } else {
+                            message = "Username or password is not correct";
                         }
-                        else{
-                            Toast.makeText(LoginActivity.this, "Username or password is not correct", Toast.LENGTH_SHORT).show();
+
+                        if (!from_system && !message.isEmpty()) {
+                            Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
                         }
+                        ProgressDialogManager.closeProgressDialog(progressDialog);
                     }
-                    else {
+                    else{
                         Toast.makeText(LoginActivity.this, "Username or password is not correct", Toast.LENGTH_SHORT).show();
                     }
-                    ProgressDialogManager.closeProgressDialog(progressDialog);
                 }
 
                 @Override
@@ -146,8 +166,17 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public boolean storeCredentialsToSQLite(User user){
-        SQLiteDBUsersHandler sqLiteDBUsersHandler = new SQLiteDBUsersHandler(LoginActivity.this);
-        return sqLiteDBUsersHandler.create(user);
+    private boolean storeCredentialsToSQLite(User user){
+        return sqLiteDBUsersHandler.update_logged_in_status(1, user);
+    }
+
+    public void check_if_already_logged_in(){
+        SQLiteDBUsersHandler sqLiteDBUsersHandler = new SQLiteDBUsersHandler(this);
+        User _user = sqLiteDBUsersHandler.get_logged_in_user();
+        if(_user.getEmail() != null && _user.getPassword() != null){
+            getLogin(_user.getEmail(), _user.getPassword(), true);
+        }else{
+            ProgressDialogManager.closeProgressDialog(progressDialog);
+        }
     }
 }
