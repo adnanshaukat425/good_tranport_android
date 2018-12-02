@@ -45,7 +45,6 @@
             android:name=".View.ListOrdersCustomersActivity"
             android:label="@string/title_activity_list_orders_customers"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".View.CreateOrderActivity" />
         <activity android:name=".View.UserProfileActivity"></activity>
 
         <provider
