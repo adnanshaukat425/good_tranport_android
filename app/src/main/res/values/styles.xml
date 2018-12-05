@@ -8,6 +8,10 @@
         <item name="colorAccent">@color/colorPrimary</item>
     </style>
 
+    <style name="custom" parent="AppTheme.NoActionBar">
+
+    </style>
+
     <style name="edit_text_style">
         <item name="android:drawablePadding">5dp</item>
         <item name="android:typeface">sans</item>

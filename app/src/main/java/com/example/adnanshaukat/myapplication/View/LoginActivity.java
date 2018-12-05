@@ -35,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText et_password;
     TextView tv_already_have_account;
     ProgressDialog progressDialog;
+    TextView tv_login_forgot_password;
     //String base_url = "http://192.168.0.105:8080/api/";
 
     SQLiteDBUsersHandler sqLiteDBUsersHandler;
@@ -53,6 +54,8 @@ public class LoginActivity extends AppCompatActivity {
 
         TextView txtCreateNewAccount = (TextView)findViewById(R.id.tv_login_create_new_account);
         txtCreateNewAccount.setText(Html.fromHtml(String.format(getString(R.string.create_new_account))));
+
+
 
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,6 +90,14 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        tv_login_forgot_password.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, UserProfileActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -100,14 +111,15 @@ public class LoginActivity extends AppCompatActivity {
         et_email = (EditText)findViewById(R.id.ev_login_email);
         et_password = (EditText)findViewById(R.id.ev_login_password);
         tv_already_have_account = (TextView)findViewById(R.id.tv_login_create_new_account);
+        tv_login_forgot_password = (TextView)findViewById(R.id.tv_login_forgot_password);
     }
 
     private void getLogin(String email, String password, final boolean from_system) {
         try {
             OkHttpClient.Builder client = new OkHttpClient.Builder();
-            client.connectTimeout(15, TimeUnit.SECONDS);
-            client.readTimeout(15, TimeUnit.SECONDS);
-            client.writeTimeout(15, TimeUnit.SECONDS);
+            client.connectTimeout(30, TimeUnit.SECONDS);
+            client.readTimeout(30, TimeUnit.SECONDS);
+            client.writeTimeout(30, TimeUnit.SECONDS);
 
             retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
                     .baseUrl(ILogin.BASE_URL)
@@ -125,6 +137,7 @@ public class LoginActivity extends AppCompatActivity {
                     User user = response.body();
                     if(user!=null) {
                         int user_id = user.getUser_id();
+                        int user_type_id = user.getUser_type_id();
                         String message = "";
                         if (user_id != 0) {
                             if (storeCredentialsToSQLite(user)) {
@@ -132,9 +145,22 @@ public class LoginActivity extends AppCompatActivity {
                                 if (!from_system) {
                                     Toast.makeText(LoginActivity.this, "Welcome " + user.getFirst_name().toString(), Toast.LENGTH_LONG).show();
                                 }
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                startActivity(intent);
-                                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+
+                                if(user_type_id == 1){
+                                    Toast.makeText(LoginActivity.this, "Welcome Customer", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(LoginActivity.this, MainActivityCustomer.class);
+                                    startActivity(intent);
+                                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                                }
+                                else if(user_type_id == 3){
+                                    Toast.makeText(LoginActivity.this, "Welcome Transporter", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(LoginActivity.this, MainActivityTransporter.class);
+                                    startActivity(intent);
+                                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                                }
+                                else if(user_type_id == 2){
+                                    Toast.makeText(LoginActivity.this, "Welcome Driver", Toast.LENGTH_SHORT).show();
+                                }
                             } else {
                                 message = "Username or password is not correct";
                             }

@@ -48,8 +48,8 @@ public class FragmentCreateOrder extends DialogFragment {
         Spinner spinner = (Spinner)view.findViewById(R.id.lv_cargo_type);
 
         Cargo[] cargo = new Cargo[2];
-        cargo[0] = new Cargo(1, "aa");
-        cargo[1] = new Cargo(2, "bb");
+        cargo[0] = new Cargo(1, "Dense");
+        cargo[1] = new Cargo(2, "Volumetric");
 
         SpinAdapter spinAdapter = new SpinAdapter(getContext(), R.layout.support_simple_spinner_dropdown_item, cargo);
         spinner.setAdapter(spinAdapter);

@@ -3,11 +3,9 @@ package com.example.adnanshaukat.myapplication.View;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
@@ -26,9 +24,7 @@ import com.example.adnanshaukat.myapplication.RetrofitInterfaces.ISignUp;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -198,7 +194,7 @@ public class CaptureImageActivity extends AppCompatActivity {
                         SQLiteDBUsersHandler sqLiteDBUsersHandler = new SQLiteDBUsersHandler(CaptureImageActivity.this);
                         sqLiteDBUsersHandler.storeCredentialsToSQLite(user);
 
-                        Intent intent = new Intent(CaptureImageActivity.this, MainActivity.class);
+                        Intent intent = new Intent(CaptureImageActivity.this, MainActivityCustomer.class);
                         intent.putExtra("user", user);
                         startActivity(intent);
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);

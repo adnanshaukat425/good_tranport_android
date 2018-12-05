@@ -47,11 +47,15 @@ public class User implements Serializable {
     @Expose
     private String password;
 
-    public User(){
+    @SerializedName("status")
+    @Expose
+    private int status;
+
+    public User() {
 
     }
 
-    public User(int user_id, int user_type_id, String first_name, String last_name, String email, String phone_number, String cnic_number, String profile_picture, String password) {
+    public User(int user_id, int user_type_id, String first_name, String last_name, String email, String phone_number, String cnic_number, String profile_picture, String password, int status) {
 
         this.user_id = user_id;
         this.user_type_id = user_type_id;
@@ -62,6 +66,7 @@ public class User implements Serializable {
         this.cnic_number = cnic_number;
         this.profile_picture = profile_picture;
         this.password = password;
+        this.status = status;
     }
 
     public int getUser_id() {
@@ -134,5 +139,13 @@ public class User implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }

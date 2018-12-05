@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_place_order"
-            android:icon="@drawable/place_order"
-            android:title="Place order" />
+            android:id="@+id/nav_t_view_drivers"
+            android:icon="@drawable/driver_logo"
+            android:title="Drivers" />
         <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
+            android:id="@+id/nav_view_vehicles"
+            android:icon="@drawable/vehicle_icon"
+            android:title="Vehicles" />
         <item
             android:id="@+id/nav_slideshow"
             android:icon="@drawable/ic_menu_slideshow"
@@ -36,7 +35,4 @@
                 android:title="Send" />
         </menu>
     </item>
-
-    
-
 </menu>

@@ -61,7 +61,7 @@ public class SignUpActivity extends AppCompatActivity {
                     String temp = Long.toString(cbo_user_type.getSelectedItemId() + 1);
                     int user_type_id = Integer.parseInt(temp);
 
-                    User user = new User(0, user_type_id, first_name, last_name, email, phone_number, cnic, "profile_picture_path", password);
+                    User user = new User(0, user_type_id, first_name, last_name, email, phone_number, cnic, "profile_picture_path", password, 1);
                     Intent intent = new Intent(SignUpActivity.this, CaptureImageActivity.class);
                     intent.putExtra("user", user);
                     startActivity(intent);

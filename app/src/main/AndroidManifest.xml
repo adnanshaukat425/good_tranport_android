@@ -9,7 +9,10 @@
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-feature android:name="android.hardware.camera" android:required="false" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <application
         android:name=".GlobalClasses.MyApplication"
@@ -31,21 +34,17 @@
             android:name=".View.SignUpActivity"
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
         <activity
-            android:name=".View.MainActivity"
+            android:name=".View.MainActivityCustomer"
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".View.CaptureImageActivity"
-            android:label="Capture Image" >
-        </activity>
         <activity
-            android:name=".View.TransporterMainActivity"
+            android:name=".View.CaptureImageActivity"
+            android:label="Capture Image"></activity>
+        <activity
+            android:name=".View.MainActivityTransporter"
             android:label="@string/title_activity_transporter_main"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".View.ListOrdersCustomersActivity"
-            android:label="@string/title_activity_list_orders_customers"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".View.UserProfileActivity"></activity>
+        <activity android:name=".View.UserProfileActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -54,8 +53,9 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths"></meta-data>
+                android:resource="@xml/file_paths" />
         </provider>
+
     </application>
 
 </manifest>

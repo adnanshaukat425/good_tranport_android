@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#292421</color>
     <color name="colorAccent">#EBEBEB</color>
     <color name="white">#fff</color>
+    <color name="colorEmail">#3D59AB</color>
 </resources>
