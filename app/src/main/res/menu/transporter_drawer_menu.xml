@@ -18,7 +18,7 @@
             android:icon="@drawable/ic_menu_manage"
             android:title="Tools" />
         <item
-            android:id="@+id/nav_logout"
+            android:id="@+id/nav_t_logout"
             android:icon="@drawable/logout"
             android:title="Logout" />
     </group>

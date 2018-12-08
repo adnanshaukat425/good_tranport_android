@@ -36,6 +36,9 @@ public class LoginActivity extends AppCompatActivity {
     TextView tv_already_have_account;
     ProgressDialog progressDialog;
     TextView tv_login_forgot_password;
+
+    private long backPressedTime;
+    private Toast backToast;
     //String base_url = "http://192.168.0.105:8080/api/";
 
     SQLiteDBUsersHandler sqLiteDBUsersHandler;
@@ -101,6 +104,19 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onBackPressed() {
+        if (backPressedTime + 2000 > System.currentTimeMillis()){
+            backToast.cancel();
+            super.onBackPressed();
+            return;
+        }else{
+            backToast = Toast.makeText(this, "Press again to exit", Toast.LENGTH_SHORT);
+            backToast.show();
+        }
+        backPressedTime = System.currentTimeMillis();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
 
@@ -145,16 +161,17 @@ public class LoginActivity extends AppCompatActivity {
                                 if (!from_system) {
                                     Toast.makeText(LoginActivity.this, "Welcome " + user.getFirst_name().toString(), Toast.LENGTH_LONG).show();
                                 }
-
                                 if(user_type_id == 1){
                                     Toast.makeText(LoginActivity.this, "Welcome Customer", Toast.LENGTH_SHORT).show();
                                     Intent intent = new Intent(LoginActivity.this, MainActivityCustomer.class);
+                                    intent.putExtra("user", user);
                                     startActivity(intent);
                                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                                 }
                                 else if(user_type_id == 3){
                                     Toast.makeText(LoginActivity.this, "Welcome Transporter", Toast.LENGTH_SHORT).show();
                                     Intent intent = new Intent(LoginActivity.this, MainActivityTransporter.class);
+                                    intent.putExtra("user", user);
                                     startActivity(intent);
                                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                                 }

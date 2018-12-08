@@ -18,4 +18,7 @@ public interface IDriver {
 
     @GET("get_driver_wrt_transporter")
     Call<List<User>> get_all_drivers(@Query("transporter_id") String transporter_id);
+
+    @GET("get_active_driver_wrt_transporter")
+    Call<List<User>> get_active_drivers(@Query("transporter_id") String transporter_id);
 }

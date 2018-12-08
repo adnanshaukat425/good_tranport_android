@@ -5,4 +5,5 @@
     <color name="colorAccent">#EBEBEB</color>
     <color name="white">#fff</color>
     <color name="colorEmail">#3D59AB</color>
+    <color name="colorOffline">#f40</color>
 </resources>

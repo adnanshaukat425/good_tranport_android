@@ -1,9 +1,11 @@
 package com.example.adnanshaukat.myapplication.View;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -11,7 +13,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.example.adnanshaukat.myapplication.GlobalClasses.MyApplication;
+import com.example.adnanshaukat.myapplication.Modals.SQLiteDBUsersHandler;
+import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
 
 /**
@@ -19,6 +25,7 @@ import com.example.adnanshaukat.myapplication.R;
  */
 
 public class MainActivityTransporter extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+    User user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +42,9 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.transporter_nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        Intent i = getIntent();
+        user = (User)i.getSerializableExtra("user");
     }
 
     public void onBackPressed() {
@@ -72,13 +82,42 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-
         if(id == R.id.nav_t_view_drivers){
-            getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right).replace(R.id.main_content_frame_transporter_container, new FragmentListOfDriverWRTTransporter()).addToBackStack(null).commit();
+
+            FragmentListOfDriverWRTTransporter fragment = new FragmentListOfDriverWRTTransporter();
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("user", user);
+            fragment.setArguments(bundle);
+
+            getSupportFragmentManager().beginTransaction().
+                    setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right).
+                    replace(R.id.main_content_frame_transporter_container, fragment).
+                    addToBackStack(null).
+                    commit();
+        }
+
+        if(id == R.id.nav_t_logout){
+            if(logout()){
+                Toast.makeText(this, "Logged out Successfully", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivityTransporter.this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+            }else{
+                Toast.makeText(this, "Try Again", Toast.LENGTH_SHORT).show();
+            }
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.transporter_drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public boolean logout(){
+        SQLiteDBUsersHandler sqLiteDBUsersHandler = new SQLiteDBUsersHandler(MainActivityTransporter.this);
+        int user_id = ((MyApplication) this.getApplication()).get_user_id();
+        User user = new User();
+        user.setUser_id(user_id);
+        return sqLiteDBUsersHandler.update_logged_in_status(0, user);
     }
 }

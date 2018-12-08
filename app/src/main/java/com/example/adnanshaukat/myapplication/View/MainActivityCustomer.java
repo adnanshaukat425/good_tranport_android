@@ -95,6 +95,7 @@ public class MainActivityCustomer extends AppCompatActivity
             if(logout()){
                 Toast.makeText(this, "Logged out Successfully", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MainActivityCustomer.this, LoginActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
             }else{

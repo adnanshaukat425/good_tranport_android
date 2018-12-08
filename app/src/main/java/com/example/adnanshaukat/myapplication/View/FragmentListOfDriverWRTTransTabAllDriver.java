@@ -46,22 +46,15 @@ public class FragmentListOfDriverWRTTransTabAllDriver extends Fragment {
         view = inflater.inflate(R.layout.fragment_list_of_driver_wrt_trans_tab_all_driver, container, false);
         progressDialog = ProgressDialogManager.showProgressDialogWithTitle(getContext(), "Loading", "Please wait");
 
-        getDrivers("7");
-//        RecyclerView recyclerView  = (RecyclerView)view.findViewById(R.id.fragment_list_of_all_driver_trans_recycler_view);
-//        DriverRecyclerViewAdapter adapter = new DriverRecyclerViewAdapter(getContext(), mUser);
-//
-//        final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-//        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-//
-//        recyclerView.setLayoutManager(layoutManager);
-//        recyclerView.setAdapter(adapter);
         return view;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mUser = getDrivers("7");
+        User user = (User)getActivity().getIntent().getSerializableExtra("user");
+        Log.e(FragmentListOfDriverWRTTransTabAllDriver.this.toString(), user.getUser_id() + "");
+        mUser = getDrivers(Integer.toString(user.getUser_id()));
         Log.e("M USER COUNT", Integer.toString(mUser.size()));
     }
 
@@ -87,19 +80,14 @@ public class FragmentListOfDriverWRTTransTabAllDriver extends Fragment {
                 @Override
                 public void onResponse(Call<List<User>> call, Response<List<User>> response) {
                     List<User> user = response.body();
-                    Log.e("USERS COUNT", Integer.toString(user.size()));
                     if(user!=null && user.size() > 0) {
                         ProgressDialogManager.closeProgressDialog(progressDialog);
-
                         RecyclerView recyclerView  = (RecyclerView)view.findViewById(R.id.fragment_list_of_all_driver_trans_recycler_view);
-                        DriverRecyclerViewAdapter adapter = new DriverRecyclerViewAdapter(getContext(), user);
-
+                        DriverRecyclerViewAdapter adapter = new DriverRecyclerViewAdapter(getContext(), user, -1);
                         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
                         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-
                         recyclerView.setLayoutManager(layoutManager);
                         recyclerView.setAdapter(adapter);
-
                     }
                     else{
                         ProgressDialogManager.closeProgressDialog(progressDialog);

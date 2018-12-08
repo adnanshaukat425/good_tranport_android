@@ -1,19 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
-    android:padding="5dp"
-    android:layout_height="wrap_content">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="5dp">
 
-    <ImageView
-        android:id="@+id/driver_list_profile_image_view"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:src="@mipmap/ic_launcher"/>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/driver_list_profile_image_view"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:src="@drawable/default_profile_image" />
+
+        <ImageView
+            android:id="@+id/driver_list_status_image_view"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
+            android:layout_alignBottom="@id/driver_list_profile_image_view"
+            android:layout_alignRight="@id/driver_list_profile_image_view"
+            android:layout_gravity="bottom"
+            android:src="@drawable/offline_icon" />
+
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
+        android:layout_marginLeft="4dp"
         android:orientation="vertical">
 
         <TextView
@@ -23,21 +39,21 @@
             android:text="Name"
             android:textColor="@color/colorPrimary"
             android:textSize="20sp"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/driver_list_driver_phone_no"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="03360258019"/>
+            android:text="03360258019" />
 
         <TextView
             android:id="@+id/driver_list_driver_email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="italic"
+            android:text="someone@gmail.com"
             android:textColor="@color/colorEmail"
-            android:text="someone@gmail.com"/>
+            android:textStyle="italic" />
 
     </LinearLayout>
 </LinearLayout>

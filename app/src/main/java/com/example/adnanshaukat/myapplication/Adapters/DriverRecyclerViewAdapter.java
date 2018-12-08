@@ -24,10 +24,11 @@ public class DriverRecyclerViewAdapter extends RecyclerView.Adapter<DriverRecycl
 
     Context mContext;
     List<User> mUsers;
-
-    public DriverRecyclerViewAdapter(Context context, List<User> users){
+    int mStatus;
+    public DriverRecyclerViewAdapter(Context context, List<User> users, int status){
         mContext = context;
         mUsers = users;
+        this.mStatus = status;
     }
 
     @Override
@@ -39,21 +40,50 @@ public class DriverRecyclerViewAdapter extends RecyclerView.Adapter<DriverRecycl
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
+        if (mStatus != -1){
+            if(mUsers.get(position).getStatus() == mStatus) {
+                String encodedImage = mUsers.get(position).getProfile_picture();
+                if (encodedImage.isEmpty()) {
+                    holder.profile_image.setImageResource(R.drawable.default_profile_image);
+                } else {
+                    byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
+                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
-        String encodedImage = mUsers.get(position).getProfile_picture();
-        if(encodedImage.isEmpty()){
-            holder.profile_image.setImageResource(R.drawable.default_profile_image);
+                    holder.profile_image.setImageBitmap(decodedByte);
+                }
+
+                if (mUsers.get(position).getStatus() == 1) {
+                    holder.driver_status_image.setImageResource(R.drawable.online_icon);
+                } else if (mUsers.get(position).getStatus() == 0) {
+                    holder.driver_status_image.setImageResource(R.drawable.offline_icon);
+                }
+
+                holder.tv_driver_name.setText(mUsers.get(position).getFirst_name() + " " + mUsers.get(position).getLast_name());
+                holder.tv_driver_email.setText(mUsers.get(position).getEmail());
+                holder.tv_driver_phone_no.setText(mUsers.get(position).getPhone_number());
+            }
         }
         else{
-            byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
-            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            String encodedImage = mUsers.get(position).getProfile_picture();
+            if (encodedImage.isEmpty()) {
+                holder.profile_image.setImageResource(R.drawable.default_profile_image);
+            } else {
+                byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
 
-            holder.profile_image.setImageBitmap(decodedByte);
+                holder.profile_image.setImageBitmap(decodedByte);
+            }
+
+            if (mUsers.get(position).getStatus() == 1) {
+                holder.driver_status_image.setImageResource(R.drawable.online_icon);
+            } else if (mUsers.get(position).getStatus() == 0) {
+                holder.driver_status_image.setImageResource(R.drawable.offline_icon);
+            }
+
+            holder.tv_driver_name.setText(mUsers.get(position).getFirst_name() + " " + mUsers.get(position).getLast_name());
+            holder.tv_driver_email.setText(mUsers.get(position).getEmail());
+            holder.tv_driver_phone_no.setText(mUsers.get(position).getPhone_number());
         }
-
-        holder.tv_driver_name.setText(mUsers.get(position).getFirst_name() + " " + mUsers.get(position).getLast_name());
-        holder.tv_driver_email.setText(mUsers.get(position).getEmail());
-        holder.tv_driver_phone_no.setText(mUsers.get(position).getPhone_number());
     }
 
     @Override
@@ -63,12 +93,13 @@ public class DriverRecyclerViewAdapter extends RecyclerView.Adapter<DriverRecycl
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
 
-        ImageView profile_image;
+        ImageView profile_image, driver_status_image;
         TextView tv_driver_name, tv_driver_email, tv_driver_phone_no;
 
         public MyViewHolder(View v){
             super(v);
             profile_image = (ImageView)v.findViewById(R.id.driver_list_profile_image_view);
+            driver_status_image = (ImageView)v.findViewById(R.id.driver_list_status_image_view);
             tv_driver_name = (TextView)v.findViewById(R.id.driver_list_driver_name);
             tv_driver_email = (TextView)v.findViewById(R.id.driver_list_driver_email);
             tv_driver_phone_no = (TextView)v.findViewById(R.id.driver_list_driver_phone_no);
