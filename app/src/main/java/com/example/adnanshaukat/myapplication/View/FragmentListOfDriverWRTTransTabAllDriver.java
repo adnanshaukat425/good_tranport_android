@@ -40,11 +40,11 @@ public class FragmentListOfDriverWRTTransTabAllDriver extends Fragment {
     private List<User> mUser = new ArrayList<>();
     private ProgressDialog progressDialog;
     private View view;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_list_of_driver_wrt_trans_tab_all_driver, container, false);
-        progressDialog = ProgressDialogManager.showProgressDialogWithTitle(getContext(), "Loading", "Please wait");
 
         return view;
     }
@@ -59,6 +59,7 @@ public class FragmentListOfDriverWRTTransTabAllDriver extends Fragment {
     }
 
     private List<User> getDrivers(String transporter_id) {
+        progressDialog = ProgressDialogManager.showProgressDialogWithTitle(getContext(), "Loading All Drivers", "Please wait");
         final List<User> result_list = new ArrayList<>();
         try {
             OkHttpClient.Builder client = new OkHttpClient.Builder();

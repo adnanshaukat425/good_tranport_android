@@ -31,7 +31,7 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transporter_main);
-
+        this.setTitle("Transporter");
         Toolbar toolbar = (Toolbar) findViewById(R.id.transporter_toolbar);
         setSupportActionBar(toolbar);
 
@@ -56,6 +56,7 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
             int fragments = getSupportFragmentManager().getBackStackEntryCount();
             Log.e("Fragment Count",Integer.toString(fragments));
             if (fragments == 0) {
+                this.setTitle("Transporter");
                 //finish();
             } else {
                 if (getSupportFragmentManager().getBackStackEntryCount() >= 1) {
@@ -90,7 +91,7 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
 
             FragmentListOfDriverWRTTransporter fragment = new FragmentListOfDriverWRTTransporter();
             fragment.setArguments(bundle);
-
+            this.setTitle("Drivers");
             getSupportFragmentManager().beginTransaction().
                     setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right).
                     replace(R.id.main_content_frame_transporter_container, fragment).
@@ -101,6 +102,7 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
         if (id == R.id.nav_t_view_vehicles){
             FragmentListOfVehicleWRTTransporter fragment = new FragmentListOfVehicleWRTTransporter();
             fragment.setArguments(bundle);
+            this.setTitle("Vehicles");
             getSupportFragmentManager().beginTransaction().
                     setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right).
                     replace(R.id.main_content_frame_transporter_container, fragment).

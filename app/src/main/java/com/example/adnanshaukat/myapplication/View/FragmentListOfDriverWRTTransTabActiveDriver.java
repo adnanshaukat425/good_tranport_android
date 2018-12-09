@@ -44,7 +44,7 @@ public class FragmentListOfDriverWRTTransTabActiveDriver extends Fragment{
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_list_of_driver_wrt_trans_tab_active_driver, container, false);
-        progressDialog = ProgressDialogManager.showProgressDialogWithTitle(getContext(), "Loading", "Please wait");
+
 
 //        fragment_list_of_active_driver_trans_refresher = (SwipeRefreshLayout)view.findViewById(R.id.fragment_list_of_active_driver_trans_refresher);
 //        fragment_list_of_active_driver_trans_refresher.setHorizontalScrollBarEnabled(true);
@@ -62,6 +62,7 @@ public class FragmentListOfDriverWRTTransTabActiveDriver extends Fragment{
     }
 
     private List<User> getDrivers(String transporter_id) {
+        progressDialog = ProgressDialogManager.showProgressDialogWithTitle(getContext(), "Loading Active Drivers", "Please wait");
         final List<User> result_list = new ArrayList<>();
         try {
             OkHttpClient.Builder client = new OkHttpClient.Builder();

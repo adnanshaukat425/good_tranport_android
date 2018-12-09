@@ -44,6 +44,7 @@ public class VehiclesRecyclerViewAdapter extends RecyclerView.Adapter<VehiclesRe
         holder.tv_vehicle_type.setText(mVehicles.get(position).getVehicle_type());
         holder.tv_driver_name.setText(mVehicles.get(position).getDriver_name());
     }
+
     @Override
     public int getItemCount() {
         return mVehicles.size();

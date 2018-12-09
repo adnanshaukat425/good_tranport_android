@@ -20,7 +20,7 @@ public class SplashScreenActivity extends AwesomeSplash {
 
         getSupportActionBar().hide();
         //Customize Circular Reveal
-        configSplash.setBackgroundColor(R.color.fillColor);//any color you want form colors.xml
+        configSplash.setBackgroundColor(R.color.colorSplash);//any color you want form colors.xml
         configSplash.setAnimCircularRevealDuration(2000); //int ms
         configSplash.setRevealFlagX(Flags.REVEAL_RIGHT);  //or Flags.REVEAL_LEFT
         configSplash.setRevealFlagY(Flags.REVEAL_BOTTOM); //or Flags.REVEAL_TOP
@@ -48,7 +48,7 @@ public class SplashScreenActivity extends AwesomeSplash {
         configSplash.setTitleSplash("");
         configSplash.setTitleTextColor(R.color.white);
         configSplash.setTitleTextSize(30f); //float value
-        configSplash.setAnimTitleDuration(3000);
+        configSplash.setAnimTitleDuration(2000);
         configSplash.setAnimTitleTechnique(Techniques.FlipInX);
     }
 

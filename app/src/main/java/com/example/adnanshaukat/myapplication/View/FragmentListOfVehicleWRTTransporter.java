@@ -45,7 +45,7 @@ public class FragmentListOfVehicleWRTTransporter extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_list_of_vehicle_wrt_transporter, container, false);
-        progressDialog = ProgressDialogManager.showProgressDialogWithTitle(getContext(), "Loading", "Please wait");
+
         return view;
     }
 
@@ -58,6 +58,7 @@ public class FragmentListOfVehicleWRTTransporter extends Fragment {
     }
 
     private List<User> getVehicles(String transporter_id) {
+        progressDialog = ProgressDialogManager.showProgressDialogWithTitle(getContext(), "Loading Vehicle", "Please wait");
         final List<User> result_list = new ArrayList<>();
         try {
             OkHttpClient.Builder client = new OkHttpClient.Builder();

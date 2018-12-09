@@ -6,4 +6,6 @@
     <color name="white">#fff</color>
     <color name="colorEmail">#3D59AB</color>
     <color name="colorOffline">#f40</color>
+    <color name="colorOnline">#0f0</color>
+    <color name="colorSplash">#1BCA90</color>
 </resources>
