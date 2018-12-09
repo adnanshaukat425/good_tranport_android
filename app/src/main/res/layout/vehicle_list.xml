@@ -10,21 +10,22 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/driver_list_profile_image_view"
+            android:padding="3dp"
+            android:id="@+id/vehicle_list_vehicle_image_view"
             android:layout_width="56dp"
             android:layout_height="56dp"
-            android:src="@drawable/default_profile_image"/>
+            android:src="@drawable/vehicle_icon"/>
 
-        <ImageView
-            android:src="@drawable/offline_icon"
-            android:layout_alignEnd="@id/driver_list_profile_image_view"
-            android:layout_alignParentRight="@id/driver_list_profile_image_view"
-            android:layout_alignBottom="@id/driver_list_profile_image_view"
-            android:id="@+id/driver_list_status_image_view"
-            android:layout_gravity="bottom"
-            android:layout_width="12dp"
-            android:layout_height="12dp"
-            android:layout_alignRight="@id/driver_list_profile_image_view" />
+        <!--<ImageView-->
+            <!--android:src="@drawable/offline_icon"-->
+            <!--android:layout_alignEnd="@id/driver_list_profile_image_view"-->
+            <!--android:layout_alignParentRight="@id/driver_list_profile_image_view"-->
+            <!--android:layout_alignBottom="@id/driver_list_profile_image_view"-->
+            <!--android:id="@+id/driver_list_status_image_view"-->
+            <!--android:layout_gravity="bottom"-->
+            <!--android:layout_width="12dp"-->
+            <!--android:layout_height="12dp"-->
+            <!--android:layout_alignRight="@id/driver_list_profile_image_view" />-->
 
     </RelativeLayout>
 
@@ -35,7 +36,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/driver_list_driver_name"
+            android:id="@+id/vehicle_list_vehicle_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Name"
@@ -44,18 +45,18 @@
             android:textStyle="bold"/>
 
         <TextView
-            android:id="@+id/driver_list_driver_phone_no"
+            android:id="@+id/vehicle_list_vehicle_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="03360258019"/>
+            android:text="20ft"/>
 
         <TextView
-            android:id="@+id/driver_list_driver_email"
+            android:id="@+id/vehicle_list_driver_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textStyle="italic"
             android:textColor="@color/colorEmail"
-            android:text="someone@gmail.com"/>
+            android:text="Driver name"/>
 
     </LinearLayout>
 </LinearLayout>

@@ -25,6 +25,7 @@ import com.example.adnanshaukat.myapplication.R;
  */
 
 public class MainActivityTransporter extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+
     User user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,13 +83,24 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("user", user);
+
         if(id == R.id.nav_t_view_drivers){
 
             FragmentListOfDriverWRTTransporter fragment = new FragmentListOfDriverWRTTransporter();
-            Bundle bundle = new Bundle();
-            bundle.putSerializable("user", user);
             fragment.setArguments(bundle);
 
+            getSupportFragmentManager().beginTransaction().
+                    setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right).
+                    replace(R.id.main_content_frame_transporter_container, fragment).
+                    addToBackStack(null).
+                    commit();
+        }
+
+        if (id == R.id.nav_t_view_vehicles){
+            FragmentListOfVehicleWRTTransporter fragment = new FragmentListOfVehicleWRTTransporter();
+            fragment.setArguments(bundle);
             getSupportFragmentManager().beginTransaction().
                     setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right).
                     replace(R.id.main_content_frame_transporter_container, fragment).
