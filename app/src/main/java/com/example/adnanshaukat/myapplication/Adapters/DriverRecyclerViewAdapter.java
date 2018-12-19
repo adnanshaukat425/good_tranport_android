@@ -3,16 +3,22 @@ package com.example.adnanshaukat.myapplication.Adapters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
+import com.example.adnanshaukat.myapplication.View.FragmentUserProfileForDriverFromTransporter;
+import com.example.adnanshaukat.myapplication.View.MainActivityTransporter;
 
 import java.util.List;
 
@@ -25,10 +31,12 @@ public class DriverRecyclerViewAdapter extends RecyclerView.Adapter<DriverRecycl
     Context mContext;
     List<User> mUsers;
     int mStatus;
-    public DriverRecyclerViewAdapter(Context context, List<User> users, int status){
+    String transporter_id;
+    public DriverRecyclerViewAdapter(Context context, List<User> users, int status, String transporter_id){
         mContext = context;
         mUsers = users;
         this.mStatus = status;
+        this.transporter_id = transporter_id;
     }
 
     @Override
@@ -41,6 +49,9 @@ public class DriverRecyclerViewAdapter extends RecyclerView.Adapter<DriverRecycl
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         if (mStatus != -1){
+            Log.e("USER STATUS",Integer.toString(mStatus));
+            Log.e("USER Name", mUsers.get(position).getFirst_name());
+
             if(mUsers.get(position).getStatus() == mStatus) {
                 String encodedImage = mUsers.get(position).getProfile_picture();
                 if (encodedImage.isEmpty()) {
@@ -84,6 +95,26 @@ public class DriverRecyclerViewAdapter extends RecyclerView.Adapter<DriverRecycl
             holder.tv_driver_email.setText(mUsers.get(position).getEmail());
             holder.tv_driver_phone_no.setText(mUsers.get(position).getPhone_number());
         }
+
+        holder.setItemClickListner(new ItemClickListner() {
+            @Override
+            public void onClick(View view, int position) {
+                Toast.makeText(mContext, mUsers.get(position).getFirst_name(), Toast.LENGTH_SHORT).show();
+                MainActivityTransporter activity = (MainActivityTransporter)mContext;
+
+                Bundle bundle = new Bundle();
+                User user = mUsers.get(position);
+                bundle.putSerializable("user_from_driver_list", user);
+                bundle.putString("transporter_id", transporter_id);
+                FragmentUserProfileForDriverFromTransporter fragment = new FragmentUserProfileForDriverFromTransporter();
+                fragment.setArguments(bundle);
+
+                activity.getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right).
+                        replace(R.id.main_content_frame_transporter_container, fragment).
+                        addToBackStack(null).
+                        commit();
+            }
+        });
     }
 
     @Override
@@ -91,18 +122,31 @@ public class DriverRecyclerViewAdapter extends RecyclerView.Adapter<DriverRecycl
         return mUsers.size();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder{
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
+        LinearLayout linearLayout;
         ImageView profile_image, driver_status_image;
         TextView tv_driver_name, tv_driver_email, tv_driver_phone_no;
+        ItemClickListner itemClickListner;
 
         public MyViewHolder(View v){
             super(v);
+            linearLayout = (LinearLayout)v.findViewById(R.id.driver_list_linear_layout);
             profile_image = (ImageView)v.findViewById(R.id.driver_list_profile_image_view);
             driver_status_image = (ImageView)v.findViewById(R.id.driver_list_status_image_view);
             tv_driver_name = (TextView)v.findViewById(R.id.driver_list_driver_name);
             tv_driver_email = (TextView)v.findViewById(R.id.driver_list_driver_email);
             tv_driver_phone_no = (TextView)v.findViewById(R.id.driver_list_driver_phone_no);
+            v.setOnClickListener(this);
+        }
+
+        public void setItemClickListner(ItemClickListner itemClickListner){
+            this.itemClickListner = itemClickListner;
+        }
+
+        @Override
+        public void onClick(View v) {
+            itemClickListner.onClick(v, getAdapterPosition());
         }
     }
 }

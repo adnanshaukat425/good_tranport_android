@@ -56,12 +56,17 @@ public class FragmentListOfDriverWRTTransTabActiveDriver extends Fragment{
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         user = (User)getActivity().getIntent().getSerializableExtra("user");
         Log.e(FragmentListOfDriverWRTTransTabActiveDriver.this.toString(), user.getUser_id() + "");
         getDrivers(Integer.toString(user.getUser_id()));
     }
 
-    private List<User> getDrivers(String transporter_id) {
+    private List<User> getDrivers(final String transporter_id) {
         progressDialog = ProgressDialogManager.showProgressDialogWithTitle(getContext(), "Loading Active Drivers", "Please wait");
         final List<User> result_list = new ArrayList<>();
         try {
@@ -87,7 +92,7 @@ public class FragmentListOfDriverWRTTransTabActiveDriver extends Fragment{
                     if(user!=null && user.size() > 0) {
                         ProgressDialogManager.closeProgressDialog(progressDialog);
                         RecyclerView recyclerView  = (RecyclerView)view.findViewById(R.id.fragment_list_of_active_driver_trans_recycler_view);
-                        DriverRecyclerViewAdapter adapter = new DriverRecyclerViewAdapter(getContext(), user, 1);
+                        DriverRecyclerViewAdapter adapter = new DriverRecyclerViewAdapter(getContext(), user, 1, transporter_id);
                         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
                         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                         recyclerView.setLayoutManager(layoutManager);

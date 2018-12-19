@@ -19,7 +19,11 @@ import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.ISignUp;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -38,6 +42,7 @@ public class SignUpActivity extends AppCompatActivity {
     Button btn_signup_next;
     ProgressDialog progressDialog;
     SQLiteDBUsersHandler sqLiteDBUsersHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +66,11 @@ public class SignUpActivity extends AppCompatActivity {
                     String temp = Long.toString(cbo_user_type.getSelectedItemId() + 1);
                     int user_type_id = Integer.parseInt(temp);
 
-                    User user = new User(0, user_type_id, first_name, last_name, email, phone_number, cnic, "profile_picture_path", password, 1);
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    Date date = new Date();
+                    String current_date = dateFormat.format(date);
+
+                    User user = new User(0, user_type_id, first_name, last_name, email, phone_number, cnic, "profile_picture_path", password, 1, current_date);
                     Intent intent = new Intent(SignUpActivity.this, CaptureImageActivity.class);
                     intent.putExtra("user", user);
                     startActivity(intent);

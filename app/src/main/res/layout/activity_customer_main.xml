@@ -23,7 +23,7 @@
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
         <FrameLayout
-            android:id="@+id/main_content_frame_container"
+            android:id="@+id/main_content_frame_customer_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
@@ -35,7 +35,6 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        app:headerLayout="@layout/nav_header_main"
         app:menu="@menu/customer_drawer_menu" />
 
 </android.support.v4.widget.DrawerLayout>

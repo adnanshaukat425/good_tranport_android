@@ -48,7 +48,6 @@
             android:name=".View.MainActivityTransporter"
             android:label="@string/title_activity_transporter_main"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".View.UserProfileActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

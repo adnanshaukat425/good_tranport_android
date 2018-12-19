@@ -52,6 +52,11 @@ public class FragmentListOfVehicleWRTTransporter extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
         User user = (User)getActivity().getIntent().getSerializableExtra("user");
         Log.e(FragmentListOfVehicleWRTTransporter.this.toString(), user.getUser_id() + "");
         getVehicles(Integer.toString(user.getUser_id()));
@@ -82,7 +87,7 @@ public class FragmentListOfVehicleWRTTransporter extends Fragment {
                 @Override
                 public void onResponse(Call<List<Vehicle>> call, Response<List<Vehicle>> response) {
                     List<Vehicle> vehicles = response.body();
-                    Log.e("VEHICLES NUMBER", Float.toString(vehicles.get(0).getVehicle_number()));
+
                     if(vehicles!=null && vehicles.size() > 0) {
                         ProgressDialogManager.closeProgressDialog(progressDialog);
                         RecyclerView recyclerView  = (RecyclerView)view.findViewById(R.id.fragment_list_of_all_vehicle_trans_recycler_view);

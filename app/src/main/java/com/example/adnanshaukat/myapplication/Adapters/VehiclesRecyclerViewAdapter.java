@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.Modals.Vehicle;
 import com.example.adnanshaukat.myapplication.R;
+import com.example.adnanshaukat.myapplication.View.MainActivityTransporter;
 
 import java.util.List;
 
@@ -42,7 +43,13 @@ public class VehiclesRecyclerViewAdapter extends RecyclerView.Adapter<VehiclesRe
     public void onBindViewHolder(VehiclesRecyclerViewAdapter.MyViewHolder holder, int position) {
         holder.tv_vehicle_number.setText(Integer.toString(mVehicles.get(position).getVehicle_number()));
         holder.tv_vehicle_type.setText(mVehicles.get(position).getVehicle_type());
-        holder.tv_driver_name.setText(mVehicles.get(position).getDriver_name());
+        if(mVehicles.get(position).getDriver_id() != 0){
+            holder.tv_driver_name.setText(mVehicles.get(position).getDriver_name());
+        }else{
+            holder.tv_driver_name.setText("No driver assigned");
+            MainActivityTransporter mainActivityTransporter = (MainActivityTransporter)mContext;
+            holder.tv_driver_name.setTextColor(mainActivityTransporter.getResources().getColor(R.color.colorOffline));
+        }
     }
 
     @Override

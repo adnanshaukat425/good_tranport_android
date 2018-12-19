@@ -1,18 +1,21 @@
 package com.example.adnanshaukat.myapplication.View;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Base64;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.adnanshaukat.myapplication.GlobalClasses.MyApplication;
@@ -32,6 +35,10 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transporter_main);
         this.setTitle("Transporter");
+
+        Intent i = getIntent();
+        user = (User)i.getSerializableExtra("user");
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.transporter_toolbar);
         setSupportActionBar(toolbar);
 
@@ -44,8 +51,36 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
         NavigationView navigationView = (NavigationView) findViewById(R.id.transporter_nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        Intent i = getIntent();
-        user = (User)i.getSerializableExtra("user");
+        View view = navigationView.inflateHeaderView(R.layout.nav_header_main);
+        ImageView profile_image =  (ImageView)view.findViewById(R.id.drawer_profile_image);
+
+        String encodedImage = user.getProfile_picture();
+        if (encodedImage.isEmpty()) {
+            profile_image.setImageResource(R.drawable.default_profile_image_2);
+        } else {
+            byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
+            profile_image.setImageBitmap(decodedByte);
+        }
+
+        profile_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("user", user);
+                FragmentUserProfile fragment = new FragmentUserProfile();
+                fragment.setArguments(bundle);
+                getSupportFragmentManager().beginTransaction().
+                        setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out).
+                        replace(R.id.main_content_frame_transporter_container, fragment).
+                        addToBackStack(null).
+                        commit();
+
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.transporter_drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+            }
+        });
     }
 
     public void onBackPressed() {

@@ -5,7 +5,9 @@ import com.example.adnanshaukat.myapplication.Modals.User;
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 /**
@@ -21,4 +23,7 @@ public interface IDriver {
 
     @GET("get_active_driver_wrt_transporter")
     Call<List<User>> get_active_drivers(@Query("transporter_id") String transporter_id);
+
+    @POST("update_drivers_vehicle")
+    Call<String> update_drivers_vehicle(@Body String json_string);
 }

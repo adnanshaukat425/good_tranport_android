@@ -1,7 +1,10 @@
 package com.example.adnanshaukat.myapplication.View;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -10,6 +13,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.adnanshaukat.myapplication.GlobalClasses.MyApplication;
@@ -20,10 +25,15 @@ import com.example.adnanshaukat.myapplication.R;
 public class MainActivityCustomer extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    User user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer_main);
+
+        Intent i = getIntent();
+        user = (User)i.getSerializableExtra("user");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.customer_toolbar);
         setSupportActionBar(toolbar);
@@ -37,7 +47,38 @@ public class MainActivityCustomer extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.customer_nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_content_frame_container, new FragmentMain()).commit();
+        View view = navigationView.inflateHeaderView(R.layout.nav_header_main);
+        ImageView profile_image =  (ImageView)view.findViewById(R.id.drawer_profile_image);
+
+        String encodedImage = user.getProfile_picture();
+        if (encodedImage.isEmpty()) {
+            profile_image.setImageResource(R.drawable.default_profile_image_2);
+        } else {
+            byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
+            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
+            profile_image.setImageBitmap(decodedByte);
+        }
+
+        profile_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("user", user);
+                FragmentUserProfile fragment = new FragmentUserProfile();
+                fragment.setArguments(bundle);
+                getSupportFragmentManager().beginTransaction().
+                        setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out).
+                        replace(R.id.main_content_frame_customer_container, fragment).
+                        addToBackStack(null).
+                        commit();
+
+                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.customer_drawer_layout);
+                drawer.closeDrawer(GravityCompat.START);
+            }
+        });
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_content_frame_customer_container, new FragmentMain()).commit();
     }
 
     @Override
@@ -79,7 +120,11 @@ public class MainActivityCustomer extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_c_place_order) {
-            getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right).replace(R.id.main_content_frame_container, new FragmentCreateOrder()).addToBackStack(null).commit();
+            getSupportFragmentManager().beginTransaction().
+                    setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right).
+                    replace(R.id.main_content_frame_customer_container, new FragmentCreateOrder()).
+                    addToBackStack(null).
+                    commit();
         } else if (id == R.id.nav_c_view_order_details) {
 
         } else if (id == R.id.nav_slideshow) {

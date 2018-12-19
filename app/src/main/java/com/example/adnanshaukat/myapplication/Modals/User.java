@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Created by AdnanShaukat on 04/11/2018.
@@ -51,11 +52,15 @@ public class User implements Serializable {
     @Expose
     private int status;
 
+    @SerializedName("created_date")
+    @Expose
+    private String created_date;
+
     public User() {
 
     }
 
-    public User(int user_id, int user_type_id, String first_name, String last_name, String email, String phone_number, String cnic_number, String profile_picture, String password, int status) {
+    public User(int user_id, int user_type_id, String first_name, String last_name, String email, String phone_number, String cnic_number, String profile_picture, String password, int status, String created_date) {
 
         this.user_id = user_id;
         this.user_type_id = user_type_id;
@@ -67,6 +72,7 @@ public class User implements Serializable {
         this.profile_picture = profile_picture;
         this.password = password;
         this.status = status;
+        this.created_date = created_date;
     }
 
     public int getUser_id() {
@@ -147,5 +153,13 @@ public class User implements Serializable {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public String getCreated_date() {
+        return created_date;
+    }
+
+    public void setCreated_date(String created_date) {
+        this.created_date = created_date;
     }
 }

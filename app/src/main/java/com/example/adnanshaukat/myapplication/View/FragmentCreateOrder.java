@@ -22,8 +22,10 @@ import com.example.adnanshaukat.myapplication.R;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by AdnanShaukat on 30/11/2018.
@@ -47,9 +49,9 @@ public class FragmentCreateOrder extends DialogFragment {
 
         Spinner spinner = (Spinner)view.findViewById(R.id.lv_cargo_type);
 
-        Cargo[] cargo = new Cargo[2];
-        cargo[0] = new Cargo(1, "Dense");
-        cargo[1] = new Cargo(2, "Volumetric");
+        ArrayList<Cargo> cargo = new ArrayList<Cargo>();
+        cargo.add(new Cargo(1, "Dense"));
+        cargo.add(new Cargo(2, "Volumetric"));
 
         SpinAdapter spinAdapter = new SpinAdapter(getContext(), R.layout.support_simple_spinner_dropdown_item, cargo);
         spinner.setAdapter(spinAdapter);
@@ -100,10 +102,10 @@ class SpinAdapter extends ArrayAdapter<Cargo>{
     // Your sent context
     private Context context;
     // Your custom values for the spinner (User)
-    private Cargo[] values;
+    private List<Cargo> values;
 
     public SpinAdapter(Context context, int textViewResourceId,
-                       Cargo[] values) {
+                       List<Cargo> values) {
         super(context, textViewResourceId, values);
         this.context = context;
         this.values = values;
@@ -111,12 +113,12 @@ class SpinAdapter extends ArrayAdapter<Cargo>{
 
     @Override
     public int getCount(){
-        return values.length;
+        return values.size();
     }
 
     @Override
     public Cargo getItem(int position){
-        return values[position];
+        return values.get(position);
     }
 
     @Override
@@ -134,7 +136,7 @@ class SpinAdapter extends ArrayAdapter<Cargo>{
         label.setTextColor(Color.BLACK);
         // Then you can get the current item using the values array (Users array) and the current position
         // You can NOW reference each method you has created in your bean object (User class)
-        label.setText(values[position].getCargo_type());
+        label.setText(values.get(position).getCargo_type());
 
         // And finally return your dynamic (or custom) view for each spinner item
         return label;
@@ -147,7 +149,7 @@ class SpinAdapter extends ArrayAdapter<Cargo>{
                                 ViewGroup parent) {
         TextView label = (TextView) super.getDropDownView(position, convertView, parent);
         label.setTextColor(Color.BLACK);
-        label.setText(values[position].getCargo_type());
+        label.setText(values.get(position).getCargo_type());
 
         return label;
     }
