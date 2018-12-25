@@ -28,4 +28,9 @@ public class Cargo {
     public void setCargo_type(String cargo_type) {
         this.cargo_type = cargo_type;
     }
+
+    @Override
+    public String toString() {
+        return cargo_type;
+    }
 }

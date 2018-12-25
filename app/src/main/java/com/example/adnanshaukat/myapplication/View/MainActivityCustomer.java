@@ -122,7 +122,7 @@ public class MainActivityCustomer extends AppCompatActivity
         if (id == R.id.nav_c_place_order) {
             getSupportFragmentManager().beginTransaction().
                     setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right).
-                    replace(R.id.main_content_frame_customer_container, new FragmentCreateOrder()).
+                    replace(R.id.main_content_frame_customer_container, new FragmentCreateOrderStep1()).
                     addToBackStack(null).
                     commit();
         } else if (id == R.id.nav_c_view_order_details) {

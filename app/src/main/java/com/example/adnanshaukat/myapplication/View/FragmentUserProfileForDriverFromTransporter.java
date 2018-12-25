@@ -192,13 +192,9 @@ public class FragmentUserProfileForDriverFromTransporter extends Fragment {
         return result_list;
     }
 
-    private void setDropdown(int selelcted_index) {
+    private void setDropdown(int selected_index) {
         spinner.setAdapter(new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_dropdown_item, vehicles_array));
-        spinner.setSelection(selelcted_index, true);
-    }
-
-    private Object getVehicleFromSpinner(HashMap hm, Object sourceKey) {
-        return hm.get(sourceKey);
+        spinner.setSelection(selected_index, true);
     }
 
     private void getVehicleFromSpinner() {
@@ -208,11 +204,6 @@ public class FragmentUserProfileForDriverFromTransporter extends Fragment {
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
                 Object item = adapterView.getItemAtPosition(position);
                 Object key = hm.get(position + 1);
-//                Toast.makeText(getContext(), item + "", Toast.LENGTH_SHORT).show();
-//                vehicle_number = getVehicleFromSpinner(hm, item).toString();
-//                vehicle_id = item.toString();
-//                Toast.makeText(getContext(), vehicle_id + "", Toast.LENGTH_SHORT).show();
-//                Toast.makeText(getContext(), vehicle_number + "", Toast.LENGTH_SHORT).show();
             }
 
             @Override
