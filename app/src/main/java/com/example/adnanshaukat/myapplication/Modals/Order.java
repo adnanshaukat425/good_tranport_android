@@ -19,12 +19,12 @@ public class Order {
     public boolean is_labour_required;
     public float labour_cost;
     public int payment_type_id;
-    public Date creation_datetime;
-    public Date order_datetime;
+    public String creation_datetime;
+    public String order_datetime;
 
     public Order(int order_id, int cargo_type_id, int container_type_id, int vehicle_type_id, int weight_catagory_id,
                  float cargo_volume, int weight_unit_id, int source_id, int destination_id, boolean is_labour_required,
-                 float labour_cost, int payment_type_id, Date creation_datetime, Date order_datetime) {
+                 float labour_cost, int payment_type_id, String creation_datetime, String order_datetime) {
         this.order_id = order_id;
         this.cargo_type_id = cargo_type_id;
         this.container_type_id = container_type_id;
@@ -137,19 +137,19 @@ public class Order {
         this.payment_type_id = payment_type_id;
     }
 
-    public Date getCreation_datetime() {
+    public String getCreation_datetime() {
         return creation_datetime;
     }
 
-    public void setCreation_datetime(Date creation_datetime) {
+    public void setCreation_datetime(String creation_datetime) {
         this.creation_datetime = creation_datetime;
     }
 
-    public Date getOrder_datetime() {
+    public String getOrder_datetime() {
         return order_datetime;
     }
 
-    public void setOrder_datetime(Date order_datetime) {
+    public void setOrder_datetime(String order_datetime) {
         this.order_datetime = order_datetime;
     }
 }

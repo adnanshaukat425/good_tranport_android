@@ -20,10 +20,10 @@
         android:textStyle="italic" />
 
     <ScrollView
-        android:layout_weight="9"
         android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_below="@id/heading"
-        android:layout_height="0dp">
+        android:layout_weight="9">
 
         <GridLayout
             android:layout_width="match_parent"
@@ -53,24 +53,24 @@
                 android:spinnerMode="dropdown" />
 
             <CheckBox
+                android:id="@+id/chk_labour_required"
+                style="@style/edit_text_style"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                style="@style/edit_text_style"
-                android:textStyle="bold"
-                android:textSize="17sp"
-                android:text="Labour required"
                 android:layout_columnWeight="1"
                 android:layout_rowWeight="21"
-                />
+                android:text="Labour required"
+                android:textSize="17sp"
+                android:textStyle="bold" />
 
 
             <TextView
-                android:id="@+id/tv_labour_required"
+                android:id="@+id/tv_labour_cost"
                 style="@style/edit_text_style"
                 android:layout_width="0dp"
-                android:layout_marginTop="26dp"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="2"
+                android:layout_marginTop="26dp"
                 android:layout_rowWeight="1"
                 android:text="Labour Cost"
                 android:textSize="17sp"
@@ -88,23 +88,23 @@
                 android:textStyle="bold" />
 
             <EditText
-                android:inputType="number"
-                android:id="@+id/spin_container_size"
+                android:id="@+id/et_labour_quantity"
                 style="@style/edit_text_style"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="2"
                 android:layout_marginTop="10dp"
                 android:layout_rowWeight="1"
-                android:textAlignment="center"
-                android:text="1"/>
+                android:inputType="number"
+                android:text="1"
+                android:textAlignment="center" />
 
             <TextView
                 android:id="@+id/tv_description"
                 style="@style/edit_text_style"
                 android:layout_width="0dp"
-                android:layout_columnSpan="2"
                 android:layout_height="wrap_content"
+                android:layout_columnSpan="2"
                 android:layout_columnWeight="1"
                 android:layout_rowWeight="1"
                 android:text="Description:"
@@ -112,7 +112,7 @@
                 android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/spin_destination_id"
+                android:id="@+id/et_destination_id"
                 style="@style/edit_text_style"
                 android:layout_width="0dp"
                 android:layout_height="80dp"
@@ -123,10 +123,12 @@
                 android:layout_toRightOf="@id/tv_destination_id" />
         </GridLayout>
     </ScrollView>
+
     <Button
-        android:background="@drawable/button_ripple_effect"
+        android:id="@+id/btn_place_order"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/button_ripple_effect"
         android:text="Place Order"
         android:textColor="@color/white"
         android:textStyle="bold" />

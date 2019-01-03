@@ -105,7 +105,8 @@ public class FragmentCreateOrderStep1 extends DialogFragment {
                 Container containerType = (Container) spinContainerType.getSelectedItem();
                 ContainerSize containerSize = (ContainerSize)spinContainerSize.getSelectedItem();
                 WeightCatagory weightCatagory = (WeightCatagory)spinCargoWeight.getSelectedItem();
-                float cargoVolume = Float.parseFloat(etCargoVolume.getText().toString());
+                String temp_volume = etCargoVolume.getText().toString();
+                float cargoVolume = Float.parseFloat(temp_volume.isEmpty() ? "0" : temp_volume);
                 MeasurementUnit measurementUnit = (MeasurementUnit) spinWeightUnit.getSelectedItem();
                 Location source = (Location) spinSource.getSelectedItem();
                 Location destination = (Location)spinDestination.getSelectedItem();

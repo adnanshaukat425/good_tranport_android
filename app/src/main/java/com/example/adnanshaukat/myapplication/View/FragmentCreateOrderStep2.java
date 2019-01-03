@@ -85,7 +85,7 @@ public class FragmentCreateOrderStep2 extends Fragment {
         view = inflater.inflate(R.layout.fragment_create_order_step2, container, false);
 
         Bundle argument = getArguments();
-        populateUI();
+        //populateUI();
 
         if (argument != null) {
             String paymentTypeString = argument.getString("paymentType");
@@ -119,7 +119,7 @@ public class FragmentCreateOrderStep2 extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
+        populateUI();
         ArrayAdapter<PaymentType> payment_adapter = new ArrayAdapter<PaymentType>(getContext(), android.R.layout.simple_spinner_item, paymentTypes);
         payment_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
@@ -128,12 +128,26 @@ public class FragmentCreateOrderStep2 extends Fragment {
         placeOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                String temp_labour_cost = tvLabourCost.getText().toString();
+                try{
+                    labour_cost = Float.parseFloat(temp_labour_cost.isEmpty() ? "0" : temp_labour_cost);
+                }
+                catch (Exception ex){
+                    labour_cost = 0;
+                }
+
+                is_labour_required = chkLabourReq.isChecked();
+                paymentType = (PaymentType) spinPaymentType.getSelectedItem();
                 progressDialog = ProgressDialogManager.showProgressDialogWithTitle(getContext(), "Placing order", "Please wait");
                 Order order = new Order(-1, cargoType.getCargo_type_id(), containerType.getContainer_type_id(),
                         containerSize.getVehicle_type_id(), weightCatagory.getWeight_id(), cargoVolume, measurementUnit.unit_id,
                         source.getLocation_id(), destination.getLocation_id(), is_labour_required, labour_cost,
-                        paymentType.payment_type_id, null, null);
+                        paymentType.payment_type_id, "", "");
 
+                Gson gson = new Gson();
+                String order_json = gson.toJson(order);
+                Log.e("FragmentStep2OrderJson", order_json);
                 placeOrder(order);
             }
         });
@@ -168,11 +182,13 @@ public class FragmentCreateOrderStep2 extends Fragment {
                 @Override
                 public void onResponse(Call<Order> call, Response<Order> response) {
                     Order response_order = response.body();
-                    if (response_order.order_id != -1) {
-                        Toast.makeText(getContext(), "Welcome " + response_order.order_id + "", Toast.LENGTH_LONG).show();
+                    Log.e("RESPONSE BODY", response.message());
+                    Log.e("RESPONSE BODY", response + "");
+                    if (response_order != null && response_order.order_id != -1) {
+                        Toast.makeText(getContext(), "Order placed", Toast.LENGTH_LONG).show();
                         //overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     } else {
-                        Toast.makeText(getContext(), "Username or password is not correct", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Please try again", Toast.LENGTH_SHORT).show();
                     }
                     ProgressDialogManager.closeProgressDialog(progressDialog);
                 }
@@ -181,7 +197,7 @@ public class FragmentCreateOrderStep2 extends Fragment {
                 public void onFailure(Call<Order> call, Throwable t) {
                     Log.e("FAILURE", t.getMessage());
                     Log.e("FAILURE", t.toString());
-                    Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "Failure: " + t.getMessage(), Toast.LENGTH_LONG).show();
                     ProgressDialogManager.closeProgressDialog(progressDialog);
                 }
             });
