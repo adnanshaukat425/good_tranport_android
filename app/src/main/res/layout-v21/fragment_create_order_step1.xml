@@ -20,10 +20,10 @@
         android:textStyle="italic" />
 
     <ScrollView
-        android:layout_weight="9"
         android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_below="@id/heading"
-        android:layout_height="0dp">
+        android:layout_weight="9">
 
         <GridLayout
             android:id="@+id/main_grid_view_order_view"
@@ -159,7 +159,7 @@
                 android:spinnerMode="dropdown" />
 
             <TextView
-                android:id="@+id/tv_soucre_id"
+                android:id="@+id/tv_source_id"
                 style="@style/edit_text_style"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -202,13 +202,14 @@
                 android:spinnerMode="dialog" />
         </GridLayout>
     </ScrollView>
+
     <FrameLayout
-        android:layout_weight="1"
         android:id="@+id/btn_order_next_step"
         style="?android:attr/buttonStyle"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="20dp"
+        android:layout_weight="1"
         android:background="@drawable/button_ripple_effect">
 
         <TextView

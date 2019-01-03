@@ -10,23 +10,27 @@ public class Order {
     public int order_id;
     public int cargo_type_id;
     public int container_type_id;
-    public String cargo_weight;
-    public String cargo_volumn;
+    public int vehicle_type_id;
+    public int weight_catagory_id;
+    public float cargo_volume;
     public int weight_unit_id;
     public int source_id;
     public int destination_id;
     public boolean is_labour_required;
-    public String labour_cost;
+    public float labour_cost;
     public int payment_type_id;
     public Date creation_datetime;
     public Date order_datetime;
 
-    public Order(int order_id, int cargo_type_id, int container_type_id, String cargo_weight, String cargo_volumn, int weight_unit_id, int source_id, int destination_id, boolean is_labour_required, String labour_cost, int payment_type_id, Date creation_datetime, Date order_datetime) {
+    public Order(int order_id, int cargo_type_id, int container_type_id, int vehicle_type_id, int weight_catagory_id,
+                 float cargo_volume, int weight_unit_id, int source_id, int destination_id, boolean is_labour_required,
+                 float labour_cost, int payment_type_id, Date creation_datetime, Date order_datetime) {
         this.order_id = order_id;
         this.cargo_type_id = cargo_type_id;
         this.container_type_id = container_type_id;
-        this.cargo_weight = cargo_weight;
-        this.cargo_volumn = cargo_volumn;
+        this.vehicle_type_id = vehicle_type_id;
+        this.weight_catagory_id = weight_catagory_id;
+        this.cargo_volume = cargo_volume;
         this.weight_unit_id = weight_unit_id;
         this.source_id = source_id;
         this.destination_id = destination_id;
@@ -61,20 +65,28 @@ public class Order {
         this.container_type_id = container_type_id;
     }
 
-    public String getCargo_weight() {
-        return cargo_weight;
+    public int getVehicle_type_id() {
+        return vehicle_type_id;
     }
 
-    public void setCargo_weight(String cargo_weight) {
-        this.cargo_weight = cargo_weight;
+    public void setVehicle_type_id(int vehicle_type_id) {
+        this.vehicle_type_id = vehicle_type_id;
     }
 
-    public String getCargo_volumn() {
-        return cargo_volumn;
+    public int getCargo_weight() {
+        return weight_catagory_id;
     }
 
-    public void setCargo_volumn(String cargo_volumn) {
-        this.cargo_volumn = cargo_volumn;
+    public void setCargo_weight(int weight_catagory_id) {
+        this.weight_catagory_id = weight_catagory_id;
+    }
+
+    public float getCargo_volume() {
+        return cargo_volume;
+    }
+
+    public void setCargo_volume(float cargo_volume) {
+        this.cargo_volume = cargo_volume;
     }
 
     public int getWeight_unit_id() {
@@ -109,11 +121,11 @@ public class Order {
         this.is_labour_required = is_labour_required;
     }
 
-    public String getLabour_cost() {
+    public float getLabour_cost() {
         return labour_cost;
     }
 
-    public void setLabour_cost(String labour_cost) {
+    public void setLabour_cost(float labour_cost) {
         this.labour_cost = labour_cost;
     }
 

@@ -1,10 +1,12 @@
 package com.example.adnanshaukat.myapplication.Modals;
 
+import java.io.Serializable;
+
 /**
  * Created by AdnanShaukat on 23/12/2018.
  */
-
-public class MeasurementUnit {
+@SuppressWarnings("serial")
+public class MeasurementUnit implements Serializable{
     public int unit_id;
     public String unit_name;
 

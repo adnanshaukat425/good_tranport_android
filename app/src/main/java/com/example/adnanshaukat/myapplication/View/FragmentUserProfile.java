@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,7 +43,8 @@ public class FragmentUserProfile extends Fragment {
 
     ImageView profile_image;
     EditText first_name, last_name, email, phone, cnic, password, confirm_password;
-    Button btn_logout, btn_change_password;
+    String _password;
+    Button btn_change_password;
     ProgressDialog progressDialog;
     @Nullable
     @Override
@@ -78,13 +80,22 @@ public class FragmentUserProfile extends Fragment {
         btn_change_password.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressDialog = ProgressDialogManager.showProgressDialogWithTitle(getContext(), "Loading", "P  lease wait...");
-                String _password = password.getText().toString();
-                if(_password.equals(confirm_password.getText().toString())){
-                    ChangePassword(mUser.getUser_id(), _password);
+                progressDialog = ProgressDialogManager.showProgressDialogWithTitle(getContext(), "Loading", "Please wait...");
+                _password = password.getText().toString();
+
+                if(checkValidity()){
+
+                    if(_password.equals(confirm_password.getText().toString())){
+                        mUser = populateModal();
+                        ChangePassword(mUser);
+                    }
+                    else{
+                        confirm_password.setError("Password Mismatched", getResources().getDrawable(R.drawable.error_icon));
+                        //Toast.makeText(getContext(), "Password miss-matched", Toast.LENGTH_SHORT).show();
+                        ProgressDialogManager.closeProgressDialog(progressDialog);
+                    }
                 }
                 else{
-                    Toast.makeText(getContext(), "Password miss-matched", Toast.LENGTH_SHORT).show();
                     ProgressDialogManager.closeProgressDialog(progressDialog);
                 }
             }
@@ -104,10 +115,9 @@ public class FragmentUserProfile extends Fragment {
         confirm_password = (EditText)view.findViewById(R.id.ed_pass_confirm);
 
         btn_change_password = (Button)view.findViewById(R.id.btn_change_password);
-        btn_logout = (Button)view.findViewById(R.id.btn_logout);
     }
 
-    private void ChangePassword(int user_id, String _password){
+    private void ChangePassword(User updated_user){
         try {
             OkHttpClient.Builder client = new OkHttpClient.Builder();
             client.connectTimeout(30, TimeUnit.SECONDS);
@@ -122,30 +132,68 @@ public class FragmentUserProfile extends Fragment {
 
             IUser api = retrofit.create(IUser.class);
 
-            Call<String> call = api.change_password(user_id, _password);
+            Call<String> call = api.update_user(updated_user);
 
             call.enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
                     String is_updated = response.body();
-                    if(is_updated.trim().toLowerCase() == "true"){
+                    if(is_updated != null && is_updated.trim().toLowerCase() == "true"){
                         ProgressDialogManager.closeProgressDialog(progressDialog);
                         Toast.makeText(getContext(), "Password changed successfully", Toast.LENGTH_SHORT).show();
                     }
                     else{
+                        ProgressDialogManager.closeProgressDialog(progressDialog);
                         Toast.makeText(getContext(), "Request didn't processed correctly, Please try again.", Toast.LENGTH_SHORT).show();
                     }
                 }
 
                 @Override
                 public void onFailure(Call<String> call, Throwable t) {
+                    ProgressDialogManager.closeProgressDialog(progressDialog);
                     Log.e("FAILURE", t.getMessage());
                     Log.e("FAILURE", t.toString());
                 }
             });
         }
         catch (Exception ex){
+            ProgressDialogManager.closeProgressDialog(progressDialog);
             Log.e("ERROR", ex.toString());
         }
+    }
+
+    private boolean checkValidity() {
+        if (TextUtils.isEmpty(_password)) {
+            password.setError("Password Required", getResources().getDrawable(R.drawable.error_icon));
+            password.requestFocus();
+            return false;
+        } else if (TextUtils.isEmpty(confirm_password.getText().toString())) {
+            confirm_password.setError("Confirm Password Required", getResources().getDrawable(R.drawable.error_icon));
+            confirm_password.requestFocus();
+            return false;
+        } else if (TextUtils.isEmpty(cnic.getText().toString())) {
+            cnic.setError("CNIC Required", getResources().getDrawable(R.drawable.error_icon));
+            cnic.requestFocus();
+            return false;
+        } else if (TextUtils.isEmpty(phone.getText().toString())) {
+            phone.setError("Email required", getResources().getDrawable(R.drawable.error_icon));
+            phone.requestFocus();
+            return false;
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email.getText().toString()).matches()) {
+            email.setError("Email not valid", getResources().getDrawable(R.drawable.error_icon));
+            email.requestFocus();
+            return false;
+        }
+        return true;
+    }
+
+    private User populateModal(){
+        mUser.setFirst_name(first_name.getText().toString());
+        mUser.setLast_name(last_name.getText().toString());
+        mUser.setEmail(email.getText().toString());
+        mUser.setPhone_number(phone.getText().toString());
+        mUser.setCnic_number(cnic.getText().toString());
+        mUser.setPassword(password.getText().toString());
+        return mUser;
     }
 }

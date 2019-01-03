@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -54,7 +55,28 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
         View view = navigationView.inflateHeaderView(R.layout.nav_header_main);
         ImageView profile_image =  (ImageView)view.findViewById(R.id.drawer_profile_image);
 
+        Menu menu = navigationView.getMenu();
+
+        MenuItem txt_id = (MenuItem) menu.findItem(R.id.nav_t_id);
+        String user_id = user.getUser_id() + "";
+
+        if(user_id.length() == 1){
+            user_id = "0000" + user_id;
+        }
+        if(user_id.length() == 2){
+            user_id = "000" + user_id;
+        }
+        if(user_id.length() == 3){
+            user_id = "00" + user_id;
+        }
+        if(user_id.length() == 4){
+            user_id = "0" + user_id;
+        }
+
+        txt_id.setTitle("Transporter ID: " + user_id);
+
         String encodedImage = user.getProfile_picture();
+
         if (encodedImage.isEmpty()) {
             profile_image.setImageResource(R.drawable.default_profile_image_2);
         } else {
@@ -157,6 +179,16 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
             }
         }
 
+        if (id == R.id.nav_t_dashboard){
+            FragmentMain fragment = new FragmentMain();
+            fragment.setArguments(bundle);
+            this.setTitle("Dashboard");
+            getSupportFragmentManager().beginTransaction().
+                    setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out).
+                    replace(R.id.main_content_frame_transporter_container, fragment).
+                    addToBackStack(null).
+                    commit();
+        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.transporter_drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

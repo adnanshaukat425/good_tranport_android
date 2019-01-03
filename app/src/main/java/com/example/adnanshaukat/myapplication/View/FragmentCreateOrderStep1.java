@@ -1,8 +1,7 @@
 package com.example.adnanshaukat.myapplication.View;
 
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Color;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -12,39 +11,33 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.adnanshaukat.myapplication.GlobalClasses.MyApplication;
-import com.example.adnanshaukat.myapplication.GlobalClasses.ProgressDialogManager;
 import com.example.adnanshaukat.myapplication.Modals.Cargo;
 import com.example.adnanshaukat.myapplication.Modals.Container;
+import com.example.adnanshaukat.myapplication.Modals.ContainerSize;
 import com.example.adnanshaukat.myapplication.Modals.Location;
 import com.example.adnanshaukat.myapplication.Modals.MeasurementUnit;
+import com.example.adnanshaukat.myapplication.Modals.PaymentType;
 import com.example.adnanshaukat.myapplication.Modals.PreOrderDataWrapperClass;
-import com.example.adnanshaukat.myapplication.Modals.User;
+import com.example.adnanshaukat.myapplication.Modals.WeightCatagory;
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.ILocation;
-import com.example.adnanshaukat.myapplication.RetrofitInterfaces.ILogin;
-import com.example.adnanshaukat.myapplication.RetrofitInterfaces.IPreOrderFormData;
+import com.example.adnanshaukat.myapplication.RetrofitInterfaces.IOrder;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import javax.xml.transform.Source;
 
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.converter.gson.GsonConverterFactory;
-
-import static com.example.adnanshaukat.myapplication.R.drawable.email;
 
 /**
  * Created by AdnanShaukat on 30/11/2018.
@@ -55,11 +48,14 @@ public class FragmentCreateOrderStep1 extends DialogFragment {
     View view;
     int DATE_DIALOG_ID= 1;
 
-    Spinner spinCargoType, spinContainerType, spinCargoWeight, spinWeightUnit, spinSource, spinDestination;
-    TextView btn_next;
+    Spinner spinCargoType, spinContainerType, spinContainerSize, spinWeightUnit, spinCargoWeight, spinSource, spinDestination;
+    TextView tvContainerSize, tvWeightUnit, tvCargoWeight, tvCargoVolume;
+    FrameLayout btn_next;
+    EditText etCargoVolume;
     int day, month, year;
     String update_date;
 
+    List<PaymentType> paymentType;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -67,12 +63,26 @@ public class FragmentCreateOrderStep1 extends DialogFragment {
         view = inflater.inflate(R.layout.fragment_create_order_step1, container, false);
         populateUI();
         getPreOrderFormData();
+        Log.e("CREATE VIEW", "CREATE VIEW");
         return view;
+    }
+
+    @Override
+    public void onPause() {
+        Log.e("PAUSE", "PAUSE");
+        super.onPause();
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        Log.e("CREATE", "CREATE");
+        super.onCreate(savedInstanceState);
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        Log.e("RESUME", "RESUME");
         spinSource.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -92,11 +102,51 @@ public class FragmentCreateOrderStep1 extends DialogFragment {
             @Override
             public void onClick(View v) {
                 Cargo cargoType = (Cargo) spinCargoType.getSelectedItem();
-                Container containerType = (Container) spinCargoType.getSelectedItem();
+                Container containerType = (Container) spinContainerType.getSelectedItem();
+                ContainerSize containerSize = (ContainerSize)spinContainerSize.getSelectedItem();
+                WeightCatagory weightCatagory = (WeightCatagory)spinCargoWeight.getSelectedItem();
+                float cargoVolume = Float.parseFloat(etCargoVolume.getText().toString());
                 MeasurementUnit measurementUnit = (MeasurementUnit) spinWeightUnit.getSelectedItem();
                 Location source = (Location) spinSource.getSelectedItem();
                 Location destination = (Location)spinDestination.getSelectedItem();
 
+                Gson gson = new Gson();
+
+                Bundle bundle =new Bundle();
+                bundle.putSerializable("cargoType", cargoType);
+                bundle.putSerializable("containerType", containerType);
+                bundle.putSerializable("containerSize", containerSize);
+                bundle.putSerializable("weightCatagory", weightCatagory);
+                bundle.putFloat("cargoVolume", cargoVolume);
+                bundle.putSerializable("measurementUnit", measurementUnit);
+                bundle.putSerializable("source", source);
+                bundle.putSerializable("destination", destination);
+                bundle.putString("paymentType", gson.toJson(paymentType));;
+                FragmentCreateOrderStep2 step_2 = new FragmentCreateOrderStep2();
+                step_2.setArguments(bundle);
+
+                if (paymentType.size() > 0){
+                    Log.e("PAYMENT TYPE", paymentType.get(0).getPayment_type());
+                }
+
+                MainActivityCustomer activity = (MainActivityCustomer)getContext();
+                activity.getSupportFragmentManager().beginTransaction().
+                        setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.fade_in, R.anim.fade_out).
+                        replace(R.id.main_content_frame_customer_container, step_2).
+                        addToBackStack(null).
+                        commit();
+            }
+        });
+
+        spinContainerType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Container container = (Container)parent.getSelectedItem();
+                showHideUI(container.getContainer_type());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
 
             }
         });
@@ -110,12 +160,12 @@ public class FragmentCreateOrderStep1 extends DialogFragment {
             client.writeTimeout(30, TimeUnit.SECONDS);
 
             retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
-                    .baseUrl(IPreOrderFormData.BASE_URL)
+                    .baseUrl(IOrder.BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(client.build())
                     .build();
 
-            IPreOrderFormData api = retrofit.create(IPreOrderFormData.class);
+            IOrder api = retrofit.create(IOrder.class);
 
             Call<Object> call = api.get_pre_order_form_data();
 
@@ -130,13 +180,16 @@ public class FragmentCreateOrderStep1 extends DialogFragment {
                         PreOrderDataWrapperClass obj = gson.fromJson(_response.toString(), PreOrderDataWrapperClass.class);
                         List<Cargo> cargo = obj.getCargo();
                         List<Container> container = obj.getContainer();
+                        List<ContainerSize> containerSize = obj.getContainer_size();
                         List<MeasurementUnit> measurement_unit = obj.getMeasurement_unit();
+                        List<WeightCatagory> weight_catagory = obj.getWeight_catagory();
                         List<Location> source = obj.getSource();
+                        paymentType = obj.getPayment_type();
 
                         Location l1 = new Location(0, "Select Location", "0", "0");
                         source.add(0, l1);
 
-                        populateSpinners(cargo, container, measurement_unit, source);
+                        populateSpinners(cargo, container, measurement_unit, source, containerSize, weight_catagory);
                     }
                 }
 
@@ -194,36 +247,336 @@ public class FragmentCreateOrderStep1 extends DialogFragment {
         }
     }
 
-    private void populateSpinners(List<Cargo> cargo, List<Container> container, List<MeasurementUnit> measurement_unit, List<Location> source){
+    private void populateSpinners(List<Cargo> cargo, List<Container> container, List<MeasurementUnit> measurement_unit,
+                                  List<Location> source, List<ContainerSize> containerSize, List<WeightCatagory> weightCatagory){
         ArrayAdapter<Cargo> cargo_adapter = new ArrayAdapter<Cargo>(getContext(), android.R.layout.simple_spinner_item, cargo);
         cargo_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spinCargoType.setAdapter(cargo_adapter);
 
         ArrayAdapter<Container> container_adapter = new ArrayAdapter<Container>(getContext(), android.R.layout.simple_spinner_item, container);
-        cargo_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        container_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spinContainerType.setAdapter(container_adapter);
 
+        ArrayAdapter<ContainerSize> container_size_adapter = new ArrayAdapter<ContainerSize>(getContext(), android.R.layout.simple_spinner_item, containerSize);
+        container_size_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spinContainerSize.setAdapter(container_size_adapter);
+
         ArrayAdapter<MeasurementUnit> measurement_unit_adapter = new ArrayAdapter<MeasurementUnit>(getContext(), android.R.layout.simple_spinner_item, measurement_unit);
-        cargo_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        measurement_unit_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spinWeightUnit.setAdapter(measurement_unit_adapter);
 
+        ArrayAdapter<WeightCatagory> weight_catagory_adapter = new ArrayAdapter<WeightCatagory>(getContext(), android.R.layout.simple_spinner_item, weightCatagory);
+        weight_catagory_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        spinCargoWeight.setAdapter(weight_catagory_adapter);
+
         ArrayAdapter<Location> source_adapter = new ArrayAdapter<Location>(getContext(), android.R.layout.simple_spinner_item, source);
-        cargo_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        source_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spinSource.setAdapter(source_adapter);
     }
 
     private void populateUI(){
+
         spinCargoType = (Spinner)view.findViewById(R.id.spin_cargo_type);
         spinContainerType = (Spinner)view.findViewById(R.id.spin_container_type);
-        spinCargoWeight = (Spinner)view.findViewById(R.id.spin_cargo_weight);
+        spinContainerSize = (Spinner)view.findViewById(R.id.spin_container_size);
         spinWeightUnit = (Spinner)view.findViewById(R.id.spin_weight_unit);
+        spinCargoWeight = (Spinner)view.findViewById(R.id.spin_cargo_weight);
         spinSource = (Spinner)view.findViewById(R.id.spin_source_id);
         spinDestination = (Spinner)view.findViewById(R.id.spin_destination_id);
 
-        btn_next = (TextView) view.findViewById(R.id.btn_order_next_step);
+        tvContainerSize = (TextView)view.findViewById(R.id.tv_container_size);
+        tvWeightUnit = (TextView)view.findViewById(R.id.tv_weight_unit);
+        tvCargoWeight = (TextView)view.findViewById(R.id.tv_cargo_weight);
+        tvCargoVolume = (TextView)view.findViewById(R.id.tv_cargo_volume);
+
+        etCargoVolume = (EditText)view.findViewById(R.id.et_cargo_volume);
+        btn_next = (FrameLayout) view.findViewById(R.id.btn_order_next_step);
+    }
+
+    private void showHideUI(String container_type){
+        if (container_type.trim().toUpperCase().equals("FCL")){
+
+            if (etCargoVolume.getVisibility() == View.VISIBLE){
+                etCargoVolume.setAlpha(1.0f);
+                // Start the animation
+                etCargoVolume.animate()
+                        .translationY(etCargoVolume.getHeight())
+                        .alpha(0.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                etCargoVolume.setVisibility(View.GONE);
+                            }
+                        });
+            }
+
+            if (tvCargoVolume.getVisibility() == View.VISIBLE){
+                tvCargoVolume.setAlpha(1.0f);
+                // Start the animation
+                tvCargoVolume.animate()
+                        .translationY(tvCargoVolume.getHeight())
+                        .alpha(0.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                tvCargoVolume.setVisibility(View.GONE);
+                            }
+                        });
+            }
+
+            if (tvCargoWeight.getVisibility() == View.VISIBLE){
+                //Make Cargo Volume row visible
+                tvCargoVolume.setAlpha(1.0f);
+                tvCargoVolume.animate()
+                        .translationY(tvCargoVolume.getHeight())
+                        .alpha(0.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                tvCargoVolume.setVisibility(View.GONE);
+                            }
+                        });
+            }
+
+            if (spinCargoWeight.getVisibility() == View.GONE){
+                spinCargoWeight.setAlpha(0.0f);
+                // Start the animation
+                spinCargoWeight.animate()
+                        .translationY(0)
+                        .alpha(1.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                spinCargoWeight.setVisibility(View.VISIBLE);
+                            }
+                        });
+            }
+
+            if(tvCargoWeight.getVisibility() == View.GONE){
+                tvCargoWeight.setAlpha(0.0f);
+                // Start the animation
+                tvCargoWeight.animate()
+                        .translationY(0)
+                        .alpha(1.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                tvCargoWeight.setVisibility(View.VISIBLE);
+                            }
+                        });
+            }
+
+            if (tvWeightUnit.getVisibility() == View.GONE){
+                tvWeightUnit.setAlpha(0.0f);
+                // Start the animation
+                tvWeightUnit.animate()
+                        .translationY(0)
+                        .alpha(1.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                tvWeightUnit.setVisibility(View.VISIBLE);
+                            }
+                        });
+            }
+
+            if(spinWeightUnit.getVisibility() == View.GONE){
+                spinWeightUnit.setAlpha(0.0f);
+                // Start the animation
+                spinWeightUnit.animate()
+                        .translationY(0)
+                        .alpha(1.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                spinWeightUnit.setVisibility(View.VISIBLE);
+                            }
+                        });
+            }
+
+            if (tvContainerSize.getVisibility() == View.GONE){
+                tvContainerSize.setAlpha(0.0f);
+                // Start the animation
+                tvContainerSize.animate()
+                        .translationY(0)
+                        .alpha(1.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                tvContainerSize.setVisibility(View.VISIBLE);
+                            }
+                        });
+            }
+
+            if(spinContainerSize.getVisibility() == View.GONE){
+                spinContainerSize.setAlpha(0.0f);
+                // Start the animation
+                spinContainerSize.animate()
+                        .translationY(0)
+                        .alpha(1.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                spinContainerSize.setVisibility(View.VISIBLE);
+                            }
+                        });
+            }
+        }
+        else if(container_type.trim().toUpperCase().equals("LCL")){
+            Toast.makeText(getContext(), "LCL Selected", Toast.LENGTH_SHORT).show();
+
+
+            if (etCargoVolume.getVisibility() == View.GONE){
+                //Make Cargo Volume row visible
+                etCargoVolume.setAlpha(0.0f);
+                etCargoVolume.animate()
+                        .translationY(0)
+                        .alpha(1.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                etCargoVolume.setVisibility(View.VISIBLE);
+                            }
+                        });
+            }
+
+            if (tvCargoVolume.getVisibility() == View.GONE){
+                tvCargoVolume.setAlpha(0.0f);
+                // Start the animation
+                tvCargoVolume.animate()
+                        .translationY(0)
+                        .alpha(1.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                tvCargoVolume.setVisibility(View.VISIBLE);
+                            }
+                        });
+            }
+
+            if (spinCargoWeight.getVisibility() == View.VISIBLE){
+                spinCargoWeight.setAlpha(1.0f);
+                // Start the animation
+                spinCargoWeight.animate()
+                        .translationY(spinCargoWeight.getHeight())
+                        .alpha(0.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                spinCargoWeight.setVisibility(View.GONE);
+                            }
+                        });
+            }
+
+            if(tvCargoWeight.getVisibility() == View.VISIBLE){
+                tvCargoWeight.setAlpha(1.0f);
+                // Start the animation
+                tvCargoWeight.animate()
+                        .translationY(tvCargoWeight.getHeight())
+                        .alpha(0.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                tvCargoWeight.setVisibility(View.GONE);
+                            }
+                        });
+            }
+
+            if (tvWeightUnit.getVisibility() == View.VISIBLE){
+                tvWeightUnit.setAlpha(1.0f);
+                // Start the animation
+                tvWeightUnit.animate()
+                        .translationY(tvWeightUnit.getHeight())
+                        .alpha(0.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                tvWeightUnit.setVisibility(View.GONE);
+                            }
+                        });
+            }
+
+            if(spinWeightUnit.getVisibility() == View.VISIBLE){
+                spinWeightUnit.setAlpha(1.0f);
+                // Start the animation
+                spinWeightUnit.animate()
+                        .translationY(spinWeightUnit.getHeight())
+                        .alpha(0.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                spinWeightUnit.setVisibility(View.GONE);
+                            }
+                        });
+            }
+
+            if (tvContainerSize.getVisibility() == View.VISIBLE){
+                tvContainerSize.setAlpha(1.0f);
+                // Start the animation
+                tvContainerSize.animate()
+                        .translationY(tvContainerSize.getHeight())
+                        .alpha(0.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                tvContainerSize.setVisibility(View.GONE);
+                            }
+                        });
+            }
+
+            if(spinContainerSize.getVisibility() == View.VISIBLE){
+                spinContainerSize.setAlpha(1.0f);
+                // Start the animation
+                spinContainerSize.animate()
+                        .translationY(spinContainerSize.getHeight())
+                        .alpha(0.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                spinContainerSize.setVisibility(View.GONE);
+                            }
+                        });
+            }
+        }
     }
 }

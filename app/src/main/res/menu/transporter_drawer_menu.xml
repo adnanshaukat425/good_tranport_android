@@ -2,6 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_t_dashboard"
+            android:icon="@drawable/ic_dashboard"
+            android:title="Dashboard"
+            />
+        <item
             android:id="@+id/nav_t_view_drivers"
             android:icon="@drawable/driver_logo"
             android:title="Drivers" />
@@ -10,29 +15,32 @@
             android:icon="@drawable/vehicle_icon"
             android:title="Vehicles" />
         <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
-        <item
             android:id="@+id/nav_t_logout"
             android:icon="@drawable/logout"
             android:title="Logout" />
     </group>
 
-    <item android:title="Communicate">
-        <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
-        </menu>
-    </item>
+    <group
+        android:id="@+id/nav_t_separator1"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_t_help"
+            android:icon="@drawable/ic_help"
+            android:title="Help"
+            />
+        <item
+            android:id="@+id/nav_t_about"
+            android:icon="@drawable/ic_about"
+            android:title="About"
+            />
+    </group>
+
+    <group
+        android:id="@+id/nav_t_separator2"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_t_id"
+            android:title="Transporter ID"
+            />
+    </group>
 </menu>

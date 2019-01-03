@@ -143,29 +143,30 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@id/tv_cnic"
+                android:enabled="false"
                 android:inputType="phone" />
 
         </RelativeLayout>
 
-        <Button
-            android:id="@+id/btn_logout"
-            style="@style/login_margin_setting"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/rl_4"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:background="#fb3434"
-            android:text="Logout"
-            android:textColor="@color/white"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+        <!--<Button-->
+            <!--android:id="@+id/btn_logout"-->
+            <!--style="@style/login_margin_setting"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_below="@+id/rl_4"-->
+            <!--android:layout_marginLeft="20dp"-->
+            <!--android:layout_marginRight="20dp"-->
+            <!--android:background="#fb3434"-->
+            <!--android:text="Logout"-->
+            <!--android:textColor="@color/white"-->
+            <!--android:textSize="15sp"-->
+            <!--android:textStyle="bold" />-->
 
         <RelativeLayout
             android:id="@+id/rl_5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/btn_logout"
+            android:layout_below="@+id/rl_4"
             android:layout_marginTop="20dp"
             android:paddingLeft="20dp"
             android:paddingRight="20dp">
@@ -235,7 +236,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:background="@drawable/button_ripple_effect"
-            android:text="Change password"
+            android:text="Update"
             android:textColor="@color/white"
             android:textSize="15sp"
             android:textStyle="bold" />

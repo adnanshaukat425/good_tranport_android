@@ -2,12 +2,14 @@ package com.example.adnanshaukat.myapplication.View;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.adnanshaukat.myapplication.Adapters.FragmentTabAdapter;
 import com.example.adnanshaukat.myapplication.R;
@@ -28,6 +30,14 @@ public class FragmentListOfDriverWRTTransporter extends Fragment {
 
         ViewPager viewPager = (ViewPager) view.findViewById(R.id.fragment_list_of_driver_wrt_trans_viewpager);
         setupViewPager(viewPager);
+
+        FloatingActionButton fab = (FloatingActionButton)view.findViewById(R.id.fab_add_driver);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getContext(), "HELLO WORLD", Toast.LENGTH_SHORT).show();
+            }
+        });
 
         TabLayout tabs = (TabLayout) view.findViewById(R.id.fragment_list_of_driver_wrt_trans_tab_layout);
         tabs.setupWithViewPager(viewPager);

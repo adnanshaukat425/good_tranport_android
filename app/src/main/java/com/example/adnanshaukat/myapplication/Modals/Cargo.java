@@ -1,10 +1,13 @@
 package com.example.adnanshaukat.myapplication.Modals;
 
+import java.io.Serializable;
+
 /**
  * Created by AdnanShaukat on 01/12/2018.
  */
 
-public class Cargo {
+@SuppressWarnings("serial")
+public class Cargo implements Serializable{
     public int cargo_type_id;
     public String cargo_type;
 

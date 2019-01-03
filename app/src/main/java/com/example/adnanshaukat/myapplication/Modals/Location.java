@@ -1,10 +1,12 @@
 package com.example.adnanshaukat.myapplication.Modals;
 
+import java.io.Serializable;
+
 /**
  * Created by AdnanShaukat on 23/12/2018.
  */
-
-public class Location {
+@SuppressWarnings("serial")
+public class Location implements Serializable {
     public int location_id;
     public String location_name;
     public String latitude;

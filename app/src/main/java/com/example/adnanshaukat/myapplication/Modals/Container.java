@@ -1,10 +1,12 @@
 package com.example.adnanshaukat.myapplication.Modals;
 
+import java.io.Serializable;
+
 /**
  * Created by AdnanShaukat on 23/12/2018.
  */
-
-public class Container {
+@SuppressWarnings("serial")
+public class Container implements Serializable {
     public int container_type_id;
     public String container_type;
 
