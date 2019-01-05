@@ -24,6 +24,7 @@ public class ProgressDialogManager {
         progressDialog.show();
         return progressDialog;
     }
+
     public static void closeProgressDialog(ProgressDialog _progressDialog) {
         _progressDialog.dismiss();
     }

@@ -12,6 +12,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -63,20 +64,30 @@ public class MainActivityCustomer extends AppCompatActivity
         profile_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("user", user);
-                FragmentUserProfile fragment = new FragmentUserProfile();
-                fragment.setArguments(bundle);
-                getSupportFragmentManager().beginTransaction().
-                        setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out).
-                        replace(R.id.main_content_frame_customer_container, fragment).
-                        addToBackStack(null).
-                        commit();
-
+                viewProfile();
                 DrawerLayout drawer = (DrawerLayout) findViewById(R.id.customer_drawer_layout);
                 drawer.closeDrawer(GravityCompat.START);
             }
         });
+
+        Menu menu = navigationView.getMenu();
+
+        MenuItem txt_id = (MenuItem) menu.findItem(R.id.nav_c_id);
+        String user_id = user.getUser_id() + "";
+
+        if(user_id.length() == 1){
+            user_id = "0000" + user_id;
+        }
+        if(user_id.length() == 2){
+            user_id = "000" + user_id;
+        }
+        if(user_id.length() == 3){
+            user_id = "00" + user_id;
+        }
+        if(user_id.length() == 4){
+            user_id = "0" + user_id;
+        }
+        txt_id.setTitle("Customer ID: " + user_id);
 
         getSupportFragmentManager().beginTransaction().replace(R.id.main_content_frame_customer_container, new FragmentMain()).commit();
     }
@@ -125,9 +136,9 @@ public class MainActivityCustomer extends AppCompatActivity
                     replace(R.id.main_content_frame_customer_container, new FragmentCreateOrderStep1()).
                     addToBackStack(null).
                     commit();
-        } else if (id == R.id.nav_c_view_order_details) {
-
-        } else if(id == R.id.nav_logout){
+        } else if (id == R.id.nav_c_view_profile) {
+            viewProfile();
+        } else if(id == R.id.nav_c_logout){
             if(logout()){
                 Toast.makeText(this, "Logged out Successfully", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MainActivityCustomer.this, LoginActivity.class);
@@ -149,5 +160,17 @@ public class MainActivityCustomer extends AppCompatActivity
         User user = new User();
         user.setUser_id(user_id);
         return sqLiteDBUsersHandler.update_logged_in_status(0, user);
+    }
+
+    private void viewProfile(){
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("user", user);
+        FragmentUserProfile fragment = new FragmentUserProfile();
+        fragment.setArguments(bundle);
+        getSupportFragmentManager().beginTransaction().
+                setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out).
+                replace(R.id.main_content_frame_customer_container, fragment).
+                addToBackStack(null).
+                commit();
     }
 }

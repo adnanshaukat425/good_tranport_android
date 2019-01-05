@@ -4,19 +4,43 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_c_place_order"
-            android:icon="@drawable/place_order"
+            android:icon="@drawable/ic_order"
             android:title="Place order" />
         <item
             android:id="@+id/nav_c_view_order_details"
             android:icon="@drawable/ic_menu_slideshow"
             android:title="View orders" />
         <item
-            android:id="@+id/nav_c_change_password"
+            android:id="@+id/nav_c_view_profile"
             android:icon="@drawable/password"
             android:title="Change password" />
         <item
-            android:id="@+id/nav_logout"
+            android:id="@+id/nav_c_logout"
             android:icon="@drawable/logout"
             android:title="Logout" />
+    </group>
+
+    <group
+        android:id="@+id/nav_c_separator1"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_c_help"
+            android:icon="@drawable/ic_help"
+            android:title="Help"
+            />
+        <item
+            android:id="@+id/nav_c_about"
+            android:icon="@drawable/ic_about"
+            android:title="About"
+            />
+    </group>
+
+    <group
+        android:id="@+id/nav_c_separator2"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_c_id"
+            android:title="Customer ID"
+            />
     </group>
 </menu>

@@ -2,13 +2,19 @@ package com.example.adnanshaukat.myapplication.View;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.AppCompatEditText;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -43,7 +49,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by AdnanShaukat on 30/11/2018.
  */
 
-public class FragmentCreateOrderStep1 extends DialogFragment {
+public class FragmentCreateOrderStep1 extends Fragment {
 
     View view;
     int DATE_DIALOG_ID= 1;
@@ -51,7 +57,8 @@ public class FragmentCreateOrderStep1 extends DialogFragment {
     Spinner spinCargoType, spinContainerType, spinContainerSize, spinWeightUnit, spinCargoWeight, spinSource, spinDestination;
     TextView tvContainerSize, tvWeightUnit, tvCargoWeight, tvCargoVolume;
     FrameLayout btn_next;
-    EditText etCargoVolume;
+    TextInputEditText etCargoVolume;
+    TextInputLayout tilCargoVolume;
     int day, month, year;
     String update_date;
 
@@ -123,6 +130,7 @@ public class FragmentCreateOrderStep1 extends DialogFragment {
                 bundle.putSerializable("source", source);
                 bundle.putSerializable("destination", destination);
                 bundle.putString("paymentType", gson.toJson(paymentType));;
+
                 FragmentCreateOrderStep2 step_2 = new FragmentCreateOrderStep2();
                 step_2.setArguments(bundle);
 
@@ -131,6 +139,7 @@ public class FragmentCreateOrderStep1 extends DialogFragment {
                 }
 
                 MainActivityCustomer activity = (MainActivityCustomer)getContext();
+
                 activity.getSupportFragmentManager().beginTransaction().
                         setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.fade_in, R.anim.fade_out).
                         replace(R.id.main_content_frame_customer_container, step_2).
@@ -265,6 +274,7 @@ public class FragmentCreateOrderStep1 extends DialogFragment {
 
         spinContainerSize.setAdapter(container_size_adapter);
 
+        measurement_unit.remove(measurement_unit.size() - 1);
         ArrayAdapter<MeasurementUnit> measurement_unit_adapter = new ArrayAdapter<MeasurementUnit>(getContext(), android.R.layout.simple_spinner_item, measurement_unit);
         measurement_unit_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
@@ -296,13 +306,14 @@ public class FragmentCreateOrderStep1 extends DialogFragment {
         tvCargoWeight = (TextView)view.findViewById(R.id.tv_cargo_weight);
         tvCargoVolume = (TextView)view.findViewById(R.id.tv_cargo_volume);
 
-        etCargoVolume = (EditText)view.findViewById(R.id.et_cargo_volume);
+        etCargoVolume = (TextInputEditText) view.findViewById(R.id.et_cargo_volume);
+        tilCargoVolume = (TextInputLayout)view.findViewById(R.id.til_cargo_volume);
         btn_next = (FrameLayout) view.findViewById(R.id.btn_order_next_step);
     }
 
     private void showHideUI(String container_type){
         if (container_type.trim().toUpperCase().equals("FCL")){
-
+            hideKeyboard(getActivity());
             if (etCargoVolume.getVisibility() == View.VISIBLE){
                 etCargoVolume.setAlpha(1.0f);
                 // Start the animation
@@ -335,6 +346,21 @@ public class FragmentCreateOrderStep1 extends DialogFragment {
                         });
             }
 
+            if (tilCargoVolume.getVisibility() == View.VISIBLE){
+                tilCargoVolume.setAlpha(1.0f);
+                tilCargoVolume.animate()
+                        .translationY(tilCargoVolume.getHeight())
+                        .alpha(0.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                tilCargoVolume.setVisibility(View.GONE);
+                            }
+                        });
+            }
+
             if (tvCargoWeight.getVisibility() == View.VISIBLE){
                 //Make Cargo Volume row visible
                 tvCargoVolume.setAlpha(1.0f);
@@ -352,7 +378,8 @@ public class FragmentCreateOrderStep1 extends DialogFragment {
             }
 
             if (spinCargoWeight.getVisibility() == View.GONE){
-                spinCargoWeight.setAlpha(0.0f);
+                spinCargoWeight.setAlpha(1.0f);
+                spinCargoWeight.setVisibility(View.VISIBLE);
                 // Start the animation
                 spinCargoWeight.animate()
                         .translationY(0)
@@ -369,6 +396,7 @@ public class FragmentCreateOrderStep1 extends DialogFragment {
 
             if(tvCargoWeight.getVisibility() == View.GONE){
                 tvCargoWeight.setAlpha(0.0f);
+                tvCargoWeight.setVisibility(View.VISIBLE);
                 // Start the animation
                 tvCargoWeight.animate()
                         .translationY(0)
@@ -385,6 +413,7 @@ public class FragmentCreateOrderStep1 extends DialogFragment {
 
             if (tvWeightUnit.getVisibility() == View.GONE){
                 tvWeightUnit.setAlpha(0.0f);
+                tvWeightUnit.setVisibility(View.VISIBLE);
                 // Start the animation
                 tvWeightUnit.animate()
                         .translationY(0)
@@ -401,6 +430,7 @@ public class FragmentCreateOrderStep1 extends DialogFragment {
 
             if(spinWeightUnit.getVisibility() == View.GONE){
                 spinWeightUnit.setAlpha(0.0f);
+                spinWeightUnit.setVisibility(View.VISIBLE);
                 // Start the animation
                 spinWeightUnit.animate()
                         .translationY(0)
@@ -417,6 +447,7 @@ public class FragmentCreateOrderStep1 extends DialogFragment {
 
             if (tvContainerSize.getVisibility() == View.GONE){
                 tvContainerSize.setAlpha(0.0f);
+                tvContainerSize.setVisibility(View.VISIBLE);
                 // Start the animation
                 tvContainerSize.animate()
                         .translationY(0)
@@ -433,6 +464,7 @@ public class FragmentCreateOrderStep1 extends DialogFragment {
 
             if(spinContainerSize.getVisibility() == View.GONE){
                 spinContainerSize.setAlpha(0.0f);
+                spinContainerSize.setVisibility(View.VISIBLE);
                 // Start the animation
                 spinContainerSize.animate()
                         .translationY(0)
@@ -454,6 +486,7 @@ public class FragmentCreateOrderStep1 extends DialogFragment {
             if (etCargoVolume.getVisibility() == View.GONE){
                 //Make Cargo Volume row visible
                 etCargoVolume.setAlpha(0.0f);
+                etCargoVolume.setVisibility(View.VISIBLE);
                 etCargoVolume.animate()
                         .translationY(0)
                         .alpha(1.0f)
@@ -469,6 +502,7 @@ public class FragmentCreateOrderStep1 extends DialogFragment {
 
             if (tvCargoVolume.getVisibility() == View.GONE){
                 tvCargoVolume.setAlpha(0.0f);
+                tvCargoVolume.setVisibility(View.VISIBLE);
                 // Start the animation
                 tvCargoVolume.animate()
                         .translationY(0)
@@ -479,6 +513,22 @@ public class FragmentCreateOrderStep1 extends DialogFragment {
                             public void onAnimationEnd(Animator animation) {
                                 super.onAnimationEnd(animation);
                                 tvCargoVolume.setVisibility(View.VISIBLE);
+                            }
+                        });
+            }
+
+            if (tilCargoVolume.getVisibility() == View.GONE){
+                tilCargoVolume.setAlpha(0.0f);
+                tilCargoVolume.setVisibility(View.VISIBLE);
+                tilCargoVolume.animate()
+                        .translationY(0)
+                        .alpha(1.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                tilCargoVolume.setVisibility(View.VISIBLE);
                             }
                         });
             }
@@ -579,5 +629,16 @@ public class FragmentCreateOrderStep1 extends DialogFragment {
                         });
             }
         }
+    }
+
+    public static void hideKeyboard(Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        //Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }

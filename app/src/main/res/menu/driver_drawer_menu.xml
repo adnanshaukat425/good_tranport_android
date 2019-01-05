@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_d_dashboard"
+            android:icon="@drawable/ic_dashboard"
+            android:title="Dashboard"
+            />
+        <item
+            android:id="@+id/nav_d_view_current_location"
+            android:icon="@drawable/ic_location_marker"
+            android:title="Current Location"
+            />
+        <item
+            android:id="@+id/nav_d_view_all_orders"
+            android:icon="@drawable/ic_order"
+            android:title="Drivers" />
+        <item
+            android:id="@+id/nav_d_logout"
+            android:icon="@drawable/logout"
+            android:title="Logout" />
+    </group>
+
+    <group
+        android:id="@+id/nav_t_separator1"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_d_help"
+            android:icon="@drawable/ic_help"
+            android:title="Help"
+            />
+        <item
+            android:id="@+id/nav_d_about"
+            android:icon="@drawable/ic_about"
+            android:title="About"
+            />
+    </group>
+
+    <group
+        android:id="@+id/nav_d_separator2"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_d_id"
+            android:title="Driver ID"
+            />
+    </group>
+</menu>

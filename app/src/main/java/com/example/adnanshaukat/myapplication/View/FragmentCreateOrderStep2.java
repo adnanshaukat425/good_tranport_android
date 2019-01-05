@@ -1,11 +1,17 @@
 package com.example.adnanshaukat.myapplication.View;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -58,6 +65,8 @@ public class FragmentCreateOrderStep2 extends Fragment {
     Spinner spinPaymentType;
     CheckBox chkLabourReq;
     EditText etLabourQuantity;
+    TextInputEditText etDescription;
+    TextInputLayout tilLabourQuantity;
     TextView tvLabourCost;
     Button placeOrder;
 
@@ -75,10 +84,16 @@ public class FragmentCreateOrderStep2 extends Fragment {
     Location destination;
     PaymentType paymentType;
     boolean is_labour_required;
-    Integer labour_quantity;
+    int labour_quantity;
     float labour_cost, cargoVolume;
+    String description;
 
     ProgressDialog progressDialog;
+
+    int FCL_20FT_LABOUR_COST = 4000;
+    int FCL_40FT_LABOUR_COST = 7000;
+    int LCL_CM3_LABOUR_COST = 200;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -125,25 +140,72 @@ public class FragmentCreateOrderStep2 extends Fragment {
 
         spinPaymentType.setAdapter(payment_adapter);
 
+        etLabourQuantity.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (!s.toString().isEmpty()) {
+                    //if true FCL else LCL
+                    if (containerType.getContainer_type_id() == 2) {
+                        if (containerSize.getVehicle_type_id() == 1) {
+                            Log.e("Labour Quantity", s.toString() + "aa");
+                            tvLabourCost.setText(Integer.toString(Integer.parseInt(s.toString()) * FCL_20FT_LABOUR_COST));
+                        }
+                        else{
+                            tvLabourCost.setText(Integer.toString(Integer.parseInt(s.toString()) * FCL_40FT_LABOUR_COST));
+                        }
+                    }
+                    else{
+                        Log.e("Labour Quantity", s.toString() + "aa");
+                        tvLabourCost.setText(Integer.toString(Integer.parseInt(s.toString()) * LCL_CM3_LABOUR_COST));
+                    }
+                }
+            }
+        });
+
+        chkLabourReq.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                showHideUI(isChecked);
+            }
+        });
+
         placeOrder.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
-
                 String temp_labour_cost = tvLabourCost.getText().toString();
+                String temp_labour_quantity  = etLabourQuantity.getText().toString();
                 try{
                     labour_cost = Float.parseFloat(temp_labour_cost.isEmpty() ? "0" : temp_labour_cost);
                 }
                 catch (Exception ex){
                     labour_cost = 0;
                 }
+                try{
+                    labour_quantity = Integer.parseInt(etLabourQuantity.getText().toString());
+                }
+                catch (Exception ex){
+                    labour_quantity = 0;
+                }
 
                 is_labour_required = chkLabourReq.isChecked();
                 paymentType = (PaymentType) spinPaymentType.getSelectedItem();
+                description = etDescription.getText().toString();
                 progressDialog = ProgressDialogManager.showProgressDialogWithTitle(getContext(), "Placing order", "Please wait");
                 Order order = new Order(-1, cargoType.getCargo_type_id(), containerType.getContainer_type_id(),
                         containerSize.getVehicle_type_id(), weightCatagory.getWeight_id(), cargoVolume, measurementUnit.unit_id,
-                        source.getLocation_id(), destination.getLocation_id(), is_labour_required, labour_cost,
-                        paymentType.payment_type_id, "", "");
+                        source.getLocation_id(), destination.getLocation_id(), is_labour_required, labour_cost, labour_quantity,
+                        description, paymentType.payment_type_id, "", "");
 
                 Gson gson = new Gson();
                 String order_json = gson.toJson(order);
@@ -157,7 +219,9 @@ public class FragmentCreateOrderStep2 extends Fragment {
         spinPaymentType = (Spinner)view.findViewById(R.id.spin_payment_type);
         chkLabourReq = (CheckBox)view.findViewById(R.id.chk_labour_required);
         tvLabourCost = (TextView)view.findViewById(R.id.tv_labour_cost);
+        tilLabourQuantity = (TextInputLayout)view.findViewById(R.id.til_labour_quantity);
         etLabourQuantity = (EditText)view.findViewById(R.id.et_labour_quantity);
+        etDescription = (TextInputEditText)view.findViewById(R.id.et_description_id);
         placeOrder = (Button)view.findViewById(R.id.btn_place_order);
     }
 
@@ -186,7 +250,20 @@ public class FragmentCreateOrderStep2 extends Fragment {
                     Log.e("RESPONSE BODY", response + "");
                     if (response_order != null && response_order.order_id != -1) {
                         Toast.makeText(getContext(), "Order placed", Toast.LENGTH_LONG).show();
-                        //overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        Bundle bundle =new Bundle();
+                        Gson gson = new Gson();
+                        bundle.putSerializable("order", gson.toJson(response_order));
+
+                        FragmentListDriverWRTOrder fragment_list_driver = new FragmentListDriverWRTOrder();
+                        fragment_list_driver.setArguments(bundle);
+
+                        MainActivityCustomer activity = (MainActivityCustomer)getContext();
+
+                        activity.getSupportFragmentManager().beginTransaction().
+                                setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.fade_in, R.anim.fade_out).
+                                replace(R.id.main_content_frame_customer_container, fragment_list_driver).
+                                addToBackStack(null).
+                                commit();
                     } else {
                         Toast.makeText(getContext(), "Please try again", Toast.LENGTH_SHORT).show();
                     }
@@ -205,6 +282,108 @@ public class FragmentCreateOrderStep2 extends Fragment {
             Log.e("ERROR", ex.toString());
             ProgressDialogManager.closeProgressDialog(progressDialog);
             Toast.makeText(getContext(), "Some error occour, please try again", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void showHideUI(boolean is_labour_required){
+        if (is_labour_required) {
+            if (tilLabourQuantity.getVisibility() == View.GONE){
+                tilLabourQuantity.setAlpha(0.0f);
+                tilLabourQuantity.setVisibility(View.VISIBLE);
+                // Start the animation
+                tilLabourQuantity.animate()
+                        .translationY(0)
+                        .alpha(1.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                tilLabourQuantity.setVisibility(View.VISIBLE);
+                            }
+                        });
+            }
+            if (etLabourQuantity.getVisibility() == View.GONE){
+                etLabourQuantity.setAlpha(0.0f);
+                etLabourQuantity.setVisibility(View.VISIBLE);
+                // Start the animation
+                etLabourQuantity.animate()
+                        .translationY(0)
+                        .alpha(1.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                etLabourQuantity.setVisibility(View.VISIBLE);
+                                etLabourQuantity.requestFocus();
+                            }
+                        });
+            }
+            if (tvLabourCost.getVisibility() == View.GONE){
+                tvLabourCost.setAlpha(0.0f);
+                tvLabourCost.setVisibility(View.VISIBLE);
+                // Start the animation
+                tvLabourCost.animate()
+                        .translationY(0)
+                        .alpha(1.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                tvLabourCost.setVisibility(View.VISIBLE);
+                            }
+                        });
+            }
+        }
+        else {
+            etDescription.requestFocus();
+            if (tilLabourQuantity.getVisibility() == View.VISIBLE) {
+                tilLabourQuantity.setAlpha(1.0f);
+                // Start the animation
+                tilLabourQuantity.animate()
+                        .translationY(tilLabourQuantity.getHeight())
+                        .alpha(0.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                tilLabourQuantity.setVisibility(View.GONE);
+                            }
+                        });
+            }
+            if (etLabourQuantity.getVisibility() == View.VISIBLE) {
+                etLabourQuantity.setAlpha(1.0f);
+                // Start the animation
+                etLabourQuantity.animate()
+                        .translationY(etLabourQuantity.getHeight())
+                        .alpha(0.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                etLabourQuantity.setVisibility(View.GONE);
+                            }
+                        });
+            }
+            if (tvLabourCost.getVisibility() == View.VISIBLE) {
+                tvLabourCost.setAlpha(1.0f);
+                // Start the animation
+                tvLabourCost.animate()
+                        .translationY(tvLabourCost.getHeight())
+                        .alpha(0.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                tvLabourCost.setVisibility(View.GONE);
+                            }
+                        });
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 package com.example.adnanshaukat.myapplication.RetrofitInterfaces;
 
+import com.example.adnanshaukat.myapplication.Modals.Order;
 import com.example.adnanshaukat.myapplication.Modals.User;
 
 import java.util.List;
@@ -16,7 +17,7 @@ import retrofit2.http.Query;
 
 public interface IDriver {
 
-    public String BASE_URL = "http://" + RetrofitManager.ip + "/"  + RetrofitManager.domain + "/api/dirver/";
+    public String BASE_URL = "http://" + RetrofitManager.ip + "/"  + RetrofitManager.domain + "/api/driver/";
 
     @GET("get_driver_wrt_transporter")
     Call<List<User>> get_all_drivers(@Query("transporter_id") String transporter_id);
@@ -26,4 +27,7 @@ public interface IDriver {
 
     @POST("update_drivers_vehicle")
     Call<String> update_drivers_vehicle(@Body String json_string);
+
+    @POST("get_driver_wrt_order")
+    Call<Object> get_driver_wrt_order(@Body Order order);
 }

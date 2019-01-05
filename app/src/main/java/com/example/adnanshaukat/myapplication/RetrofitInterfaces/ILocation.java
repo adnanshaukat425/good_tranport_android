@@ -7,6 +7,7 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 /**
@@ -18,4 +19,7 @@ public interface ILocation {
 
     @GET("get_all_destination_wrt_source")
     Call<List<Location>> get_all_destination_wrt_source(@Query("source_id") int source_id);
+
+    @POST("update_current_lat_long")
+    Call<Object> update_current_lat_long(@Query("user_id") int user_id, @Query("latitude") String latitude, @Query("longitude") String longitude);
 }

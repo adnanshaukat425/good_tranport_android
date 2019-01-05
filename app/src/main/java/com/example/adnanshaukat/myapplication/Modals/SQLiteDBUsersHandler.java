@@ -53,6 +53,10 @@ public class SQLiteDBUsersHandler extends SqlLiteDatabaseHandler {
 
             SQLiteDatabase db = this.getWritableDatabase();
 
+            ContentValues values1 = new ContentValues();
+            values1.put("is_logged_in", 0);
+            db.update("tbl_users", values1, "", null);
+
             boolean updateSuccessful = db.update("tbl_users", values, where, whereArgs) > 0;
             db.close();
 

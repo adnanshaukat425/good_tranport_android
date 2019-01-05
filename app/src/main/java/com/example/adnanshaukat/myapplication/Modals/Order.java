@@ -18,13 +18,13 @@ public class Order {
     public int destination_id;
     public boolean is_labour_required;
     public float labour_cost;
+    public int labour_quantity;
+    public String description;
     public int payment_type_id;
     public String creation_datetime;
     public String order_datetime;
 
-    public Order(int order_id, int cargo_type_id, int container_type_id, int vehicle_type_id, int weight_catagory_id,
-                 float cargo_volume, int weight_unit_id, int source_id, int destination_id, boolean is_labour_required,
-                 float labour_cost, int payment_type_id, String creation_datetime, String order_datetime) {
+    public Order(int order_id, int cargo_type_id, int container_type_id, int vehicle_type_id, int weight_catagory_id, float cargo_volume, int weight_unit_id, int source_id, int destination_id, boolean is_labour_required, float labour_cost, int labour_quantity, String description, int payment_type_id, String creation_datetime, String order_datetime) {
         this.order_id = order_id;
         this.cargo_type_id = cargo_type_id;
         this.container_type_id = container_type_id;
@@ -36,6 +36,8 @@ public class Order {
         this.destination_id = destination_id;
         this.is_labour_required = is_labour_required;
         this.labour_cost = labour_cost;
+        this.labour_quantity = labour_quantity;
+        this.description = description;
         this.payment_type_id = payment_type_id;
         this.creation_datetime = creation_datetime;
         this.order_datetime = order_datetime;
@@ -73,11 +75,11 @@ public class Order {
         this.vehicle_type_id = vehicle_type_id;
     }
 
-    public int getCargo_weight() {
+    public int getWeight_catagory_id() {
         return weight_catagory_id;
     }
 
-    public void setCargo_weight(int weight_catagory_id) {
+    public void setWeight_catagory_id(int weight_catagory_id) {
         this.weight_catagory_id = weight_catagory_id;
     }
 
@@ -127,6 +129,22 @@ public class Order {
 
     public void setLabour_cost(float labour_cost) {
         this.labour_cost = labour_cost;
+    }
+
+    public int getLabour_quantity() {
+        return labour_quantity;
+    }
+
+    public void setLabour_quantity(int labour_quantity) {
+        this.labour_quantity = labour_quantity;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public int getPayment_type_id() {
