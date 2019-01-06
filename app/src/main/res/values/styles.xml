@@ -25,6 +25,15 @@
         <item name="android:textColor">@color/colorPrimary</item>
     </style>
 
+    <style name="edit_text_style_input">
+        <item name="android:drawablePadding">5dp</item>
+        <item name="android:typeface">sans</item>
+        <item name="android:layout_marginTop">20dp</item>
+        <item name="android:textColorHint">#000</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textColor">#000</item>
+    </style>
+
     <style name="login_margin_setting">
         <item name="android:layout_marginTop">20dp</item>
         <item name="android:typeface">sans</item>

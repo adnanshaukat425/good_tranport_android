@@ -10,15 +10,14 @@ import android.view.ViewGroup;
 import com.example.adnanshaukat.myapplication.R;
 
 /**
- * Created by AdnanShaukat on 01/12/2018.
+ * Created by AdnanShaukat on 06/01/2019.
  */
 
-public class FragmentMain extends Fragment {
-
+public class FragmentMainTransporter extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_main, container, false);
+        View view = inflater.inflate(R.layout.fragment_main_transporter, container, false);
         return view;
     }
 }

@@ -11,6 +11,10 @@
             android:icon="@drawable/driver_logo"
             android:title="Drivers" />
         <item
+            android:id="@+id/nav_t_add_driver"
+            android:icon="@drawable/default_profile_image"
+            android:title="Add new driver" />
+        <item
             android:id="@+id/nav_t_view_vehicles"
             android:icon="@drawable/vehicle_icon"
             android:title="Vehicles" />

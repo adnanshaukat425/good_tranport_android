@@ -56,25 +56,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(sydney);
-        markerOptions .title("You're here");
-        markerOptions.icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.vehicle_icon));
-        mMap.addMarker(markerOptions);
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney, 15));
+//        // Add a marker in Sydney and move the camera
+//        LatLng sydney = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
+//        MarkerOptions markerOptions = new MarkerOptions();
+//        markerOptions.position(sydney);
+//        markerOptions .title("You're here");
+//        markerOptions.icon(bitmapDescriptorFromVector(getApplicationContext(), R.drawable.vehicle_icon));
+//        mMap.addMarker(markerOptions);
+//        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney, 15));
+
+        double Lat =  Double.parseDouble(latitude);
+        double Lng = Double.parseDouble(longitude);
+
+        LatLng Loc = new LatLng(Lat,Lng);
+        mMap.addMarker(new MarkerOptions().position(Loc).title("Driver Location"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Loc,17.0f));
+
     }
 
-    private BitmapDescriptor bitmapDescriptorFromVector(Context context, @DrawableRes int vectorDrawableResourceId) {
-        Drawable background = ContextCompat.getDrawable(context, R.drawable.vehicle_icon);
-        background.setBounds(0, 0, background.getIntrinsicWidth(), background.getIntrinsicHeight());
-        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorDrawableResourceId);
-        vectorDrawable.setBounds(40, 20, vectorDrawable.getIntrinsicWidth() + 40, vectorDrawable.getIntrinsicHeight() + 20);
-        Bitmap bitmap = Bitmap.createBitmap(background.getIntrinsicWidth(), background.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        background.draw(canvas);
-        vectorDrawable.draw(canvas);
-        return BitmapDescriptorFactory.fromBitmap(bitmap);
-    }
+//    private BitmapDescriptor bitmapDescriptorFromVector(Context context, @DrawableRes int vectorDrawableResourceId) {
+//        Drawable background = ContextCompat.getDrawable(context, R.drawable.vehicle_icon);
+//        background.setBounds(0, 0, background.getIntrinsicWidth(), background.getIntrinsicHeight());
+//        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorDrawableResourceId);
+//        vectorDrawable.setBounds(40, 20, vectorDrawable.getIntrinsicWidth() + 40, vectorDrawable.getIntrinsicHeight() + 20);
+//        Bitmap bitmap = Bitmap.createBitmap(background.getIntrinsicWidth(), background.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+//        Canvas canvas = new Canvas(bitmap);
+//        background.draw(canvas);
+//        vectorDrawable.draw(canvas);
+//        return BitmapDescriptorFactory.fromBitmap(bitmap);
+//    }
 }

@@ -1,15 +1,19 @@
 package com.example.adnanshaukat.myapplication.View;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,6 +21,8 @@ import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -57,58 +63,12 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.login);
+        progressDialog = ProgressDialogManager.showProgressDialogWithTitle(LoginActivity.this, "Few moments more", "Loading");
         sqLiteDBUsersHandler = new SQLiteDBUsersHandler(this);
 
-        progressDialog = ProgressDialogManager.showProgressDialogWithTitle(LoginActivity.this, "Few moments more", "Loading");
-        check_if_already_logged_in();
-        populateUI();
-
-        TextView txtForgotPassword = (TextView) findViewById(R.id.tv_login_forgot_password);
-        txtForgotPassword.setText(Html.fromHtml(String.format(getString(R.string.forgot_password))));
-
-        TextView txtCreateNewAccount = (TextView) findViewById(R.id.tv_login_create_new_account);
-        txtCreateNewAccount.setText(Html.fromHtml(String.format(getString(R.string.create_new_account))));
-
-
-        btn_login.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                if (TextUtils.isEmpty(et_email.getText())) {
-                    //Toast.makeText(LoginActivity.this, "Email required", Toast.LENGTH_SHORT).show();
-                    et_email.setError("Email required", getResources().getDrawable(R.drawable.error_icon));
-                    et_email.requestFocus();
-                } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(et_email.getText()).matches()) {
-                    //Toast.makeText(LoginActivity.this, "Email not valid", Toast.LENGTH_SHORT).show();
-                    et_email.setError("Email not valid", getResources().getDrawable(R.drawable.error_icon));
-                    et_email.requestFocus();
-                } else if (TextUtils.isEmpty(et_password.getText())) {
-                    //Toast.makeText(LoginActivity.this, "Password required", Toast.LENGTH_SHORT).show();
-                    et_password.setError("Password required", getResources().getDrawable(R.drawable.error_icon));
-                    et_password.requestFocus();
-                } else {
-                    progressDialog = ProgressDialogManager.showProgressDialogWithTitle(LoginActivity.this, "", "Please wait");
-                    getLogin(et_email.getText().toString(), et_password.getText().toString(), false);
-                }
-            }
-        });
-
-        tv_already_have_account.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        tv_login_forgot_password.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, FragmentUserProfile.class);
-                startActivity(intent);
-            }
-        });
+        if (!check_if_already_logged_in()) {
+            populateLoginActivity();
+        }
     }
 
     @Override
@@ -163,22 +123,23 @@ public class LoginActivity extends AppCompatActivity {
                         int user_id = user.getUser_id();
                         int user_type_id = user.getUser_type_id();
                         String message = "";
+                        Log.e("USER ID FROM LOGIN", user_id + "");
                         if (user_id != 0) {
 //                            if (storeCredentialsToSQLite(user)) {
                                 ((MyApplication) LoginActivity.this.getApplication()).set_user_id(user_id);
                                 if (!from_system && storeCredentialsToSQLite(user)) {
-                                    Toast.makeText(LoginActivity.this, "Welcome " + user.getFirst_name().toString(), Toast.LENGTH_LONG).show();
+                                    //Toast.makeText(LoginActivity.this, "Welcome " + user.getFirst_name().toString(), Toast.LENGTH_LONG).show();
                                     Log.e("USER TYPE ID", user_type_id + "");
                                 }
                                 if (user_type_id == 1 && storeCredentialsToSQLite(user)) {
-                                    Toast.makeText(LoginActivity.this, "Welcome Customer", Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(LoginActivity.this, "Welcome Customer", Toast.LENGTH_SHORT).show();
                                     Intent intent = new Intent(LoginActivity.this, MainActivityCustomer.class);
                                     intent.putExtra("user", user);
                                     startActivity(intent);
                                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                                 }
                                 else if (user_type_id == 3 && storeCredentialsToSQLite(user)) {
-                                    Toast.makeText(LoginActivity.this, "Welcome Transporter", Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(LoginActivity.this, "Welcome Transporter", Toast.LENGTH_SHORT).show();
                                     Intent intent = new Intent(LoginActivity.this, MainActivityTransporter.class);
                                     intent.putExtra("user", user);
                                     startActivity(intent);
@@ -190,7 +151,7 @@ public class LoginActivity extends AppCompatActivity {
                                         buildAlertMessageNoGps();
                                     } else if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                                         if(storeCredentialsToSQLite(user) && getLocation()){
-                                            Toast.makeText(LoginActivity.this, "Welcome Driver", Toast.LENGTH_SHORT).show();
+                                            //Toast.makeText(LoginActivity.this, "Welcome Driver", Toast.LENGTH_SHORT).show();
                                             Intent intent = new Intent(LoginActivity.this, MainActivityDriver.class);
                                             intent.putExtra("user", user);
                                             intent.putExtra("latitude", latitude);
@@ -204,7 +165,8 @@ public class LoginActivity extends AppCompatActivity {
 //                                message = "Username or password is not correct";
 //                            }
                         } else {
-                            message = "Username or password is not correct";
+                            populateLoginActivity();
+                            message = "Username or Password is not correct";
                         }
 
                         if (!from_system && !message.isEmpty()) {
@@ -212,7 +174,8 @@ public class LoginActivity extends AppCompatActivity {
                         }
                         ProgressDialogManager.closeProgressDialog(progressDialog);
                     } else {
-                        Toast.makeText(LoginActivity.this, "Username or password is not correct", Toast.LENGTH_SHORT).show();
+                        populateLoginActivity();
+                        Toast.makeText(LoginActivity.this, "Username or Password is not correct", Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -233,14 +196,17 @@ public class LoginActivity extends AppCompatActivity {
         return sqLiteDBUsersHandler.update_logged_in_status(1, user);
     }
 
-    public void check_if_already_logged_in() {
+    public boolean check_if_already_logged_in() {
         SQLiteDBUsersHandler sqLiteDBUsersHandler = new SQLiteDBUsersHandler(this);
         User _user = sqLiteDBUsersHandler.get_logged_in_user();
         if (_user.getEmail() != null && _user.getPassword() != null) {
             getLogin(_user.getEmail(), _user.getPassword(), true);
+            return true;
         } else {
             ProgressDialogManager.closeProgressDialog(progressDialog);
+            return false;
         }
+
     }
 
     private boolean getLocation() {
@@ -303,5 +269,63 @@ public class LoginActivity extends AppCompatActivity {
                 });
         final AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    private void populateLoginActivity(){
+        setContentView(R.layout.login);
+
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+
+        populateUI();
+
+        TextView txtForgotPassword = (TextView) findViewById(R.id.tv_login_forgot_password);
+        txtForgotPassword.setText(Html.fromHtml(String.format(getString(R.string.forgot_password))));
+
+        TextView txtCreateNewAccount = (TextView) findViewById(R.id.tv_login_create_new_account);
+        txtCreateNewAccount.setText(Html.fromHtml(String.format(getString(R.string.create_new_account))));
+
+        btn_login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Drawable errorIcon = getResources().getDrawable(R.drawable.ic_error);
+                errorIcon.setBounds(new Rect(0, 0, errorIcon.getIntrinsicWidth(), errorIcon.getIntrinsicHeight()));
+
+
+                if (TextUtils.isEmpty(et_email.getText())) {
+                    //Toast.makeText(LoginActivity.this, "Email required", Toast.LENGTH_SHORT).show();
+                    et_email.setError("Email Required !", errorIcon);
+                    et_email.requestFocus();
+                } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(et_email.getText()).matches()) {
+                    //Toast.makeText(LoginActivity.this, "Email not valid", Toast.LENGTH_SHORT).show();
+                    et_email.setError("Email Not Valid !", errorIcon);
+                    et_email.requestFocus();
+                } else if (TextUtils.isEmpty(et_password.getText())) {
+                    //Toast.makeText(LoginActivity.this, "Password required", Toast.LENGTH_SHORT).show();
+                    et_password.setError("Password Required !", errorIcon);
+                    et_password.requestFocus();
+                } else {
+                    progressDialog = ProgressDialogManager.showProgressDialogWithTitle(LoginActivity.this, "Loading", "Please wait");
+                    getLogin(et_email.getText().toString(), et_password.getText().toString(), false);
+                }
+            }
+        });
+
+        tv_already_have_account.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(LoginActivity.this, SignUpActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        tv_login_forgot_password.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, FragmentUserProfile.class);
+                startActivity(intent);
+            }
+        });
     }
 }

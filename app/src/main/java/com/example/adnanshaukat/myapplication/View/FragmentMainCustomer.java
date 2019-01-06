@@ -10,10 +10,11 @@ import android.view.ViewGroup;
 import com.example.adnanshaukat.myapplication.R;
 
 /**
- * Created by AdnanShaukat on 05/01/2019.
+ * Created by AdnanShaukat on 01/12/2018.
  */
 
-public class FragmentMainDriver extends Fragment {
+public class FragmentMainCustomer extends Fragment {
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

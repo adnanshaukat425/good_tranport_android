@@ -7,6 +7,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="Main Fragment" />
+        android:text="Main Fragment Customer" />
 
 </RelativeLayout>

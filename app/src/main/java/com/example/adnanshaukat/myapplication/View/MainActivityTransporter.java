@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.adnanshaukat.myapplication.GlobalClasses.MyApplication;
@@ -35,7 +36,7 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_transporter_main);
-        this.setTitle("Transporter");
+        this.setTitle("Dashboard");
 
         Intent i = getIntent();
         user = (User)i.getSerializableExtra("user");
@@ -54,7 +55,11 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
 
         View view = navigationView.inflateHeaderView(R.layout.nav_header_main);
         ImageView profile_image =  (ImageView)view.findViewById(R.id.drawer_profile_image);
+        TextView transporter_name = (TextView)view.findViewById(R.id.drawer_t_name);
+        TextView transporter_email = (TextView)view.findViewById(R.id.drawer_t_email);
 
+        transporter_name.setText(user.getFirst_name() + " " + user.getLast_name());
+        transporter_email.setText(user.getEmail());
         Menu menu = navigationView.getMenu();
 
         MenuItem txt_id = (MenuItem) menu.findItem(R.id.nav_t_id);
@@ -82,7 +87,6 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
         } else {
             byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
             Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-
             profile_image.setImageBitmap(decodedByte);
         }
 
@@ -98,11 +102,12 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
                         replace(R.id.main_content_frame_transporter_container, fragment).
                         addToBackStack(null).
                         commit();
-
                 DrawerLayout drawer = (DrawerLayout) findViewById(R.id.transporter_drawer_layout);
                 drawer.closeDrawer(GravityCompat.START);
             }
         });
+
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_content_frame_transporter_container, new FragmentMainTransporter()).commit();
     }
 
     public void onBackPressed() {
@@ -113,10 +118,10 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
             int fragments = getSupportFragmentManager().getBackStackEntryCount();
             Log.e("Fragment Count",Integer.toString(fragments));
             if (fragments == 0) {
-                this.setTitle("Transporter");
-                //finish();
+                this.setTitle("Dashboard");
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_content_frame_transporter_container, new FragmentMainTransporter()).commit();
             } else {
-                if (getSupportFragmentManager().getBackStackEntryCount() >= 1) {
+                if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
                     getSupportFragmentManager().popBackStackImmediate();
                 }
             }
@@ -144,8 +149,16 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
         Bundle bundle = new Bundle();
         bundle.putSerializable("user", user);
 
-        if(id == R.id.nav_t_view_drivers){
+        int fragments = getSupportFragmentManager().getBackStackEntryCount();
+        if (getSupportFragmentManager().getBackStackEntryCount() >= 1) {
+            for (int i = 0; i < fragments; i++){
+                getSupportFragmentManager().popBackStackImmediate();
+            }
+        }
 
+        Log.e("Fragments Count",String.valueOf(getSupportFragmentManager().getBackStackEntryCount()));
+
+        if(id == R.id.nav_t_view_drivers){
             FragmentListOfDriverWRTTransporter fragment = new FragmentListOfDriverWRTTransporter();
             fragment.setArguments(bundle);
             this.setTitle("Drivers");
@@ -179,8 +192,20 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
             }
         }
 
+        if (id == R.id.nav_t_add_driver){
+            bundle.putString("trasnporter_id",String.valueOf(user.getUser_id()));
+            FragmentAddDriverWETTransporter fragmentAddDriverWETTransporter = new FragmentAddDriverWETTransporter();
+            fragmentAddDriverWETTransporter.setArguments(bundle);
+
+            getSupportFragmentManager().beginTransaction().
+                    setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out).
+                    replace(R.id.main_content_frame_transporter_container, fragmentAddDriverWETTransporter).
+                    addToBackStack(null).
+                    commit();
+        }
+
         if (id == R.id.nav_t_dashboard){
-            FragmentMain fragment = new FragmentMain();
+            FragmentMainTransporter fragment = new FragmentMainTransporter();
             fragment.setArguments(bundle);
             this.setTitle("Dashboard");
             getSupportFragmentManager().beginTransaction().

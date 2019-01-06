@@ -19,5 +19,5 @@ public interface IUser {
     Call<String> change_password(@Query("user_id") int user_id, @Query("password") String password);
 
     @POST("update_user")
-    Call<String> update_user(@Body User user);
+    Call<User> update_user(@Body User user);
 }

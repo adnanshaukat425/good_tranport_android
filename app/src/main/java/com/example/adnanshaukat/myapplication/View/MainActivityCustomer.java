@@ -89,7 +89,7 @@ public class MainActivityCustomer extends AppCompatActivity
         }
         txt_id.setTitle("Customer ID: " + user_id);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_content_frame_customer_container, new FragmentMain()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_content_frame_customer_container, new FragmentMainCustomer()).commit();
     }
 
     @Override

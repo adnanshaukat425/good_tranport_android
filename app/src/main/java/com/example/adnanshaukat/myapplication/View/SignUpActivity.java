@@ -2,6 +2,8 @@ package com.example.adnanshaukat.myapplication.View;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -43,12 +45,23 @@ public class SignUpActivity extends AppCompatActivity {
     ProgressDialog progressDialog;
     SQLiteDBUsersHandler sqLiteDBUsersHandler;
 
+    int transporter_id = 0;
+    Boolean from_transporter = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sign_up);
         addItemsOnSpinner();
         populateUI();
+
+        Intent i = getIntent();
+        transporter_id = 0;
+        from_transporter = (boolean)i.getExtras().get("from_transporter");
+
+        if(from_transporter){
+            transporter_id = (int)i.getExtras().get("transporter_id");
+        }
 
         btn_signup_next.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,7 +75,6 @@ public class SignUpActivity extends AppCompatActivity {
                 cnic = et_cnic.getText().toString();
 
                 if (checkValidity()) {
-
                     String temp = Long.toString(cbo_user_type.getSelectedItemId() + 1);
                     int user_type_id = Integer.parseInt(temp);
 
@@ -73,6 +85,7 @@ public class SignUpActivity extends AppCompatActivity {
                     User user = new User(0, user_type_id, first_name, last_name, email, phone_number, cnic, "profile_picture_path", password, 1, current_date);
                     Intent intent = new Intent(SignUpActivity.this, CaptureImageActivity.class);
                     intent.putExtra("user", user);
+
                     startActivity(intent);
                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                 }
@@ -105,41 +118,44 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private boolean checkValidity() {
+        Drawable errorIcon = getResources().getDrawable(R.drawable.ic_error);
+        errorIcon.setBounds(new Rect(0, 0, errorIcon.getIntrinsicWidth(), errorIcon.getIntrinsicHeight()));
+
         if (!password.equals(confirm_password)) {
             //Toast.makeText(this, "Password missmatch", Toast.LENGTH_SHORT).show();
-            et_confirm_password.setError("Password mismatch", getResources().getDrawable(R.drawable.error_icon));
+            et_confirm_password.setError("Password mismatch", errorIcon);
             et_confirm_password.requestFocus();
             return false;
         } else if (TextUtils.isEmpty(first_name)) {
-            et_first_name.setError("First name required", getResources().getDrawable(R.drawable.error_icon));
+            et_first_name.setError("First name required", errorIcon);
             et_first_name.requestFocus();
             return false;
         } else if (TextUtils.isEmpty(last_name)) {
-            et_last_name.setError("Last name required", getResources().getDrawable(R.drawable.error_icon));
+            et_last_name.setError("Last name required", errorIcon);
             et_last_name.requestFocus();
             return false;
         } else if (TextUtils.isEmpty(email)) {
-            et_email.setError("Email required", getResources().getDrawable(R.drawable.error_icon));
+            et_email.setError("Email required", errorIcon);
             et_email.requestFocus();
             return false;
         } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            et_email.setError("Email not valid", getResources().getDrawable(R.drawable.error_icon));
+            et_email.setError("Email not valid", errorIcon);
             et_email.requestFocus();
             return false;
         } else if (TextUtils.isEmpty(cnic)) {
-            et_cnic.setError("CNIC required", getResources().getDrawable(R.drawable.error_icon));
+            et_cnic.setError("CNIC required", errorIcon);
             et_cnic.requestFocus();
             return false;
         } else if (TextUtils.isEmpty(password)) {
-            et_password.setError("Password required", getResources().getDrawable(R.drawable.error_icon));
+            et_password.setError("Password required", errorIcon);
             et_password.requestFocus();
             return false;
         } else if (TextUtils.isEmpty(phone_number)) {
-            et_phone_number.setError("Phone number required", getResources().getDrawable(R.drawable.error_icon));
+            et_phone_number.setError("Phone number required", errorIcon);
             et_phone_number.requestFocus();
             return false;
         } else if (!TextUtils.isDigitsOnly(phone_number)) {
-            et_phone_number.setError("Phone number not valid", getResources().getDrawable(R.drawable.error_icon));
+            et_phone_number.setError("Phone number not valid", errorIcon);
             et_phone_number.requestFocus();
             return false;
         }

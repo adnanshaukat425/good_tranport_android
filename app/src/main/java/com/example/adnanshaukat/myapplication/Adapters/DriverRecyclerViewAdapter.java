@@ -52,17 +52,20 @@ public class DriverRecyclerViewAdapter extends RecyclerView.Adapter<DriverRecycl
             Log.e("USER STATUS",Integer.toString(mStatus));
             Log.e("USER Name", mUsers.get(position).getFirst_name());
 
-            if(mUsers.get(position).getStatus() == mStatus) {
-                String encodedImage = mUsers.get(position).getProfile_picture();
-                if (encodedImage.isEmpty()) {
+            String encodedImage = mUsers.get(position).getProfile_picture();
+            Log.e("ENCODED IMAGE FROM RECY", encodedImage + "D");
+            if (encodedImage == null || encodedImage.isEmpty()) {
+                holder.profile_image.setImageResource(R.drawable.default_profile_image);
+            } else {
+                byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                if (decodedByte == null){
                     holder.profile_image.setImageResource(R.drawable.default_profile_image);
-                } else {
-                    byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
-                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-
-                    holder.profile_image.setImageBitmap(decodedByte);
                 }
+                holder.profile_image.setImageBitmap(decodedByte);
+            }
 
+            if(mUsers.get(position).getStatus() == mStatus) {
                 if (mUsers.get(position).getStatus() == 1) {
                     holder.driver_status_image.setImageResource(R.drawable.online_icon);
                 } else if (mUsers.get(position).getStatus() == 0) {
@@ -76,12 +79,15 @@ public class DriverRecyclerViewAdapter extends RecyclerView.Adapter<DriverRecycl
         }
         else{
             String encodedImage = mUsers.get(position).getProfile_picture();
-            if (encodedImage.isEmpty()) {
+            Log.e("ENCODED IMAGE FROM RECY", encodedImage);
+            if (encodedImage == null || encodedImage.isEmpty()) {
                 holder.profile_image.setImageResource(R.drawable.default_profile_image);
             } else {
                 byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
                 Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-
+                if (decodedByte == null){
+                    holder.profile_image.setImageResource(R.drawable.default_profile_image);
+                }
                 holder.profile_image.setImageBitmap(decodedByte);
             }
 
@@ -99,7 +105,7 @@ public class DriverRecyclerViewAdapter extends RecyclerView.Adapter<DriverRecycl
         holder.setItemClickListner(new ItemClickListner() {
             @Override
             public void onClick(View view, int position) {
-                Toast.makeText(mContext, mUsers.get(position).getFirst_name(), Toast.LENGTH_SHORT).show();
+                //Toast.makeText(mContext, mUsers.get(position).getFirst_name(), Toast.LENGTH_SHORT).show();
                 MainActivityTransporter activity = (MainActivityTransporter)mContext;
 
                 Bundle bundle = new Bundle();

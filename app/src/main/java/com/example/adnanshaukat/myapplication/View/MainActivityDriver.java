@@ -3,6 +3,7 @@ package com.example.adnanshaukat.myapplication.View;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.icu.util.ULocale;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
@@ -51,9 +52,6 @@ public class MainActivityDriver extends AppCompatActivity
         LocationController controller = new LocationController();
         controller.update_lat_long(getApplicationContext(), user.getUser_id(), latitude, longitude);
 
-        Log.e("Driver Latitude", latitude);
-        Log.e("Driver Longitude", longitude);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.driver_toolbar);
         setSupportActionBar(toolbar);
 
@@ -89,34 +87,24 @@ public class MainActivityDriver extends AppCompatActivity
 
         txt_id.setTitle("Driver ID: " + user_id);
 
-        String encodedImage = user.getProfile_picture();
+//        try{
+//            String encodedImage = user.getProfile_picture();
+//            if (encodedImage.isEmpty()) {
+//                profile_image.setImageResource(R.drawable.default_profile_image_2);
+//            } else {
+//                byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
+//                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+//
+//                profile_image.setImageBitmap(decodedByte);
+//            }
+//        }
+//        catch (Exception ex){
+//            profile_image.setImageResource(R.drawable.default_profile_image_2);
+//        }
+        Log.e("Driver Latitude", latitude);
+        Log.e("Driver Longitude", longitude);
 
-        if (encodedImage.isEmpty()) {
-            profile_image.setImageResource(R.drawable.default_profile_image_2);
-        } else {
-            byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
-            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-
-            profile_image.setImageBitmap(decodedByte);
-        }
-
-        profile_image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("user", user);
-                FragmentUserProfile fragment = new FragmentUserProfile();
-                fragment.setArguments(bundle);
-                getSupportFragmentManager().beginTransaction().
-                        setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out).
-                        replace(R.id.main_content_frame_driver_container, fragment).
-                        addToBackStack(null).
-                        commit();
-
-                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.driver_drawer_layout);
-                drawer.closeDrawer(GravityCompat.START);
-            }
-        });
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_content_frame_driver_container, new FragmentMainDriver()).commit();
     }
 
     @Override
@@ -181,7 +169,7 @@ public class MainActivityDriver extends AppCompatActivity
         }
 
         if (id == R.id.nav_d_dashboard){
-//            FragmentMain fragment = new FragmentMain();
+//            FragmentMainCustomer fragment = new FragmentMainCustomer();
 //            fragment.setArguments(bundle);
 //            this.setTitle("Dashboard");
 //            getSupportFragmentManager().beginTransaction().

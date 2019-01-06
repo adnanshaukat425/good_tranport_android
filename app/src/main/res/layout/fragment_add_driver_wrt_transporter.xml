@@ -12,7 +12,8 @@
         android:paddingBottom="@dimen/activity_vertical_margin"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingTop="@dimen/activity_vertical_margin">
+        android:paddingTop="@dimen/activity_vertical_margin"
+        tools:context="com.example.adnanshaukat.myapplication.View.FragmentUserProfile">
 
         <RelativeLayout
             android:id="@+id/rl_1"
@@ -23,12 +24,12 @@
             android:paddingRight="20dp">
 
             <RelativeLayout
-                android:id="@+id/image_relative_layout"
+                android:id="@+id/profile_image_relative_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
                 <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/user_img"
+                    android:id="@+id/add_driver_frag_image_view"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
                     android:layout_marginRight="20dp"
@@ -39,35 +40,37 @@
                 <ImageView
                     android:layout_width="25dp"
                     android:layout_height="25dp"
-                    android:layout_alignEnd="@id/user_img"
+                    android:layout_alignEnd="@id/add_driver_frag_image_view"
                     android:layout_alignParentBottom="true"
-                    android:layout_alignRight="@id/user_img"
+                    android:layout_alignRight="@id/add_driver_frag_image_view"
                     android:src="@mipmap/ic_plus" />
 
             </RelativeLayout>
 
-
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/image_relative_layout">
+                android:layout_toRightOf="@+id/profile_image_relative_view">
 
                 <EditText
-                    android:id="@+id/ed_fname"
+                    android:id="@+id/add_driver_ed_fname"
                     style="@style/edit_text_style_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="0dp"
+                    android:inputType=""
+                    android:enabled="true"
                     android:hint="First Name" />
 
                 <EditText
-                    android:id="@+id/ed_lname"
+                    android:id="@+id/add_driver_ed_lname"
                     style="@style/edit_text_style_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/ed_fname"
+                    android:layout_below="@+id/add_driver_ed_fname"
                     android:layout_marginTop="0dp"
-                    android:hint="Last Name"/>
+                    android:enabled="true"
+                    android:hint="Last Name" />
 
             </RelativeLayout>
 
@@ -83,7 +86,7 @@
             android:paddingRight="20dp">
 
             <TextView
-                android:id="@+id/tv_email"
+                android:id="@+id/add_driver_tv_email"
                 style="@style/edit_text_style"
                 android:layout_width="70dp"
                 android:layout_height="wrap_content"
@@ -93,11 +96,12 @@
                 android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/ed_email"
+                android:id="@+id/add_driver_ed_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/tv_email"
-                android:enabled="false" />
+                android:layout_toRightOf="@id/add_driver_tv_email"
+                android:enabled="true"
+                android:textColor="@color/colorPrimaryDark" />
 
         </RelativeLayout>
 
@@ -110,7 +114,7 @@
             android:paddingRight="20dp">
 
             <TextView
-                android:id="@+id/tv_number"
+                android:id="@+id/add_driver_tv_number"
                 style="@style/edit_text_style"
                 android:layout_width="70dp"
                 android:layout_height="wrap_content"
@@ -120,12 +124,14 @@
                 android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/ed_number"
+                android:id="@+id/add_driver_ed_number"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/tv_number"
+                android:layout_toRightOf="@id/add_driver_tv_number"
+                android:enabled="true"
                 android:inputType="phone"
-                android:maxLength="11" />
+                android:maxLength="11"
+                android:textColor="@color/colorPrimaryDark" />
 
         </RelativeLayout>
 
@@ -138,7 +144,7 @@
             android:paddingRight="20dp">
 
             <TextView
-                android:id="@+id/tv_cnic"
+                android:id="@+id/add_driver_tv_cnic"
                 style="@style/edit_text_style"
                 android:layout_width="70dp"
                 android:layout_height="wrap_content"
@@ -148,104 +154,83 @@
                 android:textStyle="bold" />
 
             <EditText
-                android:id="@+id/ed_cnic"
+                android:id="@+id/add_driver_ed_cnic"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/tv_cnic"
-                android:enabled="false"
+                android:layout_toRightOf="@id/add_driver_tv_cnic"
+                android:enabled="true"
                 android:inputType="phone"
-                android:maxLength="13" />
-
+                android:maxLength="13"
+                android:textColor="@color/colorPrimaryDark" />
         </RelativeLayout>
-
-        <!--<Button-->
-        <!--android:id="@+id/btn_logout"-->
-        <!--style="@style/login_margin_setting"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_below="@+id/rl_4"-->
-        <!--android:layout_marginLeft="20dp"-->
-        <!--android:layout_marginRight="20dp"-->
-        <!--android:background="#fb3434"-->
-        <!--android:text="Logout"-->
-        <!--android:textColor="@color/white"-->
-        <!--android:textSize="15sp"-->
-        <!--android:textStyle="bold" />-->
 
         <RelativeLayout
             android:id="@+id/rl_5"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/rl_4"
-            android:layout_marginTop="20dp"
+            android:layout_below="@id/rl_4"
             android:paddingLeft="20dp"
             android:paddingRight="20dp">
 
-            <TextView
-                android:id="@+id/tv_pass"
+            <CheckBox
+                android:id="@+id/chk_assing_vehicle"
                 style="@style/edit_text_style"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:paddingRight="20dp"
-                android:text="PASSWORD CHANGE"
+                android:layout_marginTop="0dp"
+                android:text="Assign Vehicle"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/tv_pass_desc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/tv_pass"
-                android:text="Leave passwords empty,when you don't want change it."
-                android:textSize="11sp"
-                android:textStyle="italic" />
-
         </RelativeLayout>
+
 
         <RelativeLayout
             android:id="@+id/rl_6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/rl_5"
-            android:layout_marginTop="10dp"
             android:paddingLeft="20dp"
             android:paddingRight="20dp">
 
-            <EditText
-                android:id="@+id/ed_pass"
-                style="@style/edit_text_style_input"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/add_driver_tv_vehicle_assign"
+                style="@style/edit_text_style"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="0dp"
-                android:hint="Password"
-                android:inputType="textPassword" />
+                android:layout_centerVertical="true"
+                android:paddingRight="20dp"
+                android:text="Vehicle Assigned:"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-            <EditText
-                android:id="@+id/ed_pass_confirm"
-                style="@style/edit_text_style_input"
+            <Spinner
+                android:id="@+id/add_driver_sp_vehicle_assign"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/ed_pass"
-                android:layout_margin="0dp"
-                android:hint="Confirm Password"
-                android:inputType="textPassword" />
-
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_toRightOf="@id/add_driver_tv_vehicle_assign" />
         </RelativeLayout>
 
-        <!--android:background="#732ee9"-->
-        <Button
-            android:id="@+id/btn_change_password"
-            style="@style/login_margin_setting"
+        <RelativeLayout
+            android:id="@+id/rl_7"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/rl_6"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:background="@drawable/button_ripple_effect"
-            android:text="Update Profile"
-            android:textColor="@color/white"
-            android:textSize="15sp"
-            android:textStyle="bold" />
+            android:layout_below="@+id/rl_6">
+
+            <Button
+                android:id="@+id/btn_fragment_add_driver"
+                style="@style/login_margin_setting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/button_ripple_effect"
+                android:text="Add Driver"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
     </RelativeLayout>
 </ScrollView>

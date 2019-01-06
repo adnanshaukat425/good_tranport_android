@@ -1,5 +1,7 @@
 package com.example.adnanshaukat.myapplication.View;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,26 +15,31 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.adnanshaukat.myapplication.GlobalClasses.EncoderDecoder;
 import com.example.adnanshaukat.myapplication.GlobalClasses.ProgressDialogManager;
+import com.example.adnanshaukat.myapplication.Modals.Cargo;
+import com.example.adnanshaukat.myapplication.Modals.SQLiteDBUsersHandler;
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.Modals.Vehicle;
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.IDriver;
+import com.example.adnanshaukat.myapplication.RetrofitInterfaces.ISignUp;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.IUser;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.IVehicleWrtDriver;
 
@@ -40,12 +47,13 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -53,49 +61,53 @@ import retrofit2.Response;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Created by AdnanShaukat on 09/12/2018.
+ * Created by AdnanShaukat on 06/01/2019.
  */
 
-public class FragmentUserProfileForDriverFromTransporter extends Fragment {
-
-    HashMap hm;
-    ImageView profile_image;
-    String[] vehicles_array;
-    int[] vehicles_id;
-    String vehicle_id;
-    String vehicle_number;
+public class FragmentAddDriverWETTransporter extends Fragment {
 
     View view;
     User mUser;
+
     Spinner spinner;
+    CircleImageView profile_image;
     TextView tv_first_name, tv_last_name, tv_email, tv_phone_no, tv_cnic;
     EditText ed_fname, ed_lname, ed_email, ed_number, ed_cnic;
-
+    CheckBox chk_assing_vehicle;
     static final int REQUEST_CAMERA_CAPTURE = 1;
     static final int REQUEST_GALLERY_CAPTURE = 2;
 
-    Button btn_update;
+    RelativeLayout rl_assign_vehicle;
+    int transporter_id = 0;
 
+    Button btn_add;
     ProgressDialog progressDialog;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_user_profile_for_driver_from_transporter, container, false);
+        view = inflater.inflate(R.layout.fragment_add_driver_wrt_transporter, container, false);
+        mUser = new User();
         populateUI();
-        //getVehicleFromSpinner();
-        btn_update.setOnClickListener(new View.OnClickListener() {
+        Bundle argument = getArguments();
+        if (argument != null) {
+            transporter_id = Integer.parseInt(argument.getString("trasnporter_id"));
+            getVehicles(String.valueOf(transporter_id));
+        }
+
+        chk_assing_vehicle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                int position = spinner.getSelectedItemPosition();
-                int id = vehicles_id[position];
-                //Toast.makeText(getContext(), id + "", Toast.LENGTH_SHORT).show();
-                if(checkValidity()){
-                    progressDialog = ProgressDialogManager.showProgressDialogWithTitle(getContext(), "Loading", "Please wait...");
-                    UpdateDriversVehicle(mUser.getUser_id() + "", id + "");
-                    UpdateUser(populateModal());
-                }
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                showHideUI(isChecked);
             }
         });
+        return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        chk_assing_vehicle.setChecked(true);
 
         profile_image.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,76 +133,22 @@ public class FragmentUserProfileForDriverFromTransporter extends Fragment {
             }
         });
 
-        return view;
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Bundle arguments = getArguments();
-        try {
-            Field popup = Spinner.class.getDeclaredField("mPopup");
-            popup.setAccessible(true);
-            // Get private mPopup member variable and try cast to ListPopupWindow
-            android.widget.ListPopupWindow sourcePopup = (android.widget.ListPopupWindow) popup.get(spinner);
-
-            // Set popupWindow height to 500px
-            sourcePopup.setHeight(700);
-        } catch (NoClassDefFoundError | ClassCastException | NoSuchFieldException | IllegalAccessException e) {
-            // silently fail...
-        }
-
-        if (arguments != null) {
-            mUser = (User) arguments.get("user_from_driver_list");
-            String transporter_id = arguments.get("transporter_id").toString();
-            getVehicles(transporter_id);
-
-            tv_first_name.setText(mUser.getFirst_name());
-            tv_last_name.setText(mUser.getLast_name());
-            tv_email.setText(mUser.getEmail());
-            tv_phone_no.setText(mUser.getPhone_number());
-            tv_cnic.setText(mUser.getCnic_number());
-            //tv_driver_since.setText(mUser.getCreated_date());
-
-            getVehicleFromSpinner();
-
-            String encodedImage = mUser.getProfile_picture();
-            Log.e("DRVIVER PROFILE IMAGE", encodedImage);
-
-            Bitmap bitmap = EncoderDecoder.getDecodeImage(encodedImage);
-
-            if(bitmap == null){
-                profile_image.setImageResource(R.drawable.default_profile_image);
+        btn_add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkValidity()) {
+                    progressDialog = ProgressDialogManager.showProgressDialogWithTitle(getContext(), "Loading...", "Please wait");
+                    User _mUser = populateModal();
+                    if (_mUser.getProfile_picture() == null){
+                        _mUser.setProfile_picture("");
+                    }
+                    getSignup(_mUser);
+                }
             }
-            else{
-                profile_image.setImageBitmap(bitmap);
-            }
-
-        } else {
-            //Toast.makeText(getContext(), "ARGUMENT IS EMPTY", Toast.LENGTH_SHORT).show();
-        }
+        });
     }
 
-    private void populateUI() {
-        spinner = (Spinner) view.findViewById(R.id.sp_vehicle_assign);
-        tv_first_name = (TextView) view.findViewById(R.id.ed_fname);
-        tv_last_name = (TextView) view.findViewById(R.id.ed_lname);
-        tv_email = (TextView) view.findViewById(R.id.ed_email);
-        tv_phone_no = (TextView) view.findViewById(R.id.ed_number);
-        tv_cnic = (TextView) view.findViewById(R.id.ed_cnic);
-        profile_image = (ImageView)view.findViewById(R.id.driver_frag_image_view);
-
-        ed_fname = (EditText)view.findViewById(R.id.ed_fname);
-        ed_lname = (EditText)view.findViewById(R.id.ed_lname);
-        ed_email = (EditText)view.findViewById(R.id.ed_email);
-        ed_number = (EditText)view.findViewById(R.id.ed_number);
-        ed_cnic = (EditText)view.findViewById(R.id.ed_cnic);
-
-        btn_update = (Button) view.findViewById(R.id.btn_fragment_user_profile_update);
-    }
-
-    private List<User> getVehicles(String transporter_id) {
-        final List<User> result_list = new ArrayList<>();
+    private void getSignup(User user) {
         try {
             OkHttpClient.Builder client = new OkHttpClient.Builder();
             client.connectTimeout(30, TimeUnit.SECONDS);
@@ -198,78 +156,50 @@ public class FragmentUserProfileForDriverFromTransporter extends Fragment {
             client.writeTimeout(30, TimeUnit.SECONDS);
 
             retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
-                    .baseUrl(IVehicleWrtDriver.BASE_URL)
+                    .baseUrl(ISignUp.BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(client.build())
                     .build();
 
-            IVehicleWrtDriver api = retrofit.create(IVehicleWrtDriver.class);
+            ISignUp api = retrofit.create(ISignUp.class);
 
-            Log.e("Transporter Id", transporter_id);
+            Call<User> call = api.get_signup(user);
 
-            Call<List<Vehicle>> call = api.get_transporter(transporter_id);
-
-            call.enqueue(new Callback<List<Vehicle>>() {
+            call.enqueue(new Callback<User>() {
                 @Override
-                public void onResponse(Call<List<Vehicle>> call, Response<List<Vehicle>> response) {
-                    List<Vehicle> vehicles = response.body();
-                    //Log.e("VEHICLES NUMBER", Float.toString(vehicles.get(0).getVehicle_number()));
-                    if (vehicles != null && vehicles.size() > 0) {
-
-                        vehicles_array = new String[vehicles.size()];
-                        vehicles_id = new int[vehicles.size()];
-                        hm = new HashMap();
-                        int selected_index = 0;
-                        for (int i = 0; i < vehicles.size(); i++) {
-                            String vehicle = Integer.toString(vehicles.get(i).getVehicle_number());
-                            hm.put(vehicles.get(i).getVehicle_id(), vehicle);
-                            vehicles_array[i] = vehicle;
-                            vehicles_id[i] = vehicles.get(i).getVehicle_id();
-                            if(vehicles.get(i).getDriver_id() == mUser.getUser_id()){
-                                selected_index = i;
-                            }
+                public void onResponse(Call<User> call, Response<User> response) {
+                    User user = response.body();
+                    Log.e("RESPONSE", response.toString());
+                    int user_id = user.getUser_id();
+                    if (user_id != 0) {
+                        if(chk_assing_vehicle.isChecked()){
+                            Toast.makeText(getContext(), "Added Successfully", Toast.LENGTH_SHORT);
+                            UpdateDriversVehicle(user.getUser_id() + "", chk_assing_vehicle + "");
                         }
-                        setDropdown(selected_index);
-                    } else {
-                        Toast.makeText(getContext(), "No Vehicles found", Toast.LENGTH_SHORT).show();
+                        else{
+                            ProgressDialogManager.closeProgressDialog(progressDialog);
+                            Toast.makeText(getContext(), "Driver Added Successfully", Toast.LENGTH_SHORT).show();
+                        }
+                        AddDriverToTransporter(user.getUser_id() + "", transporter_id + "");
+                    }
+                    else {
+
                     }
                 }
 
                 @Override
-                public void onFailure(Call<List<Vehicle>> call, Throwable t) {
+                public void onFailure(Call<User> call, Throwable t) {
                     Log.e("FAILURE", t.getMessage());
                     Log.e("FAILURE", t.toString());
                     //Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                    ProgressDialogManager.closeProgressDialog(progressDialog);
                 }
             });
         } catch (Exception ex) {
             Log.e("ERROR", ex.toString());
+            ProgressDialogManager.closeProgressDialog(progressDialog);
+            Toast.makeText(getContext(), "Some error occour, please try again", Toast.LENGTH_SHORT).show();
         }
-        return result_list;
-    }
-
-    private void setDropdown(int selected_index) {
-
-        ArrayAdapter<String> adapter  = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, vehicles_array);
-        adapter .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-        spinner.setSelection(selected_index, true);
-    }
-
-    private void getVehicleFromSpinner() {
-
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                Object item = adapterView.getItemAtPosition(position);
-                Object key = hm.get(position + 1);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
     }
 
     private void UpdateDriversVehicle(String user_id, String vehicle_id){
@@ -294,18 +224,16 @@ public class FragmentUserProfileForDriverFromTransporter extends Fragment {
             obj.put("vehicle_id", vehicle_id);
 
             json_string = obj.toString();
-
             //Toast.makeText(getContext(), "JSON STRING " + json_string + "", Toast.LENGTH_SHORT).show();
-
             Call<String> call = api.update_drivers_vehicle(json_string);
 
             call.enqueue(new Callback<String>() {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
                     String result = response.body();
-                    //Toast.makeText(getContext(), result + "", Toast.LENGTH_SHORT).show();
                     ProgressDialogManager.closeProgressDialog(progressDialog);
-                    //Toast.makeText(getContext(), "Update Successfully", Toast.LENGTH_SHORT).show();
+                    Log.e(this.toString(), result + "");
+                    Toast.makeText(getContext(), "Driver Added Successfully", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -322,7 +250,7 @@ public class FragmentUserProfileForDriverFromTransporter extends Fragment {
         }
     }
 
-    private void UpdateUser(User updated_user) {
+    private void AddDriverToTransporter(String driver_id, String trasnporter_id){
         try {
             OkHttpClient.Builder client = new OkHttpClient.Builder();
             client.connectTimeout(30, TimeUnit.SECONDS);
@@ -330,33 +258,36 @@ public class FragmentUserProfileForDriverFromTransporter extends Fragment {
             client.writeTimeout(30, TimeUnit.SECONDS);
 
             retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
-                    .baseUrl(IUser.BASE_URL)
+                    .baseUrl(ISignUp.BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(client.build())
                     .build();
 
-            IUser api = retrofit.create(IUser.class);
+            ISignUp api = retrofit.create(ISignUp.class);
 
-            Call<User> call = api.update_user(updated_user);
+            String json_string = "";
 
-            call.enqueue(new Callback<User>() {
+            JSONObject obj = new JSONObject();
+
+            json_string = obj.toString();
+            //Toast.makeText(getContext(), "JSON STRING " + json_string + "", Toast.LENGTH_SHORT).show();
+            Call<String> call = api.add_driver_to_transporter(driver_id, trasnporter_id);
+
+            call.enqueue(new Callback<String>() {
                 @Override
-                public void onResponse(Call<User> call, Response<User> response) {
-                    User is_updated = response.body();
-                    if (is_updated != null) {
-                        ProgressDialogManager.closeProgressDialog(progressDialog);
-                        Toast.makeText(getContext(), "Update Successfully", Toast.LENGTH_SHORT).show();
-                    } else {
-                        ProgressDialogManager.closeProgressDialog(progressDialog);
-                        Toast.makeText(getContext(), "Request didn't processed correctly, Please try again.", Toast.LENGTH_SHORT).show();
-                    }
+                public void onResponse(Call<String> call, Response<String> response) {
+                    String result = response.body();
+                    ProgressDialogManager.closeProgressDialog(progressDialog);
+                    Log.e("Add driver to transp", result + "");
+                    Toast.makeText(getContext(), "Driver Added Successfully", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
-                public void onFailure(Call<User> call, Throwable t) {
-                    ProgressDialogManager.closeProgressDialog(progressDialog);
+                public void onFailure(Call<String> call, Throwable t) {
                     Log.e("FAILURE", t.getMessage());
                     Log.e("FAILURE", t.toString());
+                    ProgressDialogManager.closeProgressDialog(progressDialog);
+                    //Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
                 }
             });
         } catch (Exception ex) {
@@ -365,13 +296,24 @@ public class FragmentUserProfileForDriverFromTransporter extends Fragment {
         }
     }
 
-    private User populateModal(){
-        mUser.setFirst_name(ed_fname.getText().toString());
-        mUser.setLast_name(ed_lname.getText().toString());
-        mUser.setEmail(ed_email.getText().toString());
-        mUser.setPhone_number(ed_number.getText().toString());
-        mUser.setCnic_number(ed_cnic.getText().toString());
-        return mUser;
+    private void populateUI() {
+        spinner = (Spinner) view.findViewById(R.id.add_driver_sp_vehicle_assign);
+        tv_first_name = (TextView) view.findViewById(R.id.add_driver_ed_fname);
+        tv_last_name = (TextView) view.findViewById(R.id.add_driver_ed_lname);
+        tv_email = (TextView) view.findViewById(R.id.add_driver_ed_email);
+        tv_phone_no = (TextView) view.findViewById(R.id.add_driver_ed_number);
+        tv_cnic = (TextView) view.findViewById(R.id.add_driver_ed_cnic);
+        profile_image = (CircleImageView) view.findViewById(R.id.add_driver_frag_image_view);
+
+        ed_fname = (EditText)view.findViewById(R.id.add_driver_ed_fname);
+        ed_lname = (EditText)view.findViewById(R.id.add_driver_ed_lname);
+        ed_email = (EditText)view.findViewById(R.id.add_driver_ed_email);
+        ed_number = (EditText)view.findViewById(R.id.add_driver_ed_number);
+        ed_cnic = (EditText)view.findViewById(R.id.add_driver_ed_cnic);
+
+        chk_assing_vehicle = (CheckBox)view.findViewById(R.id.chk_assing_vehicle);
+        rl_assign_vehicle = (RelativeLayout)view.findViewById(R.id.rl_6);
+        btn_add = (Button) view.findViewById(R.id.btn_fragment_add_driver);
     }
 
     private boolean checkValidity() {
@@ -437,6 +379,22 @@ public class FragmentUserProfileForDriverFromTransporter extends Fragment {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_GALLERY_CAPTURE);
     }
 
+    private User populateModal(){
+        mUser.setFirst_name(ed_fname.getText().toString());
+        mUser.setLast_name(ed_lname.getText().toString());
+        mUser.setEmail(ed_email.getText().toString());
+        mUser.setPhone_number(ed_number.getText().toString());
+        mUser.setCnic_number(ed_cnic.getText().toString());
+        mUser.setPassword(ed_fname.getText().toString());
+        mUser.setUser_type_id(2);
+        mUser.setStatus(2);
+        Date d = new Date();
+        CharSequence s  = DateFormat.format("yyyy-MM-dd", d.getTime());
+        Log.e("DateTime", s.toString());
+        mUser.setCreated_date(s.toString());
+        return mUser;
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_CAMERA_CAPTURE) {
@@ -481,5 +439,91 @@ public class FragmentUserProfileForDriverFromTransporter extends Fragment {
         String encImage = Base64.encodeToString(b, Base64.DEFAULT);
         Log.e("Encoded Image", encImage);
         return encImage;
+    }
+
+    private void showHideUI(boolean assign_vehicle) {
+        if (!assign_vehicle) {
+            if (rl_assign_vehicle.getVisibility() == View.VISIBLE) {
+                rl_assign_vehicle.setAlpha(1.0f);
+                // Start the animation
+                rl_assign_vehicle.animate()
+                        .translationY(rl_assign_vehicle.getHeight())
+                        .alpha(0.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                rl_assign_vehicle.setVisibility(View.GONE);
+                            }
+                        });
+            }
+        }
+        else{
+            if (rl_assign_vehicle.getVisibility() == View.GONE) {
+                rl_assign_vehicle.setAlpha(1.0f);
+                rl_assign_vehicle.setVisibility(View.VISIBLE);
+                // Start the animation
+                rl_assign_vehicle.animate()
+                        .translationY(0)
+                        .alpha(1.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                rl_assign_vehicle.setVisibility(View.VISIBLE);
+                            }
+                        });
+            }
+        }
+    }
+
+    private List<User> getVehicles(String transporter_id) {
+        final List<User> result_list = new ArrayList<>();
+        try {
+            OkHttpClient.Builder client = new OkHttpClient.Builder();
+            client.connectTimeout(30, TimeUnit.SECONDS);
+            client.readTimeout(30, TimeUnit.SECONDS);
+            client.writeTimeout(30, TimeUnit.SECONDS);
+
+            retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(IVehicleWrtDriver.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(client.build())
+                    .build();
+
+            IVehicleWrtDriver api = retrofit.create(IVehicleWrtDriver.class);
+
+            Log.e("Transporter Id", transporter_id);
+
+            Call<List<Vehicle>> call = api.get_transporter(transporter_id);
+
+            call.enqueue(new Callback<List<Vehicle>>() {
+                @Override
+                public void onResponse(Call<List<Vehicle>> call, Response<List<Vehicle>> response) {
+                    List<Vehicle> vehicles = response.body();
+                    //Log.e("VEHICLES NUMBER", Float.toString(vehicles.get(0).getVehicle_number()));
+                    if (vehicles != null && vehicles.size() > 0) {
+                        ArrayAdapter<Vehicle> vehicle_adapter = new ArrayAdapter<Vehicle>(getContext(), android.R.layout.simple_spinner_item, vehicles);
+                        vehicle_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                        spinner.setAdapter(vehicle_adapter);
+                    } else {
+                        Toast.makeText(getContext(), "No Vehicles found", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<Vehicle>> call, Throwable t) {
+                    Log.e("FAILURE", t.getMessage());
+                    Log.e("FAILURE", t.toString());
+                    //Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            });
+        } catch (Exception ex) {
+            Log.e("ERROR", ex.toString());
+        }
+        return result_list;
     }
 }

@@ -58,4 +58,9 @@ public class Vehicle {
     public void setDriver_name(String driver_name) {
         this.driver_name = driver_name;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(vehicle_number);
+    }
 }

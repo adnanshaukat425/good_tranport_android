@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -19,45 +19,59 @@
             android:id="@+id/rl_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:paddingLeft="20dp"
             android:paddingRight="20dp">
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/driver_frag_image_view"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_marginRight="20dp"
-                android:src="@drawable/default_profile_image"
-                app:civ_border_width="0.5sp"
-                app:civ_border_color="@color/colorPrimary" />
+            <RelativeLayout
+                android:id="@+id/profile_image_relative_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/driver_frag_image_view"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_marginRight="20dp"
+                    android:src="@drawable/default_profile_image"
+                    app:civ_border_color="@color/colorPrimary"
+                    app:civ_border_width="0.5sp" />
+
+                <ImageView
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_alignEnd="@id/driver_frag_image_view"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignRight="@id/driver_frag_image_view"
+                    android:src="@mipmap/ic_plus" />
+
+            </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/driver_frag_image_view">
+                android:layout_toRightOf="@+id/profile_image_relative_view">
 
                 <EditText
-                    android:enabled="false"
                     android:id="@+id/ed_fname"
-                    style="@style/edit_text_style"
+                    style="@style/edit_text_style_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="0dp"
+                    android:enabled="true"
                     android:hint="First Name"
-                    android:textColor="@color/colorPrimary"
-                    android:textStyle="bold" />
+                    android:textColor="@color/colorPrimary" />
 
                 <EditText
-                    android:enabled="false"
                     android:id="@+id/ed_lname"
-                    style="@style/edit_text_style"
+                    style="@style/edit_text_style_input"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/ed_fname"
                     android:layout_marginTop="0dp"
+                    android:enabled="true"
                     android:hint="Last Name"
-                    android:textColor="@color/colorPrimary"
-                    android:textStyle="bold" />
+                    android:textColor="@color/colorPrimary" />
 
             </RelativeLayout>
 
@@ -75,10 +89,9 @@
             <TextView
                 android:id="@+id/tv_email"
                 style="@style/edit_text_style"
-                android:layout_width="wrap_content"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:paddingRight="20dp"
                 android:text="Email:"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -88,7 +101,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@id/tv_email"
-                android:enabled="false"
+                android:enabled="true"
                 android:textColor="@color/colorPrimaryDark" />
 
         </RelativeLayout>
@@ -104,10 +117,9 @@
             <TextView
                 android:id="@+id/tv_number"
                 style="@style/edit_text_style"
-                android:layout_width="wrap_content"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:paddingRight="20dp"
                 android:text="Phone:"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -117,8 +129,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@id/tv_number"
-                android:enabled="false"
+                android:enabled="true"
                 android:inputType="phone"
+                android:maxLength="11"
                 android:textColor="@color/colorPrimaryDark" />
 
         </RelativeLayout>
@@ -134,10 +147,9 @@
             <TextView
                 android:id="@+id/tv_cnic"
                 style="@style/edit_text_style"
-                android:layout_width="wrap_content"
+                android:layout_width="70dp"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:paddingRight="20dp"
                 android:text="CNIC:"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -147,46 +159,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@id/tv_cnic"
-                android:enabled="false"
+                android:enabled="true"
                 android:inputType="phone"
+                android:maxLength="13"
                 android:textColor="@color/colorPrimaryDark" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/rl_5"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/rl_4"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp">
-
-            <TextView
-                android:id="@+id/tv_driver_since"
-                style="@style/edit_text_style"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:paddingRight="20dp"
-                android:text="Driver Since:"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/ed_driver_since"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/tv_driver_since"
-                android:enabled="false"
-                android:inputType="phone"
-                android:textColor="@color/colorPrimaryDark" />
-
         </RelativeLayout>
 
         <RelativeLayout
             android:id="@+id/rl_6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/rl_5"
+            android:layout_below="@+id/rl_4"
             android:paddingLeft="20dp"
             android:paddingRight="20dp">
 
@@ -205,6 +188,7 @@
                 android:id="@+id/sp_vehicle_assign"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
                 android:layout_toRightOf="@id/tv_vehicle_assign" />
         </RelativeLayout>
 
@@ -212,9 +196,7 @@
             android:id="@+id/rl_7"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/rl_6"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp">
+            android:layout_below="@+id/rl_6">
 
             <Button
                 android:id="@+id/btn_fragment_user_profile_update"
@@ -223,8 +205,9 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
                 android:background="@drawable/button_ripple_effect"
-                android:text="Update Vehicle"
+                android:text="Update Driver"
                 android:textColor="@color/white"
                 android:textStyle="bold" />
         </RelativeLayout>

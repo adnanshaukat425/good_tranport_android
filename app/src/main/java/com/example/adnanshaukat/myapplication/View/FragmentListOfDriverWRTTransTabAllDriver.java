@@ -46,6 +46,11 @@ public class FragmentListOfDriverWRTTransTabAllDriver extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_list_of_driver_wrt_trans_tab_all_driver, container, false);
 
+        User user = (User)getActivity().getIntent().getSerializableExtra("user");
+        Log.e(FragmentListOfDriverWRTTransTabAllDriver.this.toString(), user.getUser_id() + "");
+        mUser = getDrivers(Integer.toString(user.getUser_id()));
+        Log.e("M USER COUNT", Integer.toString(mUser.size()));
+
         return view;
     }
 
@@ -57,10 +62,6 @@ public class FragmentListOfDriverWRTTransTabAllDriver extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        User user = (User)getActivity().getIntent().getSerializableExtra("user");
-        Log.e(FragmentListOfDriverWRTTransTabAllDriver.this.toString(), user.getUser_id() + "");
-        mUser = getDrivers(Integer.toString(user.getUser_id()));
-        Log.e("M USER COUNT", Integer.toString(mUser.size()));
     }
 
     private List<User> getDrivers(final String transporter_id) {
@@ -68,9 +69,9 @@ public class FragmentListOfDriverWRTTransTabAllDriver extends Fragment {
         final List<User> result_list = new ArrayList<>();
         try {
             OkHttpClient.Builder client = new OkHttpClient.Builder();
-            client.connectTimeout(30, TimeUnit.SECONDS);
-            client.readTimeout(30, TimeUnit.SECONDS);
-            client.writeTimeout(30, TimeUnit.SECONDS);
+            client.connectTimeout(60, TimeUnit.SECONDS);
+            client.readTimeout(60, TimeUnit.SECONDS);
+            client.writeTimeout(60, TimeUnit.SECONDS);
 
             retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
                     .baseUrl(IDriver.BASE_URL)

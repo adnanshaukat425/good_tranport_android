@@ -45,6 +45,9 @@ public class FragmentListOfDriverWRTTransTabActiveDriver extends Fragment{
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_list_of_driver_wrt_trans_tab_active_driver, container, false);
 
+        user = (User)getActivity().getIntent().getSerializableExtra("user");
+        Log.e(FragmentListOfDriverWRTTransTabActiveDriver.this.toString(), user.getUser_id() + "");
+        getDrivers(Integer.toString(user.getUser_id()));
 
 //        fragment_list_of_active_driver_trans_refresher = (SwipeRefreshLayout)view.findViewById(R.id.fragment_list_of_active_driver_trans_refresher);
 //        fragment_list_of_active_driver_trans_refresher.setHorizontalScrollBarEnabled(true);
@@ -61,9 +64,6 @@ public class FragmentListOfDriverWRTTransTabActiveDriver extends Fragment{
     @Override
     public void onResume() {
         super.onResume();
-        user = (User)getActivity().getIntent().getSerializableExtra("user");
-        Log.e(FragmentListOfDriverWRTTransTabActiveDriver.this.toString(), user.getUser_id() + "");
-        getDrivers(Integer.toString(user.getUser_id()));
     }
 
     private List<User> getDrivers(final String transporter_id) {
