@@ -55,8 +55,8 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
 
         View view = navigationView.inflateHeaderView(R.layout.nav_header_main);
         ImageView profile_image =  (ImageView)view.findViewById(R.id.drawer_profile_image);
-        TextView transporter_name = (TextView)view.findViewById(R.id.drawer_t_name);
-        TextView transporter_email = (TextView)view.findViewById(R.id.drawer_t_email);
+        TextView transporter_name = (TextView)view.findViewById(R.id.drawer_name);
+        TextView transporter_email = (TextView)view.findViewById(R.id.drawer_email);
 
         transporter_name.setText(user.getFirst_name() + " " + user.getLast_name());
         transporter_email.setText(user.getEmail());

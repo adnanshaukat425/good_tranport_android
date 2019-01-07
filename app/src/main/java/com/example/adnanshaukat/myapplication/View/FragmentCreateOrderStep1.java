@@ -3,6 +3,8 @@ package com.example.adnanshaukat.myapplication.View;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
@@ -140,11 +142,37 @@ public class FragmentCreateOrderStep1 extends Fragment {
 
                 MainActivityCustomer activity = (MainActivityCustomer)getContext();
 
-                activity.getSupportFragmentManager().beginTransaction().
-                        setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.fade_in, R.anim.fade_out).
-                        replace(R.id.main_content_frame_customer_container, step_2).
-                        addToBackStack(null).
-                        commit();
+                if (containerType.getContainer_type_id() == 1 && cargoVolume != 0){
+                    if (((Location) spinSource.getSelectedItem()).location_id != 0){
+                        activity.getSupportFragmentManager().beginTransaction().
+                                setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.fade_in, R.anim.fade_out).
+                                replace(R.id.main_content_frame_customer_container, step_2).
+                                addToBackStack(null).
+                                commit();
+                    }
+                    else{
+                        Toast.makeText(activity, "Please Select Source", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else if(containerType.getContainer_type_id() == 1 && cargoVolume == 0){
+                    Drawable errorIcon = getResources().getDrawable(R.drawable.ic_error);
+                    errorIcon.setBounds(new Rect(0, 0, errorIcon.getIntrinsicWidth(), errorIcon.getIntrinsicHeight()));
+
+                    etCargoVolume.setError("Please Enter Volume", errorIcon);
+                    Toast.makeText(activity, "Please Enter Volume", Toast.LENGTH_SHORT).show();
+                }
+                else if(containerType.getContainer_type_id() == 2){
+                    if (((Location) spinSource.getSelectedItem()).location_id != 0){
+                        activity.getSupportFragmentManager().beginTransaction().
+                                setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.fade_in, R.anim.fade_out).
+                                replace(R.id.main_content_frame_customer_container, step_2).
+                                addToBackStack(null).
+                                commit();
+                    }
+                    else{
+                        Toast.makeText(activity, "Please Select Source", Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
         });
 

@@ -53,17 +53,35 @@ public class DriverRecyclerViewAdapter extends RecyclerView.Adapter<DriverRecycl
             Log.e("USER Name", mUsers.get(position).getFirst_name());
 
             String encodedImage = mUsers.get(position).getProfile_picture();
-            Log.e("ENCODED IMAGE FROM RECY", encodedImage + "D");
-            if (encodedImage == null || encodedImage.isEmpty()) {
-                holder.profile_image.setImageResource(R.drawable.default_profile_image);
-            } else {
-                byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
-                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                if (decodedByte == null){
-                    holder.profile_image.setImageResource(R.drawable.default_profile_image);
+//            Log.e("ENCODED IMAGE FROM RECY", encodedImage + "D");
+
+            try{
+                if (encodedImage == null || encodedImage.isEmpty()) {
+                    holder.profile_image.setImageResource(R.drawable.default_profile_image_2);
+                } else {
+                    byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
+                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                    if (decodedString.length == 0 || decodedByte == null){
+                        holder.profile_image.setImageResource(R.drawable.default_profile_image_2);
+                    }
+                    else{
+                        holder.profile_image.setImageBitmap(decodedByte);
+                    }
                 }
-                holder.profile_image.setImageBitmap(decodedByte);
             }
+            catch(Exception ex){
+                holder.profile_image.setImageResource(R.drawable.default_profile_image_2);
+            }
+//            if (encodedImage == null || encodedImage.isEmpty()) {
+//                holder.profile_image.setImageResource(R.drawable.default_profile_image);
+//            } else {
+//                byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
+//                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+//                if (decodedByte == null){
+//                    holder.profile_image.setImageResource(R.drawable.default_profile_image);
+//                }
+//                holder.profile_image.setImageBitmap(decodedByte);
+//            }
 
             if(mUsers.get(position).getStatus() == mStatus) {
                 if (mUsers.get(position).getStatus() == 1) {
@@ -79,7 +97,7 @@ public class DriverRecyclerViewAdapter extends RecyclerView.Adapter<DriverRecycl
         }
         else{
             String encodedImage = mUsers.get(position).getProfile_picture();
-            Log.e("ENCODED IMAGE FROM RECY", encodedImage);
+//            Log.e("ENCODED IMAGE FROM RECY", encodedImage);
             if (encodedImage == null || encodedImage.isEmpty()) {
                 holder.profile_image.setImageResource(R.drawable.default_profile_image);
             } else {

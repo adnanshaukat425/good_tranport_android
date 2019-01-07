@@ -1,5 +1,7 @@
 package com.example.adnanshaukat.myapplication.View;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,8 +23,11 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -70,6 +75,8 @@ public class FragmentUserProfileForDriverFromTransporter extends Fragment {
     Spinner spinner;
     TextView tv_first_name, tv_last_name, tv_email, tv_phone_no, tv_cnic;
     EditText ed_fname, ed_lname, ed_email, ed_number, ed_cnic;
+    CheckBox chk_assing_vehicle_profile;
+    RelativeLayout rl_assign_vehicle;
 
     static final int REQUEST_CAMERA_CAPTURE = 1;
     static final int REQUEST_GALLERY_CAPTURE = 2;
@@ -77,20 +84,27 @@ public class FragmentUserProfileForDriverFromTransporter extends Fragment {
     Button btn_update;
 
     ProgressDialog progressDialog;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_user_profile_for_driver_from_transporter, container, false);
         populateUI();
+        chk_assing_vehicle_profile.setChecked(true);
         //getVehicleFromSpinner();
         btn_update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int position = spinner.getSelectedItemPosition();
-                int id = vehicles_id[position];
+                int id = 0;
+                if(chk_assing_vehicle_profile.isChecked()){
+                    int position = spinner.getSelectedItemPosition();
+                    id = vehicles_id[position];
+                }
+
                 //Toast.makeText(getContext(), id + "", Toast.LENGTH_SHORT).show();
                 if(checkValidity()){
                     progressDialog = ProgressDialogManager.showProgressDialogWithTitle(getContext(), "Loading", "Please wait...");
+
                     UpdateDriversVehicle(mUser.getUser_id() + "", id + "");
                     UpdateUser(populateModal());
                 }
@@ -101,7 +115,6 @@ public class FragmentUserProfileForDriverFromTransporter extends Fragment {
             @Override
             public void onClick(View v) {
                 String[] colors = {"Capture Image", "Upload From Gallery"};
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle("Chose Image");
                 builder.setItems(colors, new DialogInterface.OnClickListener() {
@@ -118,6 +131,13 @@ public class FragmentUserProfileForDriverFromTransporter extends Fragment {
                     }
                 });
                 builder.show();
+            }
+        });
+
+        chk_assing_vehicle_profile.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                showHideUI(isChecked);
             }
         });
 
@@ -185,6 +205,9 @@ public class FragmentUserProfileForDriverFromTransporter extends Fragment {
         ed_email = (EditText)view.findViewById(R.id.ed_email);
         ed_number = (EditText)view.findViewById(R.id.ed_number);
         ed_cnic = (EditText)view.findViewById(R.id.ed_cnic);
+
+        rl_assign_vehicle = (RelativeLayout)view.findViewById(R.id.rl_6);
+        chk_assing_vehicle_profile = (CheckBox)view.findViewById(R.id.chk_assing_vehicle_profile);
 
         btn_update = (Button) view.findViewById(R.id.btn_fragment_user_profile_update);
     }
@@ -303,7 +326,7 @@ public class FragmentUserProfileForDriverFromTransporter extends Fragment {
                 @Override
                 public void onResponse(Call<String> call, Response<String> response) {
                     String result = response.body();
-                    //Toast.makeText(getContext(), result + "", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), result + "", Toast.LENGTH_SHORT).show();
                     ProgressDialogManager.closeProgressDialog(progressDialog);
                     //Toast.makeText(getContext(), "Update Successfully", Toast.LENGTH_SHORT).show();
                 }
@@ -481,5 +504,43 @@ public class FragmentUserProfileForDriverFromTransporter extends Fragment {
         String encImage = Base64.encodeToString(b, Base64.DEFAULT);
         Log.e("Encoded Image", encImage);
         return encImage;
+    }
+
+    private void showHideUI(boolean assign_vehicle) {
+        if (!assign_vehicle) {
+            if (rl_assign_vehicle.getVisibility() == View.VISIBLE) {
+                rl_assign_vehicle.setAlpha(1.0f);
+                // Start the animation
+                rl_assign_vehicle.animate()
+                        .translationY(rl_assign_vehicle.getHeight())
+                        .alpha(0.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                rl_assign_vehicle.setVisibility(View.GONE);
+                            }
+                        });
+            }
+        }
+        else{
+            if (rl_assign_vehicle.getVisibility() == View.GONE) {
+                rl_assign_vehicle.setAlpha(1.0f);
+                rl_assign_vehicle.setVisibility(View.VISIBLE);
+                // Start the animation
+                rl_assign_vehicle.animate()
+                        .translationY(0)
+                        .alpha(1.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                rl_assign_vehicle.setVisibility(View.VISIBLE);
+                            }
+                        });
+            }
+        }
     }
 }

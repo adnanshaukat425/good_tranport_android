@@ -171,13 +171,21 @@ public class FragmentAddDriverWETTransporter extends Fragment {
                     User user = response.body();
                     Log.e("RESPONSE", response.toString());
                     int user_id = user.getUser_id();
-                    if (user_id != 0) {
+                    if(user_id == -2){
+                        Drawable errorIcon = getResources().getDrawable(R.drawable.ic_error);
+                        errorIcon.setBounds(new Rect(0, 0, errorIcon.getIntrinsicWidth(), errorIcon.getIntrinsicHeight()));
+                        Toast.makeText(getContext(), "Email Already Exist Please Try Another", Toast.LENGTH_LONG).show();
+                        ed_email.setError("Email Already Exist", errorIcon);
+                    }
+                    else if (user_id != 0) {
                         if(chk_assing_vehicle.isChecked()){
                             Toast.makeText(getContext(), "Added Successfully", Toast.LENGTH_SHORT);
-                            UpdateDriversVehicle(user.getUser_id() + "", chk_assing_vehicle + "");
+                            Vehicle v = (Vehicle) spinner.getSelectedItem();
+                            UpdateDriversVehicle(user.getUser_id() + "",  + v.getVehicle_id() + "");
                         }
                         else{
                             ProgressDialogManager.closeProgressDialog(progressDialog);
+                            UpdateDriversVehicle(user.getUser_id() + "", "0");
                             Toast.makeText(getContext(), "Driver Added Successfully", Toast.LENGTH_SHORT).show();
                         }
                         AddDriverToTransporter(user.getUser_id() + "", transporter_id + "");
@@ -331,8 +339,8 @@ public class FragmentAddDriverWETTransporter extends Fragment {
             return false;
         }
         else if (TextUtils.isEmpty(ed_email.getText().toString())) {
-            ed_number.setError("Email Required !", errorIcon);
-            ed_number.requestFocus();
+            ed_email.setError("Email Required !", errorIcon);
+            ed_email.requestFocus();
             return false;
         }
         else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(ed_email.getText().toString()).matches()) {

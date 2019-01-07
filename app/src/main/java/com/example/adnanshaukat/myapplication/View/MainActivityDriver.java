@@ -1,16 +1,25 @@
 package com.example.adnanshaukat.myapplication.View;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.icu.util.ULocale;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.PersistableBundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
@@ -19,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.adnanshaukat.myapplication.GlobalClasses.LocationController;
@@ -38,19 +48,20 @@ public class MainActivityDriver extends AppCompatActivity
     String latitude;
     String longitude;
 
+    private static final int REQUEST_LOCATION = 1;
+
+    LocationManager locationManager;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_main);
-        this.setTitle("Driver");
+        this.setTitle("Dashboard");
 
         Intent i = getIntent();
         user = (User)i.getSerializableExtra("user");
-        latitude = i.getExtras().get("latitude").toString();
-        longitude = i.getExtras().get("longitude").toString();
+//        latitude = i.getExtras().get("latitude").toString();
+//        longitude = i.getExtras().get("longitude").toString();
 
-        LocationController controller = new LocationController();
-        controller.update_lat_long(getApplicationContext(), user.getUser_id(), latitude, longitude);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.driver_toolbar);
         setSupportActionBar(toolbar);
@@ -66,6 +77,12 @@ public class MainActivityDriver extends AppCompatActivity
 
         View view = navigationView.inflateHeaderView(R.layout.nav_header_main);
         ImageView profile_image =  (ImageView)view.findViewById(R.id.drawer_profile_image);
+
+        TextView driver_name = (TextView)view.findViewById(R.id.drawer_name);
+        TextView driver_email = (TextView)view.findViewById(R.id.drawer_email);
+
+        driver_name.setText(user.getFirst_name() + " " + user.getLast_name());
+        driver_email.setText(user.getEmail());
 
         Menu menu = navigationView.getMenu();
 
@@ -87,22 +104,26 @@ public class MainActivityDriver extends AppCompatActivity
 
         txt_id.setTitle("Driver ID: " + user_id);
 
-//        try{
-//            String encodedImage = user.getProfile_picture();
-//            if (encodedImage.isEmpty()) {
-//                profile_image.setImageResource(R.drawable.default_profile_image_2);
-//            } else {
-//                byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
-//                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-//
-//                profile_image.setImageBitmap(decodedByte);
-//            }
-//        }
-//        catch (Exception ex){
-//            profile_image.setImageResource(R.drawable.default_profile_image_2);
-//        }
-        Log.e("Driver Latitude", latitude);
-        Log.e("Driver Longitude", longitude);
+        String encodedImage = user.getProfile_picture();
+        try{
+            if (encodedImage.isEmpty()) {
+                profile_image.setImageResource(R.drawable.default_profile_image_2);
+            } else {
+                byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                if (decodedString.length == 0 || decodedByte == null){
+                    profile_image.setImageResource(R.drawable.default_profile_image_2);
+                }
+                else{
+                    profile_image.setImageBitmap(decodedByte);
+                }
+            }
+        }
+        catch(Exception ex){
+            profile_image.setImageResource(R.drawable.default_profile_image_2);
+        }
+        Log.e("Driver Latitude", latitude + "");
+        Log.e("Driver Longitude", longitude + "");
 
         getSupportFragmentManager().beginTransaction().replace(R.id.main_content_frame_driver_container, new FragmentMainDriver()).commit();
     }
@@ -116,7 +137,7 @@ public class MainActivityDriver extends AppCompatActivity
             int fragments = getSupportFragmentManager().getBackStackEntryCount();
             Log.e("Fragment Count",Integer.toString(fragments));
             if (fragments == 0) {
-                this.setTitle("Driver");
+                this.setTitle("Dashboard");
                 //finish();
             } else {
                 if (getSupportFragmentManager().getBackStackEntryCount() >= 1) {
@@ -151,10 +172,20 @@ public class MainActivityDriver extends AppCompatActivity
 
         }
         if(id == R.id.nav_d_view_current_location){
-            Intent intent = new Intent(MainActivityDriver.this, MapsActivity.class);
-            intent.putExtra("latitude", latitude);
-            intent.putExtra("longitude", longitude);
-            startActivity(intent);
+
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                buildAlertMessageNoGps();
+            } else if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                getLocation();
+                LocationController controller = new LocationController();
+                controller.update_lat_long(getApplicationContext(), user.getUser_id(), latitude, longitude);
+
+                Intent intent = new Intent(MainActivityDriver.this, MapsActivity.class);
+                intent.putExtra("latitude", latitude + "");
+                intent.putExtra("longitude", longitude + "");
+                startActivity(intent);
+            }
         }
         if(id == R.id.nav_d_logout){
             if(logout()){
@@ -189,5 +220,65 @@ public class MainActivityDriver extends AppCompatActivity
         User user = new User();
         user.setUser_id(user_id);
         return sqLiteDBUsersHandler.update_logged_in_status(0, user);
+    }
+        private boolean getLocation() {
+        if (ActivityCompat.checkSelfPermission(MainActivityDriver.this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission
+                (MainActivityDriver.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(MainActivityDriver.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+            return false;
+        } else {
+            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+            Location location1 = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+            Location location2 = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+
+            if (location != null) {
+                double latti = location.getLatitude();
+                double longi = location.getLongitude();
+                latitude = String.valueOf(latti);
+                longitude = String.valueOf(longi);
+
+            } else if (location1 != null) {
+                double latti = location1.getLatitude();
+                double longi = location1.getLongitude();
+                latitude = String.valueOf(latti);
+                longitude = String.valueOf(longi);
+
+            } else if (location2 != null) {
+                double latti = location2.getLatitude();
+                double longi = location2.getLongitude();
+                latitude = String.valueOf(latti);
+                longitude = String.valueOf(longi);
+
+            } else {
+                Toast.makeText(MainActivityDriver.this,"Unable to Trace your location",Toast.LENGTH_SHORT).show();
+                buildAlertMessageNoGps();
+                return false;
+            }
+            Log.e("Driver Latitude", latitude + "");
+            Log.e("Driver Longitude", longitude + "");
+            return true;
+        }
+    }
+
+    protected void buildAlertMessageNoGps() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Please Turn ON your mobile Location")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(final DialogInterface dialog, final int id) {
+                        dialog.cancel();
+                    }
+                });
+        final AlertDialog alert = builder.create();
+        alert.show();
     }
 }

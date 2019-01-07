@@ -95,6 +95,7 @@
                         style="@style/edit_text_style"
                         android:inputType="number"
                         android:hint="CNIC"
+                        android:maxLength="13"
                         android:nextFocusForward="@+id/txt_signup_password"
                         android:maxLines="1"/>
 
@@ -126,7 +127,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
                         style="@style/edit_text_style"
-                        android:inputType="phone"
+                        android:inputType="number"
+                        android:maxLength="11"
                         android:hint="Phone Number"
                         android:maxLines="1"/>
 

@@ -52,7 +52,6 @@ public class LoginActivity extends AppCompatActivity {
     ProgressDialog progressDialog;
     TextView tv_login_forgot_password;
 
-    private static final int REQUEST_LOCATION = 1;
     LocationManager locationManager;
     private long backPressedTime;
     private Toast backToast;
@@ -124,46 +123,48 @@ public class LoginActivity extends AppCompatActivity {
                         int user_type_id = user.getUser_type_id();
                         String message = "";
                         Log.e("USER ID FROM LOGIN", user_id + "");
+                        Log.e("USER TYPE FROM LOGIN", user_type_id + "");
                         if (user_id != 0) {
 //                            if (storeCredentialsToSQLite(user)) {
                                 ((MyApplication) LoginActivity.this.getApplication()).set_user_id(user_id);
-                                if (!from_system && storeCredentialsToSQLite(user)) {
-                                    //Toast.makeText(LoginActivity.this, "Welcome " + user.getFirst_name().toString(), Toast.LENGTH_LONG).show();
-                                    Log.e("USER TYPE ID", user_type_id + "");
-                                }
-                                if (user_type_id == 1 && storeCredentialsToSQLite(user)) {
-                                    //Toast.makeText(LoginActivity.this, "Welcome Customer", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(LoginActivity.this, MainActivityCustomer.class);
-                                    intent.putExtra("user", user);
-                                    startActivity(intent);
-                                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                                }
-                                else if (user_type_id == 3 && storeCredentialsToSQLite(user)) {
-                                    //Toast.makeText(LoginActivity.this, "Welcome Transporter", Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(LoginActivity.this, MainActivityTransporter.class);
-                                    intent.putExtra("user", user);
-                                    startActivity(intent);
-                                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                                }
-                                else if (user_type_id == 2 && storeCredentialsToSQLite(user)) {
-                                    locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                                    if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                                        buildAlertMessageNoGps();
-                                    } else if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-                                        if(storeCredentialsToSQLite(user) && getLocation()){
-                                            //Toast.makeText(LoginActivity.this, "Welcome Driver", Toast.LENGTH_SHORT).show();
-                                            Intent intent = new Intent(LoginActivity.this, MainActivityDriver.class);
-                                            intent.putExtra("user", user);
-                                            intent.putExtra("latitude", latitude);
-                                            intent.putExtra("longitude", longitude);
-                                            startActivity(intent);
-                                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                                        }
+                                if (!from_system) {
+                                    if (storeCredentialsToSQLite(user)){
+                                        //Toast.makeText(LoginActivity.this, "Welcome " + user.getFirst_name().toString(), Toast.LENGTH_LONG).show();
+                                        Log.e("USER TYPE ID", user_type_id + "");
                                     }
                                 }
-//                            } else {
-//                                message = "Username or password is not correct";
-//                            }
+                                if (user_type_id == 1) {
+
+                                    if (storeCredentialsToSQLite(user)){
+                                        //Toast.makeText(LoginActivity.this, "Welcome Customer", Toast.LENGTH_SHORT).show();
+                                        Intent intent = new Intent(LoginActivity.this, MainActivityCustomer.class);
+                                        intent.putExtra("user", user);
+                                        startActivity(intent);
+                                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                                    }
+                                }
+                                else if (user_type_id == 3) {
+                                    //Toast.makeText(LoginActivity.this, "Welcome Transporter", Toast.LENGTH_SHORT).show();
+                                    if (storeCredentialsToSQLite(user)){
+                                        Intent intent = new Intent(LoginActivity.this, MainActivityTransporter.class);
+                                        intent.putExtra("user", user);
+                                        startActivity(intent);
+                                        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                                    }
+                                }
+                                else if (user_type_id == 2) {
+                                    //boolean te = storeCredentialsToSQLite(user);
+                                    //Log.e("TE", te + "");
+                                    Log.e("DRIVEER", "D");
+                                    Intent intent = new Intent(LoginActivity.this, MainActivityDriver.class);
+                                    intent.putExtra("user", user);
+//                                    intent.putExtra("latitude", latitude);
+//                                    intent.putExtra("longitude", longitude);
+                                    startActivity(intent);
+                                    overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                                }else {
+                                    Log.e("Username or not correct", "");
+                                }
                         } else {
                             populateLoginActivity();
                             message = "Username or Password is not correct";
@@ -209,73 +210,9 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private boolean getLocation() {
-        if (ActivityCompat.checkSelfPermission(LoginActivity.this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission
-                (LoginActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(LoginActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
-            return false;
-        } else {
-            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
-            Location location1 = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-            Location location2 = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
-
-            if (location != null) {
-                double latti = location.getLatitude();
-                double longi = location.getLongitude();
-                latitude = String.valueOf(latti);
-                longitude = String.valueOf(longi);
-
-            } else if (location1 != null) {
-                double latti = location1.getLatitude();
-                double longi = location1.getLongitude();
-                latitude = String.valueOf(latti);
-                longitude = String.valueOf(longi);
-
-            } else if (location2 != null) {
-                double latti = location2.getLatitude();
-                double longi = location2.getLongitude();
-                latitude = String.valueOf(latti);
-                longitude = String.valueOf(longi);
-
-            } else {
-                Toast.makeText(LoginActivity.this,"Unable to Trace your location",Toast.LENGTH_SHORT).show();
-                buildAlertMessageNoGps();
-                return false;
-            }
-            Log.e("Driver Latitude", latitude);
-            Log.e("Driver Longitude", longitude);
-            return true;
-        }
-    }
-
-    protected void buildAlertMessageNoGps() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Please Turn ON your mobile Location")
-                .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int id) {
-                        startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(final DialogInterface dialog, final int id) {
-
-                        dialog.cancel();
-                    }
-                });
-        final AlertDialog alert = builder.create();
-        alert.show();
-    }
-
     private void populateLoginActivity(){
         setContentView(R.layout.login);
-
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
 
         populateUI();
 
@@ -324,6 +261,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(LoginActivity.this, FragmentUserProfile.class);
+                intent.putExtra("from_transporter", false);
                 startActivity(intent);
             }
         });

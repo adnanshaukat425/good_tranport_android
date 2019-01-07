@@ -30,7 +30,7 @@
         </activity>
         <activity
             android:name=".View.LoginActivity"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"></activity>
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
         <activity
             android:name=".View.SignUpActivity"
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
@@ -74,7 +74,8 @@
 
         <activity
             android:name=".View.MapsActivity"
-            android:label="@string/title_activity_maps"></activity>
+            android:label="@string/title_activity_maps" />
+        <activity android:name=".View.NewDriverActivityTest"></activity>
     </application>
 
 </manifest>

@@ -20,6 +20,9 @@ public interface ISignUp {
     @POST("get_signup")
     Call<User> get_signup(@Body User user);
 
+    @POST("check_if_email_already_present")
+    Call<User> check_if_email_already_present(@Body User user);
+
     @GET("add_driver_to_transporter")
     Call<String> add_driver_to_transporter(@Query("driver_id") String driver_id, @Query("transporter_id") String transporter_id);
 }

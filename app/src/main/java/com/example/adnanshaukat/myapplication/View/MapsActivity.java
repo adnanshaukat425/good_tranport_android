@@ -70,7 +70,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         LatLng Loc = new LatLng(Lat,Lng);
         mMap.addMarker(new MarkerOptions().position(Loc).title("Driver Location"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(Loc,17.0f));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Loc,15.0f));
 
     }
 

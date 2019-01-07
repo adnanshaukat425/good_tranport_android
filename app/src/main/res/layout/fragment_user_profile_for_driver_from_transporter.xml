@@ -166,10 +166,30 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rl_5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/rl_4"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp">
+
+            <CheckBox
+                android:id="@+id/chk_assing_vehicle_profile"
+                style="@style/edit_text_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:text="Assign Vehicle"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
             android:id="@+id/rl_6"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/rl_4"
+            android:layout_below="@+id/rl_5"
             android:paddingLeft="20dp"
             android:paddingRight="20dp">
 

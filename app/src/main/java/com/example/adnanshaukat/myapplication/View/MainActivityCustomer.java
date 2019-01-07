@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.adnanshaukat.myapplication.GlobalClasses.MyApplication;
@@ -51,14 +52,29 @@ public class MainActivityCustomer extends AppCompatActivity
         View view = navigationView.inflateHeaderView(R.layout.nav_header_main);
         ImageView profile_image =  (ImageView)view.findViewById(R.id.drawer_profile_image);
 
-        String encodedImage = user.getProfile_picture();
-        if (encodedImage.isEmpty()) {
-            profile_image.setImageResource(R.drawable.default_profile_image_2);
-        } else {
-            byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
-            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        TextView customer_name = (TextView)view.findViewById(R.id.drawer_name);
+        TextView customer_email = (TextView)view.findViewById(R.id.drawer_email);
 
-            profile_image.setImageBitmap(decodedByte);
+        customer_name.setText(user.getFirst_name() + " " + user.getLast_name());
+        customer_email.setText(user.getEmail());
+
+        String encodedImage = user.getProfile_picture();
+        try{
+            if (encodedImage.isEmpty()) {
+                profile_image.setImageResource(R.drawable.default_profile_image_2);
+            } else {
+                byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
+                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                if (decodedString.length == 0 || decodedByte == null){
+                    profile_image.setImageResource(R.drawable.default_profile_image_2);
+                }
+                else{
+                    profile_image.setImageBitmap(decodedByte);
+                }
+            }
+        }
+        catch(Exception ex){
+            profile_image.setImageResource(R.drawable.default_profile_image_2);
         }
 
         profile_image.setOnClickListener(new View.OnClickListener() {
@@ -101,9 +117,10 @@ public class MainActivityCustomer extends AppCompatActivity
             int fragments = getSupportFragmentManager().getBackStackEntryCount();
             Log.e("Fragment Count",Integer.toString(fragments));
             if (fragments == 0) {
-                //finish();
+                this.setTitle("Dashboard");
+                getSupportFragmentManager().beginTransaction().replace(R.id.main_content_frame_customer_container, new FragmentMainCustomer()).commit();
             } else {
-                if (getSupportFragmentManager().getBackStackEntryCount() >= 1) {
+                if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
                     getSupportFragmentManager().popBackStackImmediate();
                 }
             }
@@ -129,6 +146,15 @@ public class MainActivityCustomer extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
+
+        int fragments = getSupportFragmentManager().getBackStackEntryCount();
+        if (getSupportFragmentManager().getBackStackEntryCount() >= 1) {
+            for (int i = 0; i < fragments; i++){
+                getSupportFragmentManager().popBackStackImmediate();
+            }
+        }
+
+        Log.e("Fragments Count",String.valueOf(getSupportFragmentManager().getBackStackEntryCount()));
 
         if (id == R.id.nav_c_place_order) {
             getSupportFragmentManager().beginTransaction().

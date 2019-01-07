@@ -135,6 +135,9 @@ public class FragmentCreateOrderStep2 extends Fragment {
     public void onResume() {
         super.onResume();
         populateUI();
+
+        chkLabourReq.setChecked(true);
+
         ArrayAdapter<PaymentType> payment_adapter = new ArrayAdapter<PaymentType>(getContext(), android.R.layout.simple_spinner_item, paymentTypes);
         payment_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
@@ -175,7 +178,7 @@ public class FragmentCreateOrderStep2 extends Fragment {
         chkLabourReq.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                showHideUI(isChecked);
+                //showHideUI(isChecked);
             }
         });
 

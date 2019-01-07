@@ -113,7 +113,7 @@ public class FragmentListOfDriverWRTTransTabActiveDriver extends Fragment{
                 public void onFailure(Call<List<User>> call, Throwable t) {
                     Log.e("FAILURE", t.getMessage());
                     Log.e("FAILURE", t.toString());
-                    Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), t.getMessage() + "", Toast.LENGTH_LONG).show();
                     ProgressDialogManager.closeProgressDialog(progressDialog);
                 }
             });
