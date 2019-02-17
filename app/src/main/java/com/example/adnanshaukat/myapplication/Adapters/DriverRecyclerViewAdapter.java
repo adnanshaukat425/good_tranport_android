@@ -13,12 +13,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
-import com.example.adnanshaukat.myapplication.View.FragmentUserProfileForDriverFromTransporter;
-import com.example.adnanshaukat.myapplication.View.MainActivityTransporter;
+import com.example.adnanshaukat.myapplication.View.Transporter.FragmentUserProfileForDriverFromTransporter;
+import com.example.adnanshaukat.myapplication.View.Transporter.MainActivityTransporter;
 
 import java.util.List;
 

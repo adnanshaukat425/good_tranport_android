@@ -1,20 +1,16 @@
 package com.example.adnanshaukat.myapplication.Adapters;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.Modals.Vehicle;
 import com.example.adnanshaukat.myapplication.R;
-import com.example.adnanshaukat.myapplication.View.MainActivityTransporter;
+import com.example.adnanshaukat.myapplication.View.Transporter.MainActivityTransporter;
 
 import java.util.List;
 
@@ -41,7 +37,7 @@ public class VehiclesRecyclerViewAdapter extends RecyclerView.Adapter<VehiclesRe
 
     @Override
     public void onBindViewHolder(VehiclesRecyclerViewAdapter.MyViewHolder holder, int position) {
-        holder.tv_vehicle_number.setText(Integer.toString(mVehicles.get(position).getVehicle_number()));
+        holder.tv_vehicle_number.setText(mVehicles.get(position).getVehicle_number());
         holder.tv_vehicle_type.setText(mVehicles.get(position).getVehicle_type());
         if(mVehicles.get(position).getDriver_id() != 0){
             holder.tv_driver_name.setText(mVehicles.get(position).getDriver_name());

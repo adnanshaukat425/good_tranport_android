@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/til_vehicle_number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:hint="Vehicle Number"
+            android:textColorHint="@color/colorPrimary">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/add_vehicle_et_vehicle_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:textColorHint="@color/colorPrimary" />
+        </android.support.design.widget.TextInputLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/til_vehicle_number">
+
+            <TextView
+                android:id="@+id/tv_container_type"
+                style="@style/edit_text_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:text="Container Type:"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/add_vehicle_spin_container_type"
+                style="@style/edit_text_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_toRightOf="@id/tv_container_type"
+                android:spinnerMode="dropdown" />
+
+            <TextView
+                android:id="@+id/tv_container_size"
+                style="@style/edit_text_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tv_container_type"
+                android:text="Container Size:"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/add_vehicle_spin_container_size"
+                style="@style/edit_text_style"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_below="@id/tv_container_type"
+                android:layout_columnWeight="2"
+                android:layout_rowWeight="2"
+                android:layout_toRightOf="@id/tv_container_size"
+                android:spinnerMode="dropdown" />
+
+        </RelativeLayout>
+
+        <FrameLayout
+            android:id="@+id/btn_add_vehicle"
+            style="?android:attr/buttonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_ripple_effect"
+            android:clickable="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:clickable="true"
+                android:drawableEnd="@drawable/ic_next_arrow"
+                android:drawableRight="@drawable/ic_next_arrow"
+                android:gravity="center"
+                android:text="Next"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+    </RelativeLayout>
+</ScrollView>

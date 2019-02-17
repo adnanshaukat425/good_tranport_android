@@ -16,11 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.adnanshaukat.myapplication.Modals.DriverDetailsWrtOrder;
-import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
-import com.example.adnanshaukat.myapplication.View.FragmentUserProfileForDriverFromTransporter;
-import com.example.adnanshaukat.myapplication.View.MainActivityCustomer;
-import com.example.adnanshaukat.myapplication.View.MainActivityTransporter;
+import com.example.adnanshaukat.myapplication.View.Customer.MainActivityCustomer;
 
 import java.util.List;
 

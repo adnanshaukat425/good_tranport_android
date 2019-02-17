@@ -21,6 +21,7 @@ import com.example.adnanshaukat.myapplication.Modals.SQLiteDBUsersHandler;
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.ISignUp;
+import com.example.adnanshaukat.myapplication.View.Customer.MainActivityCustomer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

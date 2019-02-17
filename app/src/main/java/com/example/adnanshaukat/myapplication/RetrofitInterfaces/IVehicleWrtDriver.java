@@ -19,6 +19,6 @@ public interface IVehicleWrtDriver {
 
     public String BASE_URL = "http://" + RetrofitManager.ip + "/" + RetrofitManager.domain + "/api/vehicle/";
 
-    @GET("get_vehicle_wrt_transporter")
-    Call<List<Vehicle>> get_transporter(@Query("transporter_id") String transporter_id);
+    @GET("get_unassigned_vehicle_wrt_transporter")
+    Call<List<Vehicle>> get_unassigned_vehicle_wrt_transporter(@Query("transporter_id") String transporter_id);
 }

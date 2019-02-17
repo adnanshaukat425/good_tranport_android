@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.example.adnanshaukat.myapplication.View.MainActivityCustomer"
+    tools:context="com.example.adnanshaukat.myapplication.View.Customer.MainActivityCustomer"
     tools:openDrawer="start">
 
     <LinearLayout
