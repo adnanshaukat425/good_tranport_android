@@ -4,11 +4,14 @@
     android:id="@+id/driver_list_linear_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?android:attr/selectableItemBackground"
     android:orientation="horizontal"
     android:paddingBottom="5dp"
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
+    android:layout_margin="3dp"
+    android:elevation="3dp"
+    android:translationZ="3dp"
+    android:background="@drawable/edit_text_background"
     android:paddingTop="5dp">
 
     <RelativeLayout
@@ -17,8 +20,9 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/driver_list_profile_image_view"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="6dp"
             android:layout_marginRight="10dp"
             android:src="@drawable/default_profile_image"
             app:civ_border_color="@color/colorPrimary"
@@ -33,6 +37,7 @@
             android:layout_alignParentRight="@id/driver_list_profile_image_view"
             android:layout_alignRight="@id/driver_list_profile_image_view"
             android:layout_gravity="bottom"
+            android:elevation="2dp"
             android:src="@drawable/offline_icon" />
 
     </RelativeLayout>

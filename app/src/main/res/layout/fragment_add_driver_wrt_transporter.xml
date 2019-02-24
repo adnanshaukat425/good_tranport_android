@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    android:background="@color/colorAccent"
     android:layout_height="match_parent">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -24,6 +25,7 @@
             android:paddingRight="20dp">
 
             <RelativeLayout
+                android:layout_centerVertical="true"
                 android:id="@+id/profile_image_relative_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
@@ -35,7 +37,7 @@
                     android:layout_marginRight="20dp"
                     android:src="@drawable/default_profile_image"
                     app:civ_border_color="@color/colorPrimary"
-                    app:civ_border_width="1sp" />
+                    app:civ_border_width="0.5sp" />
 
                 <ImageView
                     android:layout_width="25dp"
@@ -52,25 +54,40 @@
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/profile_image_relative_view">
 
-                <EditText
-                    android:id="@+id/add_driver_ed_fname"
-                    style="@style/edit_text_style_input"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/ed_add_driver_fname_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="0dp"
-                    android:inputType=""
-                    android:enabled="true"
-                    android:hint="First Name" />
+                    android:layout_alignParentTop="true"
+                    android:hint="First Name"
+                    android:textColorHint="@color/colorPrimary">
 
-                <EditText
-                    android:id="@+id/add_driver_ed_lname"
-                    style="@style/edit_text_style_input"
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/add_driver_ed_fname"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:enabled="true"
+                        android:textColorHint="@color/colorPrimary" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/ed_lname_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/add_driver_ed_fname"
-                    android:layout_marginTop="0dp"
-                    android:enabled="true"
-                    android:hint="Last Name" />
+                    android:hint="Last Name"
+                    android:layout_below="@+id/ed_add_driver_fname_layout"
+                    android:textColorHint="@color/colorPrimary">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:id="@+id/add_driver_ed_lname"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"
+                        android:enabled="true"
+                        android:textColorHint="@color/colorPrimary" />
+
+                </android.support.design.widget.TextInputLayout>
 
             </RelativeLayout>
 
@@ -85,24 +102,22 @@
             android:paddingLeft="20dp"
             android:paddingRight="20dp">
 
-            <TextView
-                android:id="@+id/add_driver_tv_email"
-                style="@style/edit_text_style"
-                android:layout_width="70dp"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:text="Email:"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/add_driver_ed_email"
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/ed_email_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/add_driver_tv_email"
-                android:enabled="true"
-                android:textColor="@color/colorPrimaryDark" />
+                android:hint="EMAIL"
+                android:textColorHint="@color/colorPrimary">
 
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/add_driver_ed_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:enabled="true"
+                    android:textColorHint="@color/colorPrimary" />
+
+            </android.support.design.widget.TextInputLayout>
         </RelativeLayout>
 
         <RelativeLayout
@@ -113,25 +128,23 @@
             android:paddingLeft="20dp"
             android:paddingRight="20dp">
 
-            <TextView
-                android:id="@+id/add_driver_tv_number"
-                style="@style/edit_text_style"
-                android:layout_width="70dp"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:text="Phone:"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/add_driver_ed_number"
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/ed_number_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/add_driver_tv_number"
-                android:enabled="true"
-                android:inputType="phone"
-                android:maxLength="11"
-                android:textColor="@color/colorPrimaryDark" />
+                android:hint="PHONE"
+                android:textColorHint="@color/colorPrimary">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/add_driver_ed_number"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="true"
+                    android:inputType="phone"
+                    android:maxLength="11"
+                    android:textColorHint="@color/colorPrimary" />
+
+            </android.support.design.widget.TextInputLayout>
 
         </RelativeLayout>
 
@@ -143,25 +156,23 @@
             android:paddingLeft="20dp"
             android:paddingRight="20dp">
 
-            <TextView
-                android:id="@+id/add_driver_tv_cnic"
-                style="@style/edit_text_style"
-                android:layout_width="70dp"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:text="CNIC:"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <EditText
-                android:id="@+id/add_driver_ed_cnic"
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/ed_cnic_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/add_driver_tv_cnic"
-                android:enabled="true"
-                android:inputType="phone"
-                android:maxLength="13"
-                android:textColor="@color/colorPrimaryDark" />
+                android:hint="CNIC"
+                android:textColorHint="@color/colorPrimary">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/add_driver_ed_cnic"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:enabled="true"
+                    android:inputType="number"
+                    android:maxLength="13"
+                    android:textColorHint="@color/colorPrimary" />
+
+            </android.support.design.widget.TextInputLayout>
         </RelativeLayout>
 
         <RelativeLayout
@@ -184,7 +195,6 @@
 
         </RelativeLayout>
 
-
         <RelativeLayout
             android:id="@+id/rl_6"
             android:layout_width="match_parent"
@@ -193,23 +203,13 @@
             android:paddingLeft="20dp"
             android:paddingRight="20dp">
 
-            <TextView
-                android:id="@+id/add_driver_tv_vehicle_assign"
-                style="@style/edit_text_style"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:paddingRight="20dp"
-                android:text="Vehicle Assigned:"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <Spinner
+            <com.jaredrummler.materialspinner.MaterialSpinner
                 android:id="@+id/add_driver_sp_vehicle_assign"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="10dp"
-                android:layout_toRightOf="@id/add_driver_tv_vehicle_assign" />
+                android:spinnerMode="dropdown" />
+
         </RelativeLayout>
 
         <RelativeLayout

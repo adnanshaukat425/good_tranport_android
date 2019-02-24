@@ -64,6 +64,20 @@ public class FragmentUserProfile extends Fragment {
         if (argument != null) {
             mUser = (User) argument.get("user");
         }
+
+        if(mUser.getUser_type_id() == 1){
+            final MainActivityCustomer mainActivityCustomer = (MainActivityCustomer)getContext();
+            mainActivityCustomer.setTitle("User Profile");
+        }
+        else if(mUser.getUser_type_id() == 2){
+            final MainActivityDriver mainActivityDriver = (MainActivityDriver)getContext();
+            mainActivityDriver.setTitle("User Profile");
+        }
+        else if(mUser.getUser_type_id() == 3){
+            final MainActivityTransporter mainActivityTransporter = (MainActivityTransporter)getContext();
+            mainActivityTransporter.setTitle("User Profile");
+        }
+
         return view;
     }
 

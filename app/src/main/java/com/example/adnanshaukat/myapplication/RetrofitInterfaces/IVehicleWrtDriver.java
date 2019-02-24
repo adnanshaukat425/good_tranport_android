@@ -21,4 +21,7 @@ public interface IVehicleWrtDriver {
 
     @GET("get_unassigned_vehicle_wrt_transporter")
     Call<List<Vehicle>> get_unassigned_vehicle_wrt_transporter(@Query("transporter_id") String transporter_id);
+
+    @GET("get_vehicle_wrt_transporter_with_driver")
+    Call<List<Vehicle>> get_vehicle_wrt_transporter_with_driver(@Query("transporter_id") String transporter_id, @Query("driver_id") String driver_id);
 }

@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:paddingBottom="5dp"
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
     android:paddingTop="5dp"
+    android:layout_margin="3dp"
+    android:elevation="3dp"
+    android:translationZ="3dp"
+    android:background="@drawable/edit_text_background"
     android:layout_height="wrap_content">
 
     <RelativeLayout
@@ -16,8 +19,9 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/vehicle_list_vehicle_image_view"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
             android:layout_marginRight="10dp"
             android:src="@drawable/vehicle_icon"
             app:civ_border_color="@color/colorPrimary"

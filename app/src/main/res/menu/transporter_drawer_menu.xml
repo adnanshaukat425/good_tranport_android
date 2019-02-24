@@ -12,12 +12,17 @@
             android:title="Drivers" />
         <item
             android:id="@+id/nav_t_add_driver"
-            android:icon="@drawable/default_profile_image"
+            android:icon="@drawable/ic_add_user"
             android:title="Add new driver" />
         <item
             android:id="@+id/nav_t_view_vehicles"
             android:icon="@drawable/vehicle_icon"
             android:title="Vehicles" />
+
+        <item
+            android:id="@+id/nav_t_add_vehicles"
+            android:icon="@drawable/vehicle_icon"
+            android:title="Add Vehicles" />
         <item
             android:id="@+id/nav_t_logout"
             android:icon="@drawable/logout"

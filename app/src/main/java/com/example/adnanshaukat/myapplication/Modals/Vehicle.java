@@ -81,6 +81,6 @@ public class Vehicle {
 
     @Override
     public String toString() {
-        return String.valueOf(vehicle_number);
+        return vehicle_number;
     }
 }

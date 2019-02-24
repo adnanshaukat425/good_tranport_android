@@ -39,11 +39,12 @@ public class VehiclesRecyclerViewAdapter extends RecyclerView.Adapter<VehiclesRe
     public void onBindViewHolder(VehiclesRecyclerViewAdapter.MyViewHolder holder, int position) {
         holder.tv_vehicle_number.setText(mVehicles.get(position).getVehicle_number());
         holder.tv_vehicle_type.setText(mVehicles.get(position).getVehicle_type());
+        MainActivityTransporter mainActivityTransporter = (MainActivityTransporter)mContext;
         if(mVehicles.get(position).getDriver_id() != 0){
             holder.tv_driver_name.setText(mVehicles.get(position).getDriver_name());
+            holder.tv_driver_name.setTextColor(mainActivityTransporter.getResources().getColor(R.color.primaryTextColor));
         }else{
             holder.tv_driver_name.setText("No driver assigned");
-            MainActivityTransporter mainActivityTransporter = (MainActivityTransporter)mContext;
             holder.tv_driver_name.setTextColor(mainActivityTransporter.getResources().getColor(R.color.colorOffline));
         }
     }

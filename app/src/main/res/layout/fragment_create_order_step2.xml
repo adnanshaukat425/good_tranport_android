@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@color/colorAccent"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -32,25 +33,13 @@
             android:columnCount="2"
             android:rowCount="8">
 
-            <TextView
-                android:id="@+id/tv_payment_type"
-                style="@style/edit_text_style"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_columnWeight="1"
-                android:layout_rowWeight="1"
-                android:text="Payment Type:"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <Spinner
+            <com.jaredrummler.materialspinner.MaterialSpinner
                 android:id="@+id/spin_payment_type"
-                style="@style/edit_text_style"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_columnWeight="2"
                 android:layout_marginTop="10dp"
-                android:layout_rowWeight="2"
+                android:layout_rowWeight="1"
                 android:spinnerMode="dropdown" />
 
             <CheckBox
@@ -73,13 +62,13 @@
                 android:layout_columnWeight="1"
                 android:layout_columnSpan="2"
                 android:layout_rowWeight="1"
+                android:textColorHint="@color/colorPrimary"
                 android:hint="Driver quantity">
 
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/et_labour_quantity"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Driver quantity"
                     android:inputType="number" />
 
             </android.support.design.widget.TextInputLayout>
@@ -115,13 +104,13 @@
                 android:layout_rowWeight="1"
                 app:counterEnabled="true"
                 app:counterMaxLength="120"
+                android:textColorHint="@color/colorPrimary"
                 android:hint="Description">
 
                 <android.support.design.widget.TextInputEditText
                     android:id="@+id/et_description_id"
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
-                    android:hint="Description"
                     android:inputType="textMultiLine" />
 
             </android.support.design.widget.TextInputLayout>
@@ -136,4 +125,5 @@
         android:text="Place Order"
         android:textColor="@color/white"
         android:textStyle="bold" />
+
 </LinearLayout>
