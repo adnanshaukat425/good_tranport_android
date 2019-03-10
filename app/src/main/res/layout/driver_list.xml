@@ -4,15 +4,15 @@
     android:id="@+id/driver_list_linear_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="3dp"
+    android:background="@drawable/edit_text_background"
+    android:elevation="1dp"
     android:orientation="horizontal"
     android:paddingBottom="5dp"
     android:paddingLeft="10dp"
     android:paddingRight="10dp"
-    android:layout_margin="3dp"
-    android:elevation="3dp"
-    android:translationZ="3dp"
-    android:background="@drawable/edit_text_background"
-    android:paddingTop="5dp">
+    android:paddingTop="5dp"
+    android:translationZ="1dp">
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -22,8 +22,8 @@
             android:id="@+id/driver_list_profile_image_view"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginTop="6dp"
             android:layout_marginRight="10dp"
+            android:layout_marginTop="6dp"
             android:src="@drawable/default_profile_image"
             app:civ_border_color="@color/colorPrimary"
             app:civ_border_width="0.5sp" />
@@ -51,9 +51,9 @@
             android:id="@+id/driver_list_driver_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="name"
             android:capitalize="sentences"
             android:inputType="textCapSentences"
+            android:text="name"
             android:textColor="@color/colorPrimary"
             android:textSize="20sp"
             android:textStyle="bold" />
@@ -68,7 +68,7 @@
             android:id="@+id/driver_list_driver_email"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="someone@gmail.com"/>
+            android:text="someone@gmail.com" />
 
     </LinearLayout>
 </LinearLayout>

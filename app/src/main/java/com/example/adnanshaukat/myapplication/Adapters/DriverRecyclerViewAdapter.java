@@ -3,6 +3,7 @@ package com.example.adnanshaukat.myapplication.Adapters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
@@ -16,9 +17,12 @@ import android.widget.TextView;
 
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
+import com.example.adnanshaukat.myapplication.RetrofitInterfaces.RetrofitManager;
 import com.example.adnanshaukat.myapplication.View.Transporter.FragmentUserProfileForDriverFromTransporter;
 import com.example.adnanshaukat.myapplication.View.Transporter.MainActivityTransporter;
+import com.squareup.picasso.Picasso;
 
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -50,38 +54,22 @@ public class DriverRecyclerViewAdapter extends RecyclerView.Adapter<DriverRecycl
         if (mStatus != -1){
             Log.e("USER STATUS",Integer.toString(mStatus));
             Log.e("USER Name", mUsers.get(position).getFirst_name());
-
-            String encodedImage = mUsers.get(position).getProfile_picture();
-//            Log.e("ENCODED IMAGE FROM RECY", encodedImage + "D");
-
+            String image_path = mUsers.get(position).getProfile_picture();
             try{
-                if (encodedImage == null || encodedImage.isEmpty()) {
+                if (image_path == null || image_path.isEmpty()) {
                     holder.profile_image.setImageResource(R.drawable.default_profile_image_2);
                 } else {
-                    byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
-                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                    if (decodedString.length == 0 || decodedByte == null){
-                        holder.profile_image.setImageResource(R.drawable.default_profile_image_2);
-                    }
-                    else{
-                        holder.profile_image.setImageBitmap(decodedByte);
-                    }
+                    //new DownloadImageTask(holder.profile_image).execute(image_path);
+                    image_path =  "http://" + RetrofitManager.ip + "/" + RetrofitManager.domain + "/Images/AppImages/" + image_path;
+                    Picasso
+                            .with(mContext)
+                            .load(image_path)
+                            .into(holder.profile_image);
                 }
             }
             catch(Exception ex){
                 holder.profile_image.setImageResource(R.drawable.default_profile_image_2);
             }
-//            if (encodedImage == null || encodedImage.isEmpty()) {
-//                holder.profile_image.setImageResource(R.drawable.default_profile_image);
-//            } else {
-//                byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
-//                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-//                if (decodedByte == null){
-//                    holder.profile_image.setImageResource(R.drawable.default_profile_image);
-//                }
-//                holder.profile_image.setImageBitmap(decodedByte);
-//            }
-
             if(mUsers.get(position).getStatus() == mStatus) {
                 if (mUsers.get(position).getStatus() == 1) {
                     holder.driver_status_image.setImageResource(R.drawable.online_icon);
@@ -95,17 +83,21 @@ public class DriverRecyclerViewAdapter extends RecyclerView.Adapter<DriverRecycl
             }
         }
         else{
-            String encodedImage = mUsers.get(position).getProfile_picture();
-//            Log.e("ENCODED IMAGE FROM RECY", encodedImage);
-            if (encodedImage == null || encodedImage.isEmpty()) {
-                holder.profile_image.setImageResource(R.drawable.default_profile_image);
-            } else {
-                byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
-                Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                if (decodedByte == null){
+            String image_path = mUsers.get(position).getProfile_picture();
+            try{
+                if (image_path == null || image_path.isEmpty()) {
                     holder.profile_image.setImageResource(R.drawable.default_profile_image);
+                } else {
+                    //new DownloadImageTask(holder.profile_image).execute(image_path);
+                    image_path =  "http://" + RetrofitManager.ip + "/" + RetrofitManager.domain + "/Images/AppImages/" + image_path;
+                    Picasso
+                            .with(mContext)
+                            .load(image_path)
+                            .into(holder.profile_image);
                 }
-                holder.profile_image.setImageBitmap(decodedByte);
+            }
+            catch(Exception ex){
+                holder.profile_image.setImageResource(R.drawable.default_profile_image);
             }
 
             if (mUsers.get(position).getStatus() == 1) {
@@ -143,6 +135,32 @@ public class DriverRecyclerViewAdapter extends RecyclerView.Adapter<DriverRecycl
     @Override
     public int getItemCount() {
         return mUsers.size();
+    }
+
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+        ImageView bmImage;
+
+        public DownloadImageTask(ImageView bmImage) {
+            this.bmImage = bmImage;
+        }
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                mIcon11 = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.default_profile_image);
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(Bitmap result) {
+            bmImage.setImageBitmap(result);
+        }
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{

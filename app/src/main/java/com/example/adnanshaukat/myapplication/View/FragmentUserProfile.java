@@ -27,16 +27,24 @@ import com.example.adnanshaukat.myapplication.GlobalClasses.EncoderDecoder;
 import com.example.adnanshaukat.myapplication.GlobalClasses.ProgressDialogManager;
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
+import com.example.adnanshaukat.myapplication.RetrofitInterfaces.IUploadFiles;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.IUser;
+import com.example.adnanshaukat.myapplication.RetrofitInterfaces.RetrofitManager;
 import com.example.adnanshaukat.myapplication.View.Customer.MainActivityCustomer;
 import com.example.adnanshaukat.myapplication.View.Driver.MainActivityDriver;
 import com.example.adnanshaukat.myapplication.View.Transporter.MainActivityTransporter;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -46,13 +54,15 @@ public class FragmentUserProfile extends Fragment {
 
     View view;
     User mUser;
+    String user_type = "";
 
     ImageView profile_image;
     EditText first_name, last_name, email, phone, cnic, password, confirm_password;
     String _password;
     Button btn_change_password;
     ProgressDialog progressDialog;
-
+    String savedFileDestination;
+    Bitmap bitmap_image;
     static final int REQUEST_CAMERA_CAPTURE = 1;
     static final int REQUEST_GALLERY_CAPTURE = 2;
 
@@ -61,39 +71,42 @@ public class FragmentUserProfile extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view  = inflater.inflate(R.layout.fragment_user_profile, container, false);
         Bundle argument = getArguments();
+        PopulateUI();
+
         if (argument != null) {
             mUser = (User) argument.get("user");
         }
 
         if(mUser.getUser_type_id() == 1){
             final MainActivityCustomer mainActivityCustomer = (MainActivityCustomer)getContext();
+            user_type = "customer.png";
             mainActivityCustomer.setTitle("User Profile");
         }
         else if(mUser.getUser_type_id() == 2){
             final MainActivityDriver mainActivityDriver = (MainActivityDriver)getContext();
+            user_type = "driver.png";
             mainActivityDriver.setTitle("User Profile");
         }
         else if(mUser.getUser_type_id() == 3){
             final MainActivityTransporter mainActivityTransporter = (MainActivityTransporter)getContext();
+            user_type = "transporter.png";
             mainActivityTransporter.setTitle("User Profile");
         }
 
+        String image_path = mUser.getProfile_picture();
+        if(TextUtils.isEmpty(image_path)){
+            profile_image.setImageResource(R.drawable.default_profile_image);
+        }
+        else{
+            image_path =  "http://" + RetrofitManager.ip + "/" + RetrofitManager.domain + "/Images/AppImages/" + image_path;
+            Picasso.with(getContext()).load(image_path).into(profile_image);
+        }
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        PopulateUI();
-
-        String encodedImage = mUser.getProfile_picture();
-        Bitmap bitmap = EncoderDecoder.getDecodeImage(encodedImage);
-        if(bitmap == null){
-            profile_image.setImageResource(R.drawable.default_profile_image);
-        }
-        else{
-            profile_image.setImageBitmap(bitmap);
-        }
 
         profile_image.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -179,6 +192,10 @@ public class FragmentUserProfile extends Fragment {
 
             IUser api = retrofit.create(IUser.class);
 
+            if(!TextUtils.isEmpty(savedFileDestination)){
+                updated_user.setProfile_picture(savedFileDestination + "_" + user_type);
+            }
+
             Call<User> call = api.update_user(updated_user);
 
             call.enqueue(new Callback<User>() {
@@ -188,6 +205,7 @@ public class FragmentUserProfile extends Fragment {
                     if(response_object != null){
                         ProgressDialogManager.closeProgressDialog(progressDialog);
                         Toast.makeText(getContext(), "Profile Updated Successfully", Toast.LENGTH_SHORT).show();
+                        uploadImage();
                         if (response_object.getUser_type_id() == 3){
                             Intent i = new Intent(getContext(), MainActivityTransporter.class);
                             i.putExtra("user", response_object);
@@ -296,46 +314,87 @@ public class FragmentUserProfile extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CAMERA_CAPTURE) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            Bitmap bitmap = Bitmap.createScaledBitmap(imageBitmap, 500, 500, true);
-            profile_image.setImageBitmap(bitmap);
-            String encodedImage = "";
-            try{
-                encodedImage = encodeImage(bitmap);
-                mUser.setProfile_picture(encodedImage);
-                Log.e("Encoded Image", encodedImage);
-            }
-            catch(Exception ex) {
-                Log.e("Encoded Image", ex.toString());
-            }
-
-        }
-        if (requestCode == REQUEST_GALLERY_CAPTURE && data != null && data.getData() != null) {
-            Uri uri = data.getData();
-            String encodedImage = "";
-            try {
-                Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
-                Bitmap bitmap = Bitmap.createScaledBitmap(imageBitmap, 500, 500, true);
+        Long tsLong = System.currentTimeMillis()/1000;
+        if(data != null){
+            if (requestCode == REQUEST_CAMERA_CAPTURE) {
+                Bundle extras = data.getExtras();
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                Bitmap bitmap = Bitmap.createScaledBitmap(imageBitmap, imageBitmap.getWidth(), imageBitmap.getHeight(), true);
                 profile_image.setImageBitmap(bitmap);
-                encodedImage = encodeImage(bitmap);
-                mUser.setProfile_picture(encodedImage);
-            } catch (IOException e) {
-                e.printStackTrace();
+                savedFileDestination = tsLong.toString();
+                bitmap_image = bitmap;
             }
-            catch(Exception ex) {
-                Log.e("Fragment User Profile", ex.toString());
+            if (requestCode == REQUEST_GALLERY_CAPTURE && data != null && data.getData() != null) {
+                Uri uri = data.getData();
+                try {
+                    Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), uri);
+                    Bitmap bitmap = Bitmap.createScaledBitmap(imageBitmap, 500, 500, true);
+                    profile_image.setImageBitmap(bitmap);
+                    savedFileDestination = tsLong.toString();
+                    bitmap_image = bitmap;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                catch(Exception ex) {
+                    Log.e("Fragment User Profile", ex.toString());
+                }
             }
         }
     }
 
-    private String encodeImage(Bitmap bm) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.JPEG,100,baos);
-        byte[] b = baos.toByteArray();
-        String encImage = Base64.encodeToString(b, Base64.DEFAULT);
-        Log.e("Encoded Image", encImage);
-        return encImage;
+    private void uploadImage() {
+        if(bitmap_image != null){
+            try{
+
+                File file = new File(getContext().getCacheDir(), savedFileDestination + "_" + user_type);
+                file.createNewFile();
+
+                Bitmap bitmap = bitmap_image;
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
+                byte[] bitmapdata = bos.toByteArray();
+
+                FileOutputStream fos = new FileOutputStream(file);
+                fos.write(bitmapdata);
+                fos.flush();
+                fos.close();
+
+                RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+                MultipartBody.Part body = MultipartBody.Part.createFormData("uploaded_file", file.getName(), requestFile);
+
+                OkHttpClient.Builder client = new OkHttpClient.Builder();
+                client.connectTimeout(30, TimeUnit.SECONDS);
+                client.readTimeout(30, TimeUnit.SECONDS);
+                client.writeTimeout(30, TimeUnit.SECONDS);
+
+                retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
+                        .baseUrl(IUploadFiles.BASE_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .client(client.build())
+                        .build();
+
+                IUploadFiles api = retrofit.create(IUploadFiles.class);
+
+                Call<Void> call = api.upload(body);
+
+                call.enqueue(new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        Log.e("RESPONSE FROM API", response.toString());
+                        //Toast.makeText(getContext(), "Image upload successfully", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.e("FAILURE", t.getMessage());
+                        Log.e("FAILURE", t.toString());
+                    }
+                });
+            }
+            catch (Exception ex){
+                Log.e(getContext().toString(), ex.getMessage());
+                Log.e(getContext().toString(), "Exception in Upload");
+            }
+        }
     }
 }

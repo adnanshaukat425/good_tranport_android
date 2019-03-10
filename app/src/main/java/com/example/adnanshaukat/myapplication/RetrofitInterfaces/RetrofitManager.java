@@ -5,7 +5,7 @@ package com.example.adnanshaukat.myapplication.RetrofitInterfaces;
  */
 
 public class RetrofitManager {
-    static String ip = "192.168.1.100";
+    public static String ip = "192.168.43.124";
     //static String ip = "169.254.124.226";//mobile
-    static String domain = "smart_transport";
+    public static String domain = "smart_transport";
 }
