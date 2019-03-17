@@ -4,47 +4,65 @@
     android:layout_height="match_parent"
     android:fillViewport="true"
     android:background="@color/colorAccent"
+    android:id="@+id/root_layou_transporter_dashboard"
     android:orientation="vertical">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
+        android:padding="8dp"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <RelativeLayout
+        <LinearLayout
+            android:layout_gravity="right"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="2">
+            android:layout_weight="1">
 
-            <TextView
-                android:id="@+id/bar_text_descirption"
-                style="@style/edit_text_style_input"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:text="You last week trips" />
-
-            <com.github.mikephil.charting.charts.BarChart
-                android:id="@+id/bar_chart"
+            <com.jaredrummler.materialspinner.MaterialSpinner
+                android:id="@+id/t_period_top_driver"
+                style="@style/edit_text_style"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@id/bar_text_descirption"
-                android:layout_weight="2" />
-        </RelativeLayout>
+                android:layout_height="wrap_content"
+                android:layout_gravity="right|top"
+                android:elevation="1dp"
+                android:translationZ="1dp"
+                android:spinnerMode="dropdown" />
+
+
+        </LinearLayout>
+        <!--<RelativeLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="0dp"-->
+            <!--android:layout_weight="2">-->
+
+            <!--<TextView-->
+                <!--android:id="@+id/bar_text_descirption"-->
+                <!--style="@style/edit_text_style_input"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_centerHorizontal="true"-->
+                <!--android:text="You last week trips" />-->
+
+            <!--<com.github.mikephil.charting.charts.BarChart-->
+                <!--android:id="@+id/bar_chart"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:layout_below="@id/bar_text_descirption"-->
+                <!--android:layout_weight="2" />-->
+        <!--</RelativeLayout>-->
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="2">
-
+            android:layout_weight="3">
             <TextView
                 android:id="@+id/line_text_descirption"
                 style="@style/edit_text_style_input"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:text="Top 5 driver of last week" />
-
+                android:text="Top 5 driver of " />
 
             <com.github.mikephil.charting.charts.LineChart
                 android:id="@+id/line_chart"
