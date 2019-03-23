@@ -4,86 +4,163 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.example.adnanshaukat.myapplication.Modals.SignalRService;
 import com.example.adnanshaukat.myapplication.R;
-import com.microsoft.signalr.Action1;
-import com.microsoft.signalr.HubConnection;
-import com.microsoft.signalr.HubConnectionBuilder;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.concurrent.ExecutionException;
+
+import microsoft.aspnet.signalr.client.Credentials;
+import microsoft.aspnet.signalr.client.Platform;
+import microsoft.aspnet.signalr.client.PlatformComponent;
+import microsoft.aspnet.signalr.client.SignalRFuture;
+import microsoft.aspnet.signalr.client.http.Request;
+import microsoft.aspnet.signalr.client.http.android.AndroidPlatformComponent;
+import microsoft.aspnet.signalr.client.hubs.HubConnection;
+import microsoft.aspnet.signalr.client.hubs.HubProxy;
+import microsoft.aspnet.signalr.client.hubs.SubscriptionHandler1;
+import microsoft.aspnet.signalr.client.transport.ClientTransport;
+import microsoft.aspnet.signalr.client.transport.ServerSentEventsTransport;
 
 public class SingalRTestingActivity extends AppCompatActivity {
-
-    private final Context mContext = this;
-    private SignalRService mService;
-    private boolean mBound = false;
+    EditText username, message, send_message;
+    Button connection, disconnection, send;
+    Spinner users;
+    HubConnection hubConnection; //Do the signalR definitions
+    HubProxy hubProxy;
+    Handler mHandler=new Handler(); //listener
+    Context cx;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_singal_rtesting);
+        username = (EditText) findViewById(R.id.putText);
+        message = (EditText) findViewById(R.id.edit_message);
+        send_message=(EditText)findViewById(R.id.messageScreen);
+        connection = (Button) findViewById(R.id.btnconnect);
+        disconnection = (Button) findViewById(R.id.btndisconnect);
+        send = (Button) findViewById(R.id.send_message);
+        users = (Spinner) findViewById(R.id.userList);
+        cx = this;
 
-//        Intent intent = new Intent();
-//        intent.setClass(mContext, SignalRService.class);
-//        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-
-        HubConnection hubConnection = HubConnectionBuilder.create("http://192.168.0.107/signalr/hubs")
-                .build();
-        hubConnection.send("Send", "Message");
-        hubConnection.on("broadcastMessage", new Action1<String>() {
+        users.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void invoke(String param1) {
-                Log.e("SignalR Android", param1);
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if(position>0){
+                    //send.setEnabled(true);
+                }
+                else{
+                    //send.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        send.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!message.getText().toString().trim().equals("")) { // WebApi Methods
+                    hubProxy.invoke("Send", "Hello from android");//we have parameterized what we want in the web API method
+                }
+            }
+        });
+        connection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                connect(); // connect chat server
+            }
+        });
+        disconnection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                disconnect(); //disconnect chat server
+            }
+        });
+
+    }
+
+    void connect() {
+        Platform.loadPlatformComponent(new AndroidPlatformComponent());
+        Credentials credentials = new Credentials() {
+            @Override
+            public void prepareRequest(Request request) {
+                request.addHeader("username", username.getText().toString().trim()); //get username
+            }
+        };
+        String serverUrl="http://192.168.1.106/smart_transport/signalr"; // connect to signalr server
+        hubConnection = new HubConnection(serverUrl);
+        hubConnection.setCredentials(credentials);
+        hubConnection.connected(new Runnable() {
+            @Override
+            public void run() {
+                Log.e("SignalR", "SignalR Running");
+            }
+        });
+        String CLIENT_METHOD_BROADAST_MESSAGE = "broadcastMessage"; // get webapi serv methods
+        hubProxy = hubConnection.createHubProxy("notificationHub"); // web api  necessary method name
+        ClientTransport clientTransport = new ServerSentEventsTransport(hubConnection.getLogger());
+        SignalRFuture<Void> signalRFuture = hubConnection.start(clientTransport);
+
+        hubProxy.on(CLIENT_METHOD_BROADAST_MESSAGE, new SubscriptionHandler1<String>() {
+            @Override
+            public void run(String s) {
+                // we added the list of connected users
+                Log.e("MESSAGE", s);
+                final String message = s;
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+//                            ArrayAdapter<String> adapter=new ArrayAdapter<String>(cx,android.R.layout.simple_list_item_1,user_names);
+//                            adapter.setDropDownViewResource(android.R.layout.simple_list_item_1);
+//                            users.setAdapter(adapter);
+                        Log.e("MESSAGES", message);
+                    }
+                });
             }
         }, String.class);
-    }
 
-    @Override
-    protected void onStop() {
-        // Unbind from the service
-//        if (mBound) {
-//            unbindService(mConnection);
-//            mBound = false;
-//        }
-        super.onStop();
-    }
-
-//    public void sendMessage() {
-//        if (mBound) {
-//            // Call a method from the SignalRService.
-//            // However, if this call were something that might hang, then this request should
-//            // occur in a separate thread to avoid slowing down the activity performance.
-////            EditText editText = (EditText) findViewById(R.id.edit_message);
-//            String editText = "Hello world";
-//            if (editText != null) {
-//                String message = editText;
-//                mService.sendMessage(message);
+//        hubProxy.on("sendMessage", new SubscriptionHandler2<String ,String>() {
+//
+//            @Override
+//            public void run(final String s, final String s2) {
+//                mHandler.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        send_message.setText(send_message.getText()+"\n"+s2+" : "+s);
+//                    }
+//                });
 //            }
-//        }
-//    }
-//
-//    /**
-//     * Defines callbacks for service binding, passed to bindService()
-//     */
-//    private final ServiceConnection mConnection = new ServiceConnection() {
-//
-//        @Override
-//        public void onServiceConnected(ComponentName className,
-//                                       IBinder service) {
-//            // We've bound to SignalRService, cast the IBinder and get SignalRService instance
-//            SignalRService.LocalBinder binder = (SignalRService.LocalBinder) service;
-//            mService = binder.getService();
-//            mBound = true;
-//        }
-//
-//        @Override
-//        public void onServiceDisconnected(ComponentName arg0) {
-//            mBound = false;
-//        }
-//    };
+//        },String.class,String.class);
+        try {
+            signalRFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            Log.e("SimpleAASignalR", e.toString());
+            return;
+        }
+    }
+    void disconnect(){ //disconnection server
+        hubConnection.stop();
+        //userList.clear();
+        users.setAdapter(null);
+        send.setEnabled(false);
+        //sender=null;
+    }
 }

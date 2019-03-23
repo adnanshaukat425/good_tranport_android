@@ -9,16 +9,16 @@ import android.os.Looper;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.microsoft.signalr.Action;
-import com.microsoft.signalr.Action1;
-import com.microsoft.signalr.HubConnection;
-import com.microsoft.signalr.HubConnectionBuilder;
+//import com.microsoft.signalr.Action;
+//import com.microsoft.signalr.Action1;
+//import com.microsoft.signalr.HubConnection;
+//import com.microsoft.signalr.HubConnectionBuilder;
 
 import java.util.concurrent.ExecutionException;
 
 public class SignalRService{
-    private HubConnection mHubConnection;
-    private Handler mHandler; // to display Toast message
+//    private HubConnection mHubConnection;
+//    private Handler mHandler; // to display Toast message
 //    private final IBinder mBinder = new LocalBinder(); // Binder given to clients
 
 //    public SignalRService() {

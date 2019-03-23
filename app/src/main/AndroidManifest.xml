@@ -25,7 +25,6 @@
         <activity android:name=".View.SplashScreenActivity">
             <!--<intent-filter>-->
                 <!--<action android:name="android.intent.action.MAIN" />-->
-
                 <!--<category android:name="android.intent.category.LAUNCHER" />-->
             <!--</intent-filter>-->
         </activity>
@@ -68,13 +67,10 @@
             android:label="@string/title_activity_maps" />
         <activity android:name=".View.NewDriverActivityTest" />
         <activity android:name=".View.SingalRTestingActivity">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
     </application>
 

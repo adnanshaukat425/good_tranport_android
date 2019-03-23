@@ -1,6 +1,7 @@
 package com.example.adnanshaukat.myapplication.View.Driver;
 
 import android.Manifest;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,6 +15,8 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -32,13 +35,24 @@ import android.widget.Toast;
 
 import com.example.adnanshaukat.myapplication.GlobalClasses.LocationController;
 import com.example.adnanshaukat.myapplication.GlobalClasses.MyApplication;
+import com.example.adnanshaukat.myapplication.Modals.Notification;
 import com.example.adnanshaukat.myapplication.Modals.SQLiteDBUsersHandler;
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
+import com.example.adnanshaukat.myapplication.RetrofitInterfaces.INotification;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.RetrofitManager;
 import com.example.adnanshaukat.myapplication.View.LoginActivity;
 import com.example.adnanshaukat.myapplication.View.MapsActivity;
 import com.squareup.picasso.Picasso;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by AdnanShaukat on 05/01/2019.
@@ -50,6 +64,9 @@ public class MainActivityDriver extends AppCompatActivity
     User user;
     String latitude;
     String longitude;
+
+    String CHANNEL_ID = "111";
+    int notificationId = 111;
 
     private static final int REQUEST_LOCATION = 1;
 
@@ -119,6 +136,23 @@ public class MainActivityDriver extends AppCompatActivity
         Log.e("Driver Longitude", longitude + "");
 
         getSupportFragmentManager().beginTransaction().replace(R.id.main_content_frame_driver_container, new FragmentMainDriver()).commit();
+        getNotification();
+//        Intent intent = new Intent(this, MainActivityDriver.class);
+//        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//        intent.putExtra("user", user);
+//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+//
+//        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+//                .setSmallIcon(R.drawable.vehicle_icon)
+//                .setContentTitle("Welcome " + user.getFirst_name())
+//                .setContentText("Welcome to our application")
+//                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+//                .setContentIntent(pendingIntent)
+//                .setAutoCancel(true);
+//
+//        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+//        //notificationId is a unique int for each notification that you must define
+//        notificationManager.notify(notificationId, builder.build());
     }
 
     @Override
@@ -214,7 +248,8 @@ public class MainActivityDriver extends AppCompatActivity
         user.setUser_id(user_id);
         return sqLiteDBUsersHandler.update_logged_in_status(0, user);
     }
-        private boolean getLocation() {
+
+    private boolean getLocation() {
         if (ActivityCompat.checkSelfPermission(MainActivityDriver.this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission
                 (MainActivityDriver.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -273,5 +308,65 @@ public class MainActivityDriver extends AppCompatActivity
                 });
         final AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    public void getNotification(){
+        try {
+            OkHttpClient.Builder client = new OkHttpClient.Builder();
+            client.connectTimeout(30, TimeUnit.SECONDS);
+            client.readTimeout(30, TimeUnit.SECONDS);
+            client.writeTimeout(30, TimeUnit.SECONDS);
+
+            retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(INotification.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(client.build())
+                    .build();
+
+            INotification api = retrofit.create(INotification.class);
+
+            Call<List<Notification>> call = api.get_notification();
+
+            call.enqueue(new Callback<List<Notification>>() {
+                @Override
+                public void onResponse(Call<List<Notification>> call, Response<List<Notification>> response) {
+                    Log.e("RESPONSE BODY", response.message());
+                    Log.e("RESPONSE BODY", response + "");
+                    List<Notification> notification = response.body();
+                    if(notification != null && notification.size() > 0){
+                        for (int i = 0; i < notification.size(); i++) {
+                            Intent intent = new Intent(getApplicationContext(), MainActivityDriver.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            intent.putExtra("user", user);
+                            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
+
+                            NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                                    .setSmallIcon(R.drawable.vehicle_icon)
+                                    .setContentTitle("Welcome " + user.getFirst_name())
+                                    .setContentText(notification.get(i).getNotification_message())
+                                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                                    .setContentIntent(pendingIntent)
+                                    .setAutoCancel(true);
+
+                            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
+                            //notificationId is a unique int for each notification that you must define
+                            notificationManager.notify(notificationId, builder.build());
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<Notification>> call, Throwable t) {
+                    Log.e("FAILURE", t.getMessage());
+                    Log.e("FAILURE", t.toString());
+                    //Toast.makeText(mContext, "Failure: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                    //ProgressDialogManager.closeProgressDialog(progressDialog);
+                }
+            });
+        } catch (Exception ex) {
+            Log.e("ERROR", ex.toString());
+            //ProgressDialogManager.closeProgressDialog(progressDialog);
+            //Toast.makeText(mContext, "Some error occour, please try again", Toast.LENGTH_SHORT).show();
+        }
     }
 }

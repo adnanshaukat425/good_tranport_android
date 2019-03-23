@@ -136,7 +136,6 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
                 .setContentTitle("Welcome " + user.getFirst_name())
                 .setContentText("Welcome to our application")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setContentIntent(pendingIntent)
                 .setAutoCancel(true);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
