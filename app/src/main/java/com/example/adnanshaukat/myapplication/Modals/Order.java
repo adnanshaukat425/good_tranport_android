@@ -24,6 +24,10 @@ public class Order {
     public String creation_datetime;
     public String order_datetime;
 
+    public Order(){
+
+    }
+
     public Order(int order_id, int cargo_type_id, int container_type_id, int vehicle_type_id, int weight_catagory_id, float cargo_volume, int weight_unit_id, int source_id, int destination_id, boolean is_labour_required, float labour_cost, int labour_quantity, String description, int payment_type_id, String creation_datetime, String order_datetime) {
         this.order_id = order_id;
         this.cargo_type_id = cargo_type_id;

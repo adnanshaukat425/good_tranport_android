@@ -1,10 +1,12 @@
 package com.example.adnanshaukat.myapplication.Modals;
 
+import java.io.Serializable;
+
 /**
  * Created by AdnanShaukat on 09/12/2018.
  */
 
-public class Vehicle {
+public class Vehicle implements Serializable {
     public int vehicle_id;
     public String vehicle_type;
     public String vehicle_number;

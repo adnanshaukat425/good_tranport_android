@@ -115,7 +115,7 @@ public class FragmentAddDriverWETTransporter extends Fragment {
         populateUI();
         Bundle argument = getArguments();
         if (argument != null) {
-            transporter_id = Integer.parseInt(argument.getString("trasnporter_id"));
+            transporter_id = Integer.parseInt(argument.getString("transporter_id"));
             getVehicles(String.valueOf(transporter_id));
         }
 

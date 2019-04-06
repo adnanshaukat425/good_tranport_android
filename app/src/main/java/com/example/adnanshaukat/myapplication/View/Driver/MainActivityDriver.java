@@ -58,18 +58,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by AdnanShaukat on 05/01/2019.
  */
 
-public class MainActivityDriver extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivityDriver extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     User user;
     String latitude;
     String longitude;
-
     String CHANNEL_ID = "111";
-    int notificationId = 111;
 
     private static final int REQUEST_LOCATION = 1;
-
     LocationManager locationManager;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,6 +75,8 @@ public class MainActivityDriver extends AppCompatActivity
 
         Intent i = getIntent();
         user = (User)i.getSerializableExtra("user");
+        Object fragment_from_notification = i.getExtras().get("fragment_from_notification");
+
 //        latitude = i.getExtras().get("latitude").toString();
 //        longitude = i.getExtras().get("longitude").toString();
 
@@ -136,23 +134,22 @@ public class MainActivityDriver extends AppCompatActivity
         Log.e("Driver Longitude", longitude + "");
 
         getSupportFragmentManager().beginTransaction().replace(R.id.main_content_frame_driver_container, new FragmentMainDriver()).commit();
+
+        if(fragment_from_notification != null) {
+            if (fragment_from_notification.toString().trim().toLowerCase().equals("fragment_order_list_for_driver")) {
+                FragmentOrdersListForDriver fragment = new FragmentOrdersListForDriver();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("user", user);
+                fragment.setArguments(bundle);
+                this.setTitle("Order List");
+                getSupportFragmentManager().beginTransaction().
+                        setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out).
+                        replace(R.id.main_content_frame_driver_container, fragment).
+                        addToBackStack(null).
+                        commit();
+            }
+        }
         getNotification();
-//        Intent intent = new Intent(this, MainActivityDriver.class);
-//        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//        intent.putExtra("user", user);
-//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-//
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-//                .setSmallIcon(R.drawable.vehicle_icon)
-//                .setContentTitle("Welcome " + user.getFirst_name())
-//                .setContentText("Welcome to our application")
-//                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-//                .setContentIntent(pendingIntent)
-//                .setAutoCancel(true);
-//
-//        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-//        //notificationId is a unique int for each notification that you must define
-//        notificationManager.notify(notificationId, builder.build());
     }
 
     @Override
@@ -350,7 +347,7 @@ public class MainActivityDriver extends AppCompatActivity
 
                             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
                             //notificationId is a unique int for each notification that you must define
-                            notificationManager.notify(notificationId, builder.build());
+                            notificationManager.notify(notification.get(i).getNotification_id(), builder.build());
                         }
                     }
                 }

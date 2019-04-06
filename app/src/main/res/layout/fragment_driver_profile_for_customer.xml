@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorAccent">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/activity_user_profile"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin">
+
+        <RelativeLayout
+            android:id="@+id/image_relative_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/frag_driver_prof_for_cust_driver_img"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginRight="20dp"
+                android:src="@drawable/default_profile_image"
+                app:civ_border_color="@color/colorPrimary"
+                app:civ_border_width="1sp" />
+
+            <TextView
+                android:id="@+id/frag_driver_prof_for_cust_driver_rating"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignEnd="@id/frag_driver_prof_for_cust_driver_img"
+                android:layout_alignParentBottom="true"
+                android:layout_alignRight="@id/frag_driver_prof_for_cust_driver_img"
+                android:background="@drawable/rating_badge"
+                android:text="4.5" />
+
+        </RelativeLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/image_relative_layout"
+            android:layout_margin="10dp"
+            android:background="@color/white"
+            android:hint="Name">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/frag_driver_prof_for_cust_driver_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/name"
+            android:layout_margin="10dp"
+            android:background="@color/white"
+            android:hint="Phone No">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/frag_driver_prof_for_cust_driver_phone_no"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/phone"
+            android:layout_margin="10dp"
+            android:background="@color/white"
+            android:hint="Email">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/frag_driver_prof_for_cust_driver_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <Button
+            android:id="@+id/frag_driver_prof_for_cust_btn_hire_driver"
+            android:layout_below="@id/email"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:layout_margin="10dp"
+            android:background="@drawable/button_ripple_effect"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Hire Driver" />
+
+    </RelativeLayout>
+</ScrollView>

@@ -199,7 +199,7 @@
             android:paddingRight="20dp">
 
             <TextView
-                android:id="@+id/tv_pass"
+                android:id="@+id/tv_pass_"
                 style="@style/edit_text_style"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -213,7 +213,7 @@
                 android:id="@+id/tv_pass_desc"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/tv_pass"
+                android:layout_below="@+id/tv_pass_"
                 android:text="Leave passwords empty,when you don't want change it."
                 android:textSize="11sp"
                 android:textStyle="italic" />

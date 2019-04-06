@@ -1,11 +1,7 @@
 package com.example.adnanshaukat.myapplication.View;
 
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Handler;
-import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,17 +11,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import com.example.adnanshaukat.myapplication.Modals.SignalRService;
+import com.example.adnanshaukat.myapplication.Modals.SignalrNotificationManager;
 import com.example.adnanshaukat.myapplication.R;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.util.concurrent.ExecutionException;
 
 import microsoft.aspnet.signalr.client.Credentials;
 import microsoft.aspnet.signalr.client.Platform;
-import microsoft.aspnet.signalr.client.PlatformComponent;
 import microsoft.aspnet.signalr.client.SignalRFuture;
 import microsoft.aspnet.signalr.client.http.Request;
 import microsoft.aspnet.signalr.client.http.android.AndroidPlatformComponent;
@@ -39,10 +31,11 @@ public class SingalRTestingActivity extends AppCompatActivity {
     EditText username, message, send_message;
     Button connection, disconnection, send;
     Spinner users;
-    HubConnection hubConnection; //Do the signalR definitions
+    HubConnection hubConnection;
     HubProxy hubProxy;
-    Handler mHandler=new Handler(); //listener
+    Handler mHandler=new Handler();
     Context cx;
+    SignalrNotificationManager signalrNotificationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,8 +48,7 @@ public class SingalRTestingActivity extends AppCompatActivity {
         disconnection = (Button) findViewById(R.id.btndisconnect);
         send = (Button) findViewById(R.id.send_message);
         users = (Spinner) findViewById(R.id.userList);
-        cx = this;
-
+        signalrNotificationManager = new SignalrNotificationManager(this);
         users.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -84,13 +76,13 @@ public class SingalRTestingActivity extends AppCompatActivity {
         connection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                connect(); // connect chat server
+                signalrNotificationManager.connectToSignalR(1); // connect chat server
             }
         });
         disconnection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                disconnect(); //disconnect chat server
+                signalrNotificationManager.disconnect(); //disconnect chat server
             }
         });
 
@@ -156,6 +148,7 @@ public class SingalRTestingActivity extends AppCompatActivity {
             return;
         }
     }
+
     void disconnect(){ //disconnection server
         hubConnection.stop();
         //userList.clear();

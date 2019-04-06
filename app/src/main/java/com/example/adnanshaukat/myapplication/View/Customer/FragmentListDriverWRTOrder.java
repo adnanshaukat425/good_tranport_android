@@ -67,7 +67,7 @@ public class FragmentListDriverWRTOrder extends Fragment {
         getDriversWrtOrder(order);
     }
 
-    private void getDriversWrtOrder(Order order) {
+    private void getDriversWrtOrder(final Order order) {
         progressDialog = ProgressDialogManager.showProgressDialogWithTitle(getContext(), "Loading Active Drivers", "Please wait");
         try {
             OkHttpClient.Builder client = new OkHttpClient.Builder();
@@ -103,7 +103,7 @@ public class FragmentListDriverWRTOrder extends Fragment {
 //                        List<DriverDetailsWrtOrder> drivers = (List<DriverDetailsWrtOrder>)gson.fromJson(driver_json, List.class);
                         Log.e("DRIVER DETAILS First", drivers.get(0).getFirst_name());
 
-                        DriverRecyclerViewWrtOrderAdapter adapter = new DriverRecyclerViewWrtOrderAdapter(getContext(), drivers);
+                        DriverRecyclerViewWrtOrderAdapter adapter = new DriverRecyclerViewWrtOrderAdapter(getContext(), drivers, order.getOrder_id());
                         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
                         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                         rv.setLayoutManager(layoutManager);

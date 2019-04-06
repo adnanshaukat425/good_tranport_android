@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.support.annotation.DrawableRes;
 import android.support.multidex.MultiDex;
 import android.support.v4.app.FragmentActivity;
@@ -12,8 +13,10 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 
 import com.example.adnanshaukat.myapplication.R;
+import com.google.android.gms.location.places.PlacesOptions;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -35,13 +38,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent intent = getIntent();
         latitude = intent.getExtras().get("latitude").toString();
         longitude = intent.getExtras().get("longitude").toString();
-
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
 
+    public void updateMap(String latitude, String longitude){
+        double Lat =  Double.parseDouble(latitude);
+        double Lng = Double.parseDouble(longitude);
+        try{
+            if(mMap != null){
+                LatLng Loc = new LatLng(Lat,Lng);
+                mMap.addMarker(new MarkerOptions().position(Loc).title("").icon(BitmapDescriptorFactory.fromResource(R.drawable.vehicle_icon)));
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(Loc));
+            }
+        }
+        catch (Exception ex) {
+
+        }
+    }
 
     /**
      * Manipulates the map once available.
@@ -71,7 +87,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LatLng Loc = new LatLng(Lat,Lng);
         mMap.addMarker(new MarkerOptions().position(Loc).title("Driver Location"));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Loc,15.0f));
-
     }
 
 //    private BitmapDescriptor bitmapDescriptorFromVector(Context context, @DrawableRes int vectorDrawableResourceId) {

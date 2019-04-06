@@ -1,5 +1,7 @@
 package com.example.adnanshaukat.myapplication.View.Transporter;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.graphics.Rect;
@@ -55,7 +57,8 @@ public class FragmentAddVehicleWRTTransporter extends Fragment {
     MaterialSpinner spinContainerType, spinContainerSize;
     Button btn_next;
     ProgressDialog progressDialog;
-
+    DBVehicle vehicle;
+    Vehicle vehicle_from_vehicle_list;
     private String vehicle_number;
     private int container_type_id, container_size_id;
 
@@ -65,31 +68,40 @@ public class FragmentAddVehicleWRTTransporter extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_add_vehicle_wrt_transporter, container, false);
-        final MainActivityTransporter mainActivityTransporter = (MainActivityTransporter)getContext();
-        mainActivityTransporter.setTitle("Add Vehicle");
+        final MainActivityTransporter mainActivityTransporter = (MainActivityTransporter) getContext();
+
+        Bundle argument = getArguments();
         populateUI();
+        if (argument != null) {
+            vehicle_from_vehicle_list = (Vehicle) argument.get("vehicle_from_vehicle_list");
+            //Toast.makeText(mainActivityTransporter, vehicle.get, Toast.LENGTH_SHORT).show();
+            if (vehicle_from_vehicle_list == null) {
+                mainActivityTransporter.setTitle("Add Vehicle");
+                btn_next.setText("Add Vehicle");
+            } else {
+                mainActivityTransporter.setTitle("Vehicle");
+                btn_next.setText("Update Vehicle");
+            }
+            transporter_id = Integer.parseInt(argument.getString("transporter_id"));
+        }
         get_vehicle_type_and_container_size();
 
-        populateUI();
-        Bundle argument = getArguments();
-        if (argument != null) {
-            transporter_id = Integer.parseInt(argument.getString("trasnporter_id"));
-        }
         btn_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 vehicle_number = etVehicleNumber.getText().toString();
-                container_type_id = ((Container)spinContainerType.getItems().get(spinContainerType.getSelectedIndex())).getContainer_type_id();
-                container_size_id = ((ContainerSize)spinContainerSize.getItems().get(spinContainerSize.getSelectedIndex())).getVehicle_type_id();
-                Log.e("Container Type Id", String.valueOf(container_type_id));
-                Log.e("Container Size Id", String.valueOf(container_size_id));
-                Log.e("Transporter Id", String.valueOf(transporter_id));
-                Log.e("Vehicle Number", String.valueOf(vehicle_number));
-
-                if(checkValidity()){
+                container_type_id = ((Container) spinContainerType.getItems().get(spinContainerType.getSelectedIndex())).getContainer_type_id();
+                container_size_id = ((ContainerSize) spinContainerSize.getItems().get(spinContainerSize.getSelectedIndex())).getVehicle_type_id();
+                DBVehicle vehicle = new DBVehicle(0, container_size_id, container_type_id, vehicle_number, transporter_id);
+                if (checkValidity()) {
                     progressDialog = ProgressDialogManager.showProgressDialogWithTitle(getContext(), "Please Wait...", "Loading");
-                    DBVehicle vehicle = new DBVehicle(0, container_type_id, container_size_id, vehicle_number, transporter_id);
-                    add_vehicle(vehicle);
+                    if(btn_next.getText().toString().trim().toLowerCase().equals("add vehicle")){
+                        add_vehicle(vehicle);
+                    }
+                    else if(btn_next.getText().toString().trim().toLowerCase().equals("update vehicle")){
+                        vehicle.setVehicle_id(vehicle_from_vehicle_list.getVehicle_id());
+                        update_vehicle(vehicle);
+                    }
                 }
             }
         });
@@ -97,9 +109,14 @@ public class FragmentAddVehicleWRTTransporter extends Fragment {
         etVehicleNumber.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean b) {
+                mainActivityTransporter.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+            }
+        });
 
-                    mainActivityTransporter.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
+        spinContainerType.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(MaterialSpinner view, int position, long id, Object item) {
+                showHideUI(((Container)item).getContainer_type_id());
             }
         });
         return view;
@@ -118,10 +135,12 @@ public class FragmentAddVehicleWRTTransporter extends Fragment {
             Toast.makeText(getContext(), "Container Type Can't Be Empty", Toast.LENGTH_SHORT).show();
             return false;
         }
-        if(spinContainerSize.getSelectedIndex() == 0){
-            spinContainerSize.requestFocus();
-            Toast.makeText(getContext(), "Container Size Can't Be Empty", Toast.LENGTH_SHORT).show();
-            return false;
+        if(spinContainerType.getSelectedIndex() == 2) {
+            if(spinContainerSize.getSelectedIndex() == 0){
+                spinContainerSize.requestFocus();
+                Toast.makeText(getContext(), "Container Size Can't Be Empty", Toast.LENGTH_SHORT).show();
+                return false;
+            }
         }
         return true;
     }
@@ -150,6 +169,55 @@ public class FragmentAddVehicleWRTTransporter extends Fragment {
                     DBVehicle response_vehicle = response.body();
                     if (response_vehicle != null && response_vehicle.vehicle_id != 0) {
                         Toast.makeText(getContext(), "Vehicle Added Succesfully", Toast.LENGTH_LONG).show();
+                        clearFields();
+                    }
+                    else if(response.message().equals("Not Acceptable")){
+                        Toast.makeText(getContext(), "Vehicle With This Number Is Already Present.", Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        Toast.makeText(getContext(), "Something Went Wrong, Please Try Again Later", Toast.LENGTH_LONG).show();
+                    }
+                    ProgressDialogManager.closeProgressDialog(progressDialog);
+                }
+
+                @Override
+                public void onFailure(Call<DBVehicle> call, Throwable t) {
+                    Log.e("FAILURE", t.getMessage());
+                    Log.e("FAILURE", t.toString());
+                    ProgressDialogManager.closeProgressDialog(progressDialog);
+                    Toast.makeText(getContext(), "An Error Occour, Please Try Again", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } catch (Exception ex) {
+            ProgressDialogManager.closeProgressDialog(progressDialog);
+            Log.e("ERROR", ex.toString());
+        }
+    }
+
+    private void update_vehicle(DBVehicle vehicle) {
+        try {
+            OkHttpClient.Builder client = new OkHttpClient.Builder();
+            client.connectTimeout(30, TimeUnit.SECONDS);
+            client.readTimeout(30, TimeUnit.SECONDS);
+            client.writeTimeout(30, TimeUnit.SECONDS);
+
+            retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(IVehicle.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(client.build())
+                    .build();
+
+            IVehicle api = retrofit.create(IVehicle.class);
+
+            Call<DBVehicle> call = api.update_vehicle_wrt_transporter(vehicle);
+
+            call.enqueue(new Callback<DBVehicle>() {
+                @Override
+                public void onResponse(Call<DBVehicle> call, Response<DBVehicle> response) {
+                    Log.e("RESPONSE", response.toString());
+                    DBVehicle response_vehicle = response.body();
+                    if (response_vehicle != null && response_vehicle.vehicle_id != 0) {
+                        Toast.makeText(getContext(), "Vehicle Updated Successfully", Toast.LENGTH_LONG).show();
                         clearFields();
                     }
                     else if(response.message().equals("Not Acceptable")){
@@ -205,6 +273,9 @@ public class FragmentAddVehicleWRTTransporter extends Fragment {
                         List<ContainerSize> containerSize = obj.getContainer_size();
                         populateSpinners(container, containerSize);
                     }
+                    if(vehicle_from_vehicle_list != null){
+                        populateUIFromModal(vehicle_from_vehicle_list);
+                    }
                 }
 
                 @Override
@@ -219,7 +290,6 @@ public class FragmentAddVehicleWRTTransporter extends Fragment {
     }
 
     private void populateUI(){
-
         spinContainerType = (MaterialSpinner) view.findViewById(R.id.add_vehicle_spin_container_type);
         spinContainerSize = (MaterialSpinner)view.findViewById(R.id.add_vehicle_spin_container_size);
         etVehicleNumber = (EditText)view.findViewById(R.id.add_vehicle_et_vehicle_number);
@@ -245,5 +315,88 @@ public class FragmentAddVehicleWRTTransporter extends Fragment {
         etVehicleNumber.setText("");
         spinContainerSize.setSelectedIndex(0);
         spinContainerType.setSelectedIndex(0);
+    }
+
+    private void populateUIFromModal(Vehicle vehicle){
+        try {
+            OkHttpClient.Builder client = new OkHttpClient.Builder();
+            client.connectTimeout(30, TimeUnit.SECONDS);
+            client.readTimeout(30, TimeUnit.SECONDS);
+            client.writeTimeout(30, TimeUnit.SECONDS);
+
+            retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(IVehicle.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(client.build())
+                    .build();
+
+            IVehicle api = retrofit.create(IVehicle.class);
+
+            Call<DBVehicle> call = api.get_vehicle(vehicle.getVehicle_id());
+
+            call.enqueue(new Callback<DBVehicle>() {
+                @Override
+                public void onResponse(Call<DBVehicle> call, Response<DBVehicle> response) {
+                    Log.e("RESPONSE", response.toString());
+                    DBVehicle response_vehicle = response.body();
+                    if (response_vehicle != null && response_vehicle.vehicle_id != 0) {
+                        Log.e("Vehicle Number", response_vehicle.getVehicle_number());
+                        Log.e("Vehicle Type Id", response_vehicle.getVehicle_type_id() + "");
+                        Log.e("Container Type", response_vehicle.getContainer_type_id() + "");
+                        showHideUI(response_vehicle.getVehicle_type_id());
+                        etVehicleNumber.setText(response_vehicle.getVehicle_number());
+                        spinContainerSize.setSelectedIndex(response_vehicle.getContainer_type_id());
+                        spinContainerType.setSelectedIndex(response_vehicle.getVehicle_type_id());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<DBVehicle> call, Throwable t) {
+                    Log.e("FAILURE", t.getMessage());
+                    Log.e("FAILURE", t.toString());
+                    Toast.makeText(getContext(), "An Error Occour, Please Try Again", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } catch (Exception ex) {
+            Log.e("ERROR", ex.toString());
+        }
+    }
+
+    private void showHideUI(int container_type_id){
+        if(container_type_id == 1){
+            //Toast.makeText(mainActivityTransporter, "LCL", Toast.LENGTH_SHORT).show();
+            if (spinContainerSize.getVisibility() == View.VISIBLE) {
+                spinContainerSize.setAlpha(1.0f);
+                // Start the animation
+                spinContainerSize.animate()
+                        .translationY(spinContainerSize.getHeight())
+                        .alpha(0.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                spinContainerSize.setVisibility(View.GONE);
+                            }
+                        });
+            }
+        }
+        else{
+            if (spinContainerSize.getVisibility() == View.GONE) {
+                spinContainerSize.setAlpha(0.0f);
+                // Start the animation
+                spinContainerSize.animate()
+                        .translationY(0)
+                        .alpha(1.0f)
+                        .setDuration(1000)
+                        .setListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                super.onAnimationEnd(animation);
+                                spinContainerSize.setVisibility(View.VISIBLE);
+                            }
+                        });
+            }
+        }
     }
 }

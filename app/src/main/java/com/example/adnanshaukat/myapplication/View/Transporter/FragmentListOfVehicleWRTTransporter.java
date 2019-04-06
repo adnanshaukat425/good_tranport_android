@@ -54,7 +54,7 @@ public class FragmentListOfVehicleWRTTransporter extends Fragment {
         Bundle bundle = new Bundle();
         Bundle argument = getArguments();
         mUser = (User)argument.getSerializable("user");
-        bundle.putString("trasnporter_id",String.valueOf(mUser.getUser_id()));
+        bundle.putString("transporter_id",String.valueOf(mUser.getUser_id()));
         final FragmentAddVehicleWRTTransporter fragmentAddVehicleWRTTransporter = new FragmentAddVehicleWRTTransporter();
         fragmentAddVehicleWRTTransporter.setArguments(bundle);
 

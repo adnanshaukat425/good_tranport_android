@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.example.adnanshaukat.myapplication.GlobalClasses.MyApplication;
 import com.example.adnanshaukat.myapplication.GlobalClasses.ProgressDialogManager;
 import com.example.adnanshaukat.myapplication.Modals.SQLiteDBUsersHandler;
+import com.example.adnanshaukat.myapplication.Modals.SignalrNotificationManager;
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.ILogin;
@@ -118,7 +119,10 @@ public class LoginActivity extends AppCompatActivity {
                         Log.e("USER TYPE FROM LOGIN", user_type_id + "");
                         if (user_id != 0) {
 //                            if (storeCredentialsToSQLite(user)) {
-                                ((MyApplication) LoginActivity.this.getApplication()).set_user_id(user_id);
+                                ((MyApplication) LoginActivity.this.getApplication()).setGlobalUser(user);
+                            SignalrNotificationManager signalrNotificationManager = new SignalrNotificationManager(getApplicationContext());
+                            signalrNotificationManager.connectToSignalR(user.getUser_id());
+
                                 if (!from_system) {
                                     if (storeCredentialsToSQLite(user)){
                                         //Toast.makeText(LoginActivity.this, "Welcome " + user.getFirst_name().toString(), Toast.LENGTH_LONG).show();

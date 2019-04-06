@@ -22,6 +22,7 @@ import com.example.adnanshaukat.myapplication.Modals.Order;
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.INotification;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.IOrder;
+import com.example.adnanshaukat.myapplication.View.Customer.FragmentDriverProfileForCustomer;
 import com.example.adnanshaukat.myapplication.View.Customer.FragmentListDriverWRTOrder;
 import com.example.adnanshaukat.myapplication.View.Customer.MainActivityCustomer;
 import com.example.adnanshaukat.myapplication.View.Driver.MainActivityDriver;
@@ -43,9 +44,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class DriverRecyclerViewWrtOrderAdapter extends RecyclerView.Adapter<DriverRecyclerViewWrtOrderAdapter.MyViewHolder> {
     Context mContext;
     List<DriverDetailsWrtOrder> mDriver;
-    public DriverRecyclerViewWrtOrderAdapter(Context context, List<DriverDetailsWrtOrder> users){
+    int mOrder_id;
+    public DriverRecyclerViewWrtOrderAdapter(Context context, List<DriverDetailsWrtOrder> users, int order_id){
         mContext = context;
         mDriver = users;
+        mOrder_id = order_id;
     }
 
     @Override
@@ -75,68 +78,24 @@ public class DriverRecyclerViewWrtOrderAdapter extends RecyclerView.Adapter<Driv
         holder.setItemClickListner(new ItemClickListner() {
             @Override
             public void onClick(View view, int position) {
-                //Toast.makeText(mContext, mDriver.get(position).getFirst_name(), Toast.LENGTH_SHORT).show();
                 MainActivityCustomer activity = (MainActivityCustomer)mContext;
-
                 Bundle bundle = new Bundle();
                 DriverDetailsWrtOrder user = mDriver.get(position);
+                bundle.putSerializable("driver_id", user.getUser_id());
+                bundle.putSerializable("order_id", mOrder_id);
                 bundle.putSerializable("user_from_driver_list", user);
                 bundle.putString("transporter_id", Integer.toString(user.getTransporter_id()));
-                //Toast.makeText(activity, "Will be available soon :-)", Toast.LENGTH_SHORT).show();
 
-                Notification notification = new Notification(0, "New Order from customer", user.getUser_id(), 0, 0);
-                InsertNotification(notification);
+                FragmentDriverProfileForCustomer fragment = new FragmentDriverProfileForCustomer();
+                fragment.setArguments(bundle);
 
-
-//                FragmentUserProfileForDriverFromTransporter fragment = new FragmentUserProfileForDriverFromTransporter();
-//                fragment.setArguments(bundle);
-//
-//                activity.getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right).
-//                        replace(R.id.main_content_frame_transporter_container, fragment).
-//                        addToBackStack(null).
-//                        commit();
+                activity.getSupportFragmentManager().beginTransaction().
+                        setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right).
+                        replace(R.id.main_content_frame_customer_container, fragment).
+                        addToBackStack(null).
+                        commit();
             }
         });
-    }
-
-    public void InsertNotification(Notification notification){
-        try {
-            OkHttpClient.Builder client = new OkHttpClient.Builder();
-            client.connectTimeout(30, TimeUnit.SECONDS);
-            client.readTimeout(30, TimeUnit.SECONDS);
-            client.writeTimeout(30, TimeUnit.SECONDS);
-
-            retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
-                    .baseUrl(INotification.BASE_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .client(client.build())
-                    .build();
-
-            INotification api = retrofit.create(INotification.class);
-
-            Call<Void> call = api.InsertNotification(notification);
-
-            call.enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                    Log.e("RESPONSE BODY", response.message());
-                    Log.e("RESPONSE BODY", response + "");
-                    Toast.makeText(mContext, "Driver will be notified!", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-                    Log.e("FAILURE", t.getMessage());
-                    Log.e("FAILURE", t.toString());
-                    Toast.makeText(mContext, "Failure: " + t.getMessage(), Toast.LENGTH_LONG).show();
-                    //ProgressDialogManager.closeProgressDialog(progressDialog);
-                }
-            });
-        } catch (Exception ex) {
-            Log.e("ERROR", ex.toString());
-            //ProgressDialogManager.closeProgressDialog(progressDialog);
-            Toast.makeText(mContext, "Some error occour, please try again", Toast.LENGTH_SHORT).show();
-        }
     }
 
     @Override

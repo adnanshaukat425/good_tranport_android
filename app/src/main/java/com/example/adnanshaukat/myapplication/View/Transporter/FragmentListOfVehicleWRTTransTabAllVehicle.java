@@ -54,7 +54,7 @@ public class FragmentListOfVehicleWRTTransTabAllVehicle extends Fragment {
         getVehicles(Integer.toString(user.getUser_id()));
     }
 
-    private List<User> getVehicles(String transporter_id) {
+    private List<User> getVehicles(final String transporter_id) {
         progressDialog = ProgressDialogManager.showProgressDialogWithTitle(getContext(), "Loading Vehicle", "Please wait");
         final List<User> result_list = new ArrayList<>();
         try {
@@ -83,7 +83,7 @@ public class FragmentListOfVehicleWRTTransTabAllVehicle extends Fragment {
                     if(vehicles!=null && vehicles.size() > 0) {
                         ProgressDialogManager.closeProgressDialog(progressDialog);
                         RecyclerView recyclerView  = (RecyclerView)view.findViewById(R.id.fragment_list_of_all_vehicle_trans_recycler_view);
-                        VehiclesRecyclerViewAdapter adapter = new VehiclesRecyclerViewAdapter(getContext(), vehicles);
+                        VehiclesRecyclerViewAdapter adapter = new VehiclesRecyclerViewAdapter(getContext(), vehicles, transporter_id);
                         final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
                         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                         recyclerView.setLayoutManager(layoutManager);

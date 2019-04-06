@@ -2,6 +2,8 @@ package com.example.adnanshaukat.myapplication.RetrofitInterfaces;
 
 import com.example.adnanshaukat.myapplication.Modals.Order;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -20,4 +22,10 @@ public interface IOrder {
 
     @POST("place_order")
     Call<Order> place_order(@Body Order order);
+
+    @GET("request_driver_for_order")
+    Call<Object> request_driver_for_order(@Query("order_id") String order_id, @Query("customer_id") String customer_id, @Query("driver_id") String driver_id);
+
+    @GET("get_all_orders_of_customer")
+    Call<Object> get_all_orders_of_customer(@Query("customer_id") int customer_id);
 }

@@ -26,4 +26,11 @@ public interface IVehicle {
 
     @POST("add_vehicle_wrt_transporter")
     Call<DBVehicle> add_vehicle_wrt_transporter(@Body DBVehicle vehicle);
+
+    @POST("update_vehicle_wrt_transporter")
+    Call<DBVehicle> update_vehicle_wrt_transporter(@Body DBVehicle vehicle);
+
+
+    @GET("get_vehicle")
+    Call<DBVehicle> get_vehicle(@Query("vehicle_id") int vehicle_id);
 }

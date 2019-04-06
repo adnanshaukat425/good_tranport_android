@@ -25,6 +25,7 @@ import com.example.adnanshaukat.myapplication.Modals.SQLiteDBUsersHandler;
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.RetrofitManager;
+import com.example.adnanshaukat.myapplication.View.Driver.FragmentOrdersListForDriver;
 import com.example.adnanshaukat.myapplication.View.FragmentUserProfile;
 import com.example.adnanshaukat.myapplication.View.LoginActivity;
 import com.squareup.picasso.Picasso;
@@ -163,7 +164,6 @@ public class MainActivityCustomer extends AppCompatActivity
                 getSupportFragmentManager().popBackStackImmediate();
             }
         }
-
         Log.e("Fragments Count",String.valueOf(getSupportFragmentManager().getBackStackEntryCount()));
 
         if(id == R.id.nav_c_dashboard){
@@ -177,7 +177,6 @@ public class MainActivityCustomer extends AppCompatActivity
                     addToBackStack(null).
                     commit();
         }
-
         if (id == R.id.nav_c_place_order) {
             this.setTitle("Place Order");
             getSupportFragmentManager().beginTransaction().
@@ -189,6 +188,18 @@ public class MainActivityCustomer extends AppCompatActivity
         else if (id == R.id.nav_c_view_profile) {
             this.setTitle("User Profile");
             viewProfile();
+        }
+        else if(id == R.id.nav_c_view_order_details){
+            FragmentOrderListForCustomer fragment = new FragmentOrderListForCustomer();
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("user", user);
+            this.setTitle("Order List");
+            fragment.setArguments(bundle);
+            getSupportFragmentManager().beginTransaction().
+                    setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out).
+                    replace(R.id.main_content_frame_customer_container, fragment).
+                    addToBackStack(null).
+                    commit();
         }
         else if(id == R.id.nav_c_logout){
             if(logout()){

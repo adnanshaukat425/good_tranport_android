@@ -228,7 +228,7 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
         }
 
         if (id == R.id.nav_t_add_driver){
-            bundle.putString("trasnporter_id",String.valueOf(user.getUser_id()));
+            bundle.putString("transporter_id",String.valueOf(user.getUser_id()));
             FragmentAddDriverWETTransporter fragmentAddDriverWETTransporter = new FragmentAddDriverWETTransporter();
             fragmentAddDriverWETTransporter.setArguments(bundle);
 
@@ -251,7 +251,7 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
         }
 
         if (id == R.id.nav_t_add_vehicles){
-            bundle.putString("trasnporter_id",String.valueOf(user.getUser_id()));
+            bundle.putString("transporter_id",String.valueOf(user.getUser_id()));
             FragmentAddVehicleWRTTransporter fragment = new FragmentAddVehicleWRTTransporter();
             fragment.setArguments(bundle);
             this.setTitle("Add Vehicles");
