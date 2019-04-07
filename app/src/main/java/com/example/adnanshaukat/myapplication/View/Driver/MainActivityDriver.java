@@ -17,6 +17,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -29,7 +30,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,10 +40,12 @@ import com.example.adnanshaukat.myapplication.GlobalClasses.LocationController;
 import com.example.adnanshaukat.myapplication.GlobalClasses.MyApplication;
 import com.example.adnanshaukat.myapplication.Modals.Notification;
 import com.example.adnanshaukat.myapplication.Modals.SQLiteDBUsersHandler;
+import com.example.adnanshaukat.myapplication.Modals.SignalrTrackingManager;
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.INotification;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.RetrofitManager;
+import com.example.adnanshaukat.myapplication.TrackingService;
 import com.example.adnanshaukat.myapplication.View.LoginActivity;
 import com.example.adnanshaukat.myapplication.View.MapsActivity;
 import com.squareup.picasso.Picasso;
@@ -64,6 +69,8 @@ public class MainActivityDriver extends AppCompatActivity implements NavigationV
     String latitude;
     String longitude;
     String CHANNEL_ID = "111";
+    Switch switch_tracking;
+    private static final int PERMISSIONS_REQUEST = 1;
 
     private static final int REQUEST_LOCATION = 1;
     LocationManager locationManager;
@@ -305,6 +312,65 @@ public class MainActivityDriver extends AppCompatActivity implements NavigationV
                 });
         final AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+
+        MenuItem item = (MenuItem) menu.findItem(R.id.switchId);
+        item.setActionView(R.layout.switch_layout);
+        switch_tracking = item.getActionView().findViewById(R.id.switchAB);
+
+        switch_tracking.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,
+                                         boolean isChecked) {
+                if (isChecked) {
+                    Toast.makeText(getApplication(), "Tracking Started", Toast.LENGTH_SHORT)
+                            .show();
+
+                    LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+                    if (!lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                        Toast.makeText(getApplicationContext(), "Please enable location services", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+
+                    // Check location permission is granted - if it is, start
+                    // the service, otherwise request the permission
+                    int permission = ContextCompat.checkSelfPermission(MainActivityDriver.this,
+                            Manifest.permission.ACCESS_FINE_LOCATION);
+                    if (permission == PackageManager.PERMISSION_GRANTED) {
+                        startTrackerService();
+                    } else {
+                        ActivityCompat.requestPermissions(MainActivityDriver.this,
+                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                PERMISSIONS_REQUEST);
+                    }
+
+                } else {
+                    Toast.makeText(getApplication(), "Tracking Stopped", Toast.LENGTH_SHORT)
+                            .show();
+                }
+            }
+        });
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[]
+            grantResults) {
+        if (requestCode == PERMISSIONS_REQUEST && grantResults.length == 1
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            // Start the service when the permission is granted
+            startTrackerService();
+        } else {
+            finish();
+        }
+    }
+
+    private void startTrackerService() {
+        startService(new Intent(this, TrackingService.class));
+        finish();
     }
 
     public void getNotification(){

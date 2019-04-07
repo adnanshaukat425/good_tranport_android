@@ -1,0 +1,35 @@
+{
+  "project_info": {
+    "project_number": "89086494156",
+    "firebase_url": "https://smarttransport-030319.firebaseio.com",
+    "project_id": "smarttransport-030319",
+    "storage_bucket": "smarttransport-030319.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:89086494156:android:e45ad91f4f1f75c1",
+        "android_client_info": {
+          "package_name": "com.example.adnanshaukat.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyACQa6yDTz 2JXtKri14EUPH5MldrkcR2Lc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "89086494156-08tls4tcc765vhug80t5c1avsuqla2la.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

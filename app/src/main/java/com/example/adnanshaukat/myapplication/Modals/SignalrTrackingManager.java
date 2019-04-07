@@ -1,15 +1,23 @@
 package com.example.adnanshaukat.myapplication.Modals;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.*;
+import android.os.AsyncTask;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.RetrofitManager;
+import com.example.adnanshaukat.myapplication.View.Driver.MainActivityDriver;
 import com.example.adnanshaukat.myapplication.View.MapsActivity;
 
+import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
 import microsoft.aspnet.signalr.client.Credentials;
@@ -33,8 +41,17 @@ public class SignalrTrackingManager {
     Handler mHandler = new Handler();
     Context context;
     String CHANNEL_ID = "111";
-    public SignalrTrackingManager(Context context){
+    private static SignalrTrackingManager signalrTrackingManager = new SignalrTrackingManager();
+    private SignalrTrackingManager(){
+    }
+
+    public static SignalrTrackingManager SignalrTrackingManager(){
+        return signalrTrackingManager;
+    }
+
+    public SignalrTrackingManager setContext(Context context){
         this.context = context;
+        return this;
     }
 
     public void connectToSignalR(final int user_id){
@@ -75,8 +92,6 @@ public class SignalrTrackingManager {
             }
         }, Route.class);
 
-        //hubProxy.invoke("insert_location", new Route(0, 1, "24.00", "67.25151", null));
-//
 ////        hubProxy.on("sendMessage", new SubscriptionHandler2<String ,String>() {
 ////
 ////            @Override
@@ -98,7 +113,15 @@ public class SignalrTrackingManager {
         }
     }
 
+    public void insertLocation(String latitude, String longitude, int order_detail_id){
+        hubProxy.invoke("InsertLocation", new Route(0, order_detail_id, latitude, longitude, null));
+    }
+
     public void disconnect(){
         hubConnection.stop();
+    }
+
+    public void StartTracking(){
+
     }
 }
