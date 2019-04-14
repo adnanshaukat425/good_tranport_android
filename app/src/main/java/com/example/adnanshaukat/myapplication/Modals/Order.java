@@ -1,15 +1,18 @@
 package com.example.adnanshaukat.myapplication.Modals;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by AdnanShaukat on 01/12/2018.
  */
 
-public class Order {
+@SuppressWarnings("Serial")
+public class Order implements Serializable{
     public int order_id;
     public int cargo_type_id;
     public int container_type_id;
+    public int customer_id;
     public int vehicle_type_id;
     public int weight_catagory_id;
     public float cargo_volume;
@@ -28,7 +31,7 @@ public class Order {
 
     }
 
-    public Order(int order_id, int cargo_type_id, int container_type_id, int vehicle_type_id, int weight_catagory_id, float cargo_volume, int weight_unit_id, int source_id, int destination_id, boolean is_labour_required, float labour_cost, int labour_quantity, String description, int payment_type_id, String creation_datetime, String order_datetime) {
+    public Order(int order_id, int cargo_type_id, int container_type_id, int vehicle_type_id, int weight_catagory_id, float cargo_volume, int weight_unit_id, int source_id, int destination_id, boolean is_labour_required, float labour_cost, int labour_quantity, String description, int payment_type_id, String creation_datetime, String order_datetime, int customer_id) {
         this.order_id = order_id;
         this.cargo_type_id = cargo_type_id;
         this.container_type_id = container_type_id;
@@ -45,6 +48,7 @@ public class Order {
         this.payment_type_id = payment_type_id;
         this.creation_datetime = creation_datetime;
         this.order_datetime = order_datetime;
+        this.customer_id = customer_id;
     }
 
     public int getOrder_id() {
@@ -173,5 +177,13 @@ public class Order {
 
     public void setOrder_datetime(String order_datetime) {
         this.order_datetime = order_datetime;
+    }
+
+    public int getCustomer_id() {
+        return customer_id;
+    }
+
+    public void setCustomer_id(int customer_id) {
+        this.customer_id = customer_id;
     }
 }

@@ -29,6 +29,7 @@ import com.example.adnanshaukat.myapplication.Modals.Location;
 import com.example.adnanshaukat.myapplication.Modals.MeasurementUnit;
 import com.example.adnanshaukat.myapplication.Modals.PaymentType;
 import com.example.adnanshaukat.myapplication.Modals.PreOrderDataWrapperClass;
+import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.Modals.WeightCatagory;
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.ILocation;
@@ -60,28 +61,23 @@ public class FragmentCreateOrderStep1 extends Fragment {
     TextInputLayout tilCargoVolume;
     int day, month, year;
     String update_date;
+    User mUser;
 
     List<PaymentType> paymentType;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_create_order_step1, container, false);
+        Bundle argument = getArguments();
+
+        mUser =(User)argument.getSerializable("user");
+
+        Log.e("CreateOrderStep1", "Customer_Id " + mUser.getUser_id());
+
         populateUI();
         getPreOrderFormData();
         showHideUI("FCL");
         return view;
-    }
-
-    @Override
-    public void onPause() {
-        Log.e("PAUSE", "PAUSE");
-        super.onPause();
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.e("CREATE", "CREATE");
-        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -129,6 +125,7 @@ public class FragmentCreateOrderStep1 extends Fragment {
                 bundle.putSerializable("measurementUnit", measurementUnit);
                 bundle.putSerializable("source", source);
                 bundle.putString("paymentType", gson.toJson(paymentType));;
+                bundle.putSerializable("user", mUser);
 
                 FragmentCreateOrderStep2 step_2 = new FragmentCreateOrderStep2();
                 step_2.setArguments(bundle);
@@ -258,8 +255,8 @@ public class FragmentCreateOrderStep1 extends Fragment {
 
                 @Override
                 public void onFailure(Call<Object> call, Throwable t) {
-                    Log.e("FAILURE", t.getMessage());
-                    Log.e("FAILURE", t.toString());
+                    Log.e("CreateOrderStep1", "FAILURE");
+                    Log.e("CreateOrderStep1", "FAILURE");
                 }
             });
         } catch (Exception ex) {

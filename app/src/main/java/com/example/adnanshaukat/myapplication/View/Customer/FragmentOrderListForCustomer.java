@@ -24,6 +24,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -49,16 +50,14 @@ public class FragmentOrderListForCustomer extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_order_list_for_customer, container, false);
-        populateUI();
+        getActivity().setTitle("Orders");
 
+        populateUI();
         Bundle bundle = getArguments();
         mUser = (User) bundle.getSerializable("user");
-
-        Log.e("CUstomer_id", mUser.getUser_id() + "");
-
         getOrders(mUser.getUser_id());
 
-        return super.onCreateView(inflater, container, savedInstanceState);
+        return view;
     }
 
     private void populateUI() {
@@ -92,28 +91,36 @@ public class FragmentOrderListForCustomer extends Fragment {
                         Log.e("Response Driver", response_json.toString());
                         Gson gson = new Gson();
                         try {
-                            JsonObject obj = gson.fromJson(response_json.toString(), JsonObject.class);
-                            String driver_json = obj.get("drivers").toString();
-                            Log.e("DRIVER JSON", driver_json);
-                            JsonArray json_array = gson.fromJson(driver_json, JsonArray.class);
+                            JsonArray json_array = gson.fromJson(response_json.toString(), JsonArray.class);
+//                            String driver_json = obj.get("drivers").toString();
+//                            Log.e("DRIVER JSON", driver_json);
+                            //JsonArray json_array = gson.fromJson(driver_json, JsonArray.class);
 
-                            List<Order> order = new ArrayList<Order>();
-
+                            List<HashMap<String, String>> order = new ArrayList<HashMap<String, String>>();
+                            Log.e("Array Size", json_array.size() + "");
                             for (int i = 0; i < json_array.size(); i++) {
-                                Order or = new Order();
-                                or.setOrder_id(Integer.parseInt(json_array.get(i).getAsJsonObject().get("order_id").toString()));
-                                or.setCreation_datetime(json_array.get(i).getAsJsonObject().get("creation_datetime").toString());
-                                or.setDescription("");
+                                HashMap<String, String> or = new HashMap<String, String>();
+                                or.put("order_id",json_array.get(i).getAsJsonObject().get("order_id") != null ? json_array.get(i).getAsJsonObject().get("order_id").toString() : "");
+                                or.put("creation_datetime",json_array.get(i).getAsJsonObject().get("creation_datetime") != null ? json_array.get(i).getAsJsonObject().get("creation_datetime").toString() : "");
+                                or.put("source", json_array.get(i).getAsJsonObject().get("Source") != null ? json_array.get(i).getAsJsonObject().get("Source").toString() : "");
+                                or.put("destination", json_array.get(i).getAsJsonObject().get("Destination") != null ? json_array.get(i).getAsJsonObject().get("Destination").toString() : "");
+                                or.put("status", json_array.get(i).getAsJsonObject().get("status_type") != null ? json_array.get(i).getAsJsonObject().get("status_type").toString() : "");
 
                                 order.add(or);
                             }
+
+                            Log.e("order Size", order.size() + "");
+
                             OrdersAdapter adapter = new OrdersAdapter(getContext(), order);
-                            LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+                            final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
                             layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                             recyclerView.setLayoutManager(layoutManager);
                             recyclerView.setAdapter(adapter);
+
+
                         } catch (Exception ex) {
-                            Toast.makeText(getContext(), "No Orders found", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "No Orders found!!", Toast.LENGTH_SHORT).show();
+                            Log.e("OrderLstForC", ex.toString() + ex.getStackTrace());
                         }
                     } else {
                         Toast.makeText(getContext(), "No Orders found", Toast.LENGTH_SHORT).show();

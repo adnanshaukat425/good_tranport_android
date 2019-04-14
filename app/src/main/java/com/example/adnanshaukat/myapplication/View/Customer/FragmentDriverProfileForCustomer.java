@@ -85,7 +85,7 @@ public class FragmentDriverProfileForCustomer extends Fragment {
                 Log.e("Driver_id", driver_id);
                 Log.e("Customer_id", Integer.toString(mUser.getUser_id()));
                 Log.e("Order_id", order_id);
-                requestDriverForOrder(driver_id, Integer.toString(mUser.getUser_id()), order_id);
+                requestDriverForOrder(driver_id, order_id);
             }
         });
         return view;
@@ -177,7 +177,7 @@ public class FragmentDriverProfileForCustomer extends Fragment {
         }
     }
 
-    private void requestDriverForOrder(String driver_id, String customer_id, String order_id) {
+    private void requestDriverForOrder(String driver_id, String order_id) {
         progressDialog = ProgressDialogManager.showProgressDialogWithTitle(getContext(), "Loading Driver Details", "Please wait");
         try {
             OkHttpClient.Builder client = new OkHttpClient.Builder();
@@ -193,7 +193,7 @@ public class FragmentDriverProfileForCustomer extends Fragment {
 
             IOrder api = retrofit.create(IOrder.class);
 
-            Call<Object> call = api.request_driver_for_order(order_id, customer_id, driver_id);
+            Call<Object> call = api.request_driver_for_order(order_id, driver_id);
 
             call.enqueue(new Callback<Object>() {
                 @Override

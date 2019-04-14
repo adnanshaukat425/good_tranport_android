@@ -24,7 +24,7 @@ public interface IOrder {
     Call<Order> place_order(@Body Order order);
 
     @GET("request_driver_for_order")
-    Call<Object> request_driver_for_order(@Query("order_id") String order_id, @Query("customer_id") String customer_id, @Query("driver_id") String driver_id);
+    Call<Object> request_driver_for_order(@Query("order_id") String order_id, @Query("driver_id") String driver_id);
 
     @GET("get_all_orders_of_customer")
     Call<Object> get_all_orders_of_customer(@Query("customer_id") int customer_id);

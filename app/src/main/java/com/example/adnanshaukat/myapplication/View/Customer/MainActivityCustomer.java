@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
@@ -179,9 +180,16 @@ public class MainActivityCustomer extends AppCompatActivity
         }
         if (id == R.id.nav_c_place_order) {
             this.setTitle("Place Order");
+
+            FragmentCreateOrderStep1 fragment = new FragmentCreateOrderStep1();
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("user", user);
+
+            fragment.setArguments(bundle);
+
             getSupportFragmentManager().beginTransaction().
                     setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right).
-                    replace(R.id.main_content_frame_customer_container, new FragmentCreateOrderStep1()).
+                    replace(R.id.main_content_frame_customer_container, fragment).
                     addToBackStack(null).
                     commit();
         }

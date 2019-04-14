@@ -3,6 +3,7 @@ package com.example.adnanshaukat.myapplication.Adapters;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.example.adnanshaukat.myapplication.View.Customer.FragmentListDriverWR
 import com.example.adnanshaukat.myapplication.View.Customer.MainActivityCustomer;
 import com.google.gson.Gson;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -24,24 +26,28 @@ import java.util.List;
 public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.MyViewHolder> {
 
     Context mContext;
-    List<Order> mOrders;
-    public OrdersAdapter(Context context, List<Order> orders){
+    List<HashMap<String, String>> mOrders;
+    public OrdersAdapter(Context context, List<HashMap<String, String>> orders){
         mContext = context;
         mOrders = orders;
     }
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(mContext).inflate(R.layout.driver_list, parent, false);
+        View v = LayoutInflater.from(mContext).inflate(R.layout.vehicle_list, parent, false);
         MyViewHolder viewHolder = new MyViewHolder(v);
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-            holder.tv_order_id.setText(mOrders.get(position).getOrder_id());
-            holder.tv_creation_date.setText(mOrders.get(position).getCreation_datetime());
-            holder.tv_order_status.setText(mOrders.get(position).getDescription());
+
+        Log.e("FROM Order Adapter", position + " " + mOrders.get(position).get("order_id") + "");
+
+        holder.tv_order_status.setText(mOrders.get(position).get("status").replace("\"", ""));
+        holder.tv_source_destination.setText(mOrders.get(position).get("source").replace("\"", "") + " => " + mOrders.get(position).get("destination").replace("\"", ""));
+        holder.tv_creation_datetime.setText((mOrders.get(position).get("creation_datetime").replace("\"", "")));
+
 
         holder.setItemClickListner(new ItemClickListner() {
             @Override
@@ -50,9 +56,13 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.MyViewHold
                 MainActivityCustomer activity = (MainActivityCustomer)mContext;
 
                 Bundle bundle = new Bundle();
-//                User user = mUsers.get(position);
-                Gson gson = new Gson();
-                bundle.putSerializable("order", gson.toJson(mOrders.get(position)));
+                Order ord = new Order();
+
+                ord.setOrder_id(Integer.parseInt(mOrders.get(position).get("order_id").toString()));
+
+                bundle.putSerializable("order", ord);
+                bundle.putString("show_wrt_order_id", "true");
+
                 FragmentListDriverWRTOrder fragment = new FragmentListDriverWRTOrder();
                 fragment.setArguments(bundle);
 
@@ -72,15 +82,15 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.MyViewHold
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         ImageView profile_image;
-        TextView tv_order_id, tv_creation_date, tv_order_status;
+        TextView tv_creation_datetime, tv_source_destination, tv_order_status;
         ItemClickListner itemClickListner;
 
         public MyViewHolder(View v){
             super(v);
             profile_image = (ImageView)v.findViewById(R.id.vehicle_list_vehicle_image_view);
-            tv_order_id = (TextView)v.findViewById(R.id.vehicle_list_driver_name);
-            tv_order_status = (TextView)v.findViewById(R.id.vehicle_list_vehicle_type);
-            tv_creation_date = (TextView)v.findViewById(R.id.vehicle_list_vehicle_number);
+            tv_order_status = (TextView)v.findViewById(R.id.vehicle_list_driver_name);
+            tv_creation_datetime = (TextView)v.findViewById(R.id.vehicle_list_vehicle_type);
+            tv_source_destination = (TextView)v.findViewById(R.id.vehicle_list_vehicle_number);
             v.setOnClickListener(this);
         }
 

@@ -21,6 +21,7 @@ import com.example.adnanshaukat.myapplication.GlobalClasses.MyApplication;
 import com.example.adnanshaukat.myapplication.GlobalClasses.ProgressDialogManager;
 import com.example.adnanshaukat.myapplication.Modals.SQLiteDBUsersHandler;
 import com.example.adnanshaukat.myapplication.Modals.SignalrNotificationManager;
+import com.example.adnanshaukat.myapplication.Modals.SignalrTrackingManager;
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.ILogin;
@@ -123,7 +124,11 @@ public class LoginActivity extends AppCompatActivity {
                             SignalrNotificationManager signalrNotificationManager = new SignalrNotificationManager(getApplicationContext());
                             signalrNotificationManager.connectToSignalR(user.getUser_id());
 
-                                if (!from_system) {
+                            SignalrTrackingManager signalrTrackingManager = SignalrTrackingManager.SignalrTrackingManager();
+                            signalrTrackingManager.setContext(getApplicationContext());
+                            signalrTrackingManager.connectToSignalR(user.getUser_id(), 1);
+
+                            if (!from_system) {
                                     if (storeCredentialsToSQLite(user)){
                                         //Toast.makeText(LoginActivity.this, "Welcome " + user.getFirst_name().toString(), Toast.LENGTH_LONG).show();
                                         Log.e("USER TYPE ID", user_type_id + "");

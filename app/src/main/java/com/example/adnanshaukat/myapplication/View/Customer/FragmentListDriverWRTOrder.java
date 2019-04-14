@@ -1,5 +1,6 @@
 package com.example.adnanshaukat.myapplication.View.Customer;
 
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.app.ProgressDialog;
 import android.os.Bundle;
@@ -46,17 +47,51 @@ public class FragmentListDriverWRTOrder extends Fragment {
     ProgressDialog progressDialog;
     Order order;
 
+    String show_wrt_order_id = "";
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_list_driver_wrt_order, container, false);
+        getActivity().setTitle("Drivers");
+
         populateUI();
         Bundle argument = getArguments();
+        String order_details =  "";
         if (argument != null) {
-            String order_details = argument.getString("order");
-            Log.e("order_details", order_details);
-            Gson gson = new Gson();
-            order = gson.fromJson(order_details, Order.class);
+            show_wrt_order_id = argument.getString("show_wrt_order_id");
+            Log.e("FragLstDriWrtOrd", show_wrt_order_id);
+            if(show_wrt_order_id == "false"){
+                order_details = argument.getString("order");
+                Log.e("order_details", order_details);
+                Gson gson = new Gson();
+                order = gson.fromJson(order_details, Order.class);
+            }
+            else if(show_wrt_order_id == "true"){
+                order = (Order)argument.getSerializable("order");
+            }
+        }
+
+        if(show_wrt_order_id == "true"){
+            final FragmentListDriverWRTOrder fragmentListDriverWRTOrder = new FragmentListDriverWRTOrder();
+            view.findViewById(R.id.fab_driver_list_assing_new_driver).setVisibility(View.VISIBLE);
+
+            FloatingActionButton fab = (FloatingActionButton)view.findViewById(R.id.fab_driver_list_assing_new_driver);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getFragmentManager().beginTransaction().
+                            setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out).
+                            replace(R.id.main_content_frame_transporter_container, fragmentListDriverWRTOrder).
+                            addToBackStack(null).
+                            commit();
+                }
+            });
+
+
+        }
+        else if(show_wrt_order_id == "false"){
+            view.findViewById(R.id.fab_driver_list_assing_new_driver).setVisibility(View.GONE);
         }
         return view;
     }
@@ -64,10 +99,10 @@ public class FragmentListDriverWRTOrder extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        getDriversWrtOrder(order);
+            getDriversWrtOrder(order, show_wrt_order_id);
     }
 
-    private void getDriversWrtOrder(final Order order) {
+    private void getDriversWrtOrder(final Order order, String show_wrt_order_id) {
         progressDialog = ProgressDialogManager.showProgressDialogWithTitle(getContext(), "Loading Active Drivers", "Please wait");
         try {
             OkHttpClient.Builder client = new OkHttpClient.Builder();
@@ -83,12 +118,20 @@ public class FragmentListDriverWRTOrder extends Fragment {
 
             IDriver api = retrofit.create(IDriver.class);
 
-            Call<Object> call = api.get_driver_wrt_order(order);
+            Call<Object> call = null;
+            if(show_wrt_order_id == "false"){
+                call = api.get_driver_wrt_order(order);
+            }
+            else{
+                Log.e("FraglstDriWrtOrd", "calling get_driver_wrt_order_id " + show_wrt_order_id);
+                call = api.get_driver_wrt_order_id(order.getOrder_id() + "");
+            }
 
             call.enqueue(new Callback<Object>() {
                 @Override
                 public void onResponse(Call<Object> call, Response<Object> response) {
                     Object response_json = response.body();
+                    Log.e("FraglstDriWrtOrd", response.toString());
                     if(response_json != null) {
 
                         Log.e("Response Driver", response_json.toString());
@@ -101,13 +144,17 @@ public class FragmentListDriverWRTOrder extends Fragment {
                         List<DriverDetailsWrtOrder> drivers = gson.fromJson(driver_json, listType);
 
 //                        List<DriverDetailsWrtOrder> drivers = (List<DriverDetailsWrtOrder>)gson.fromJson(driver_json, List.class);
-                        Log.e("DRIVER DETAILS First", drivers.get(0).getFirst_name());
-
-                        DriverRecyclerViewWrtOrderAdapter adapter = new DriverRecyclerViewWrtOrderAdapter(getContext(), drivers, order.getOrder_id());
-                        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-                        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-                        rv.setLayoutManager(layoutManager);
-                        rv.setAdapter(adapter);
+                        if(drivers.size() > 0){
+                            Log.e("DRIVER DETAILS First", drivers.get(0).getFirst_name());
+                            DriverRecyclerViewWrtOrderAdapter adapter = new DriverRecyclerViewWrtOrderAdapter(getContext(), drivers, order.getOrder_id());
+                            LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+                            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                            rv.setLayoutManager(layoutManager);
+                            rv.setAdapter(adapter);
+                        }
+                        else{
+                            Toast.makeText(getContext(), "No drivers found", Toast.LENGTH_SHORT).show();
+                        }
                     }
                     else{
                         Toast.makeText(getContext(), "No drivers found", Toast.LENGTH_SHORT).show();

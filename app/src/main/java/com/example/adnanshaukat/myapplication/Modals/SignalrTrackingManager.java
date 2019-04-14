@@ -17,6 +17,7 @@ import com.example.adnanshaukat.myapplication.RetrofitInterfaces.RetrofitManager
 import com.example.adnanshaukat.myapplication.View.Driver.MainActivityDriver;
 import com.example.adnanshaukat.myapplication.View.MapsActivity;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
@@ -34,14 +35,15 @@ import microsoft.aspnet.signalr.client.transport.ServerSentEventsTransport;
 /**
  * Created by AdnanShaukat on 31/03/2019.
  */
-
-public class SignalrTrackingManager {
-    public HubConnection hubConnection;
-    public HubProxy hubProxy;
-    Handler mHandler = new Handler();
-    Context context;
-    String CHANNEL_ID = "111";
+@SuppressWarnings("serial")
+public class SignalrTrackingManager implements Serializable {
+    private HubConnection hubConnection;
+    private HubProxy hubProxy;
+    private Handler mHandler = new Handler();
+    private Context context;
+    private String CHANNEL_ID = "111";
     private static SignalrTrackingManager signalrTrackingManager = new SignalrTrackingManager();
+
     private SignalrTrackingManager(){
     }
 
@@ -54,13 +56,14 @@ public class SignalrTrackingManager {
         return this;
     }
 
-    public void connectToSignalR(final int user_id){
-        String serverUrl="http://" + RetrofitManager.ip + "/" + RetrofitManager.domain + "/signalr"; // connect to signalr server
+    public void connectToSignalR(final int user_id, final int order_detail_id){
+        String serverUrl = "http://" + RetrofitManager.ip + "/" + RetrofitManager.domain + "/signalr"; // connect to signalr server
         Platform.loadPlatformComponent(new AndroidPlatformComponent());
         Credentials credentials = new Credentials() {
             @Override
             public void prepareRequest(Request request) {
-                request.addHeader("user_id", user_id + ""); //get username
+                request.addHeader("user_id", user_id + "");
+                request.addHeader("user_id", order_detail_id + "");
             }
         };
         hubConnection = new HubConnection(serverUrl);
@@ -114,7 +117,10 @@ public class SignalrTrackingManager {
     }
 
     public void insertLocation(String latitude, String longitude, int order_detail_id){
+        Log.e("SignalR", "Invoking Method InsertLocation");
         hubProxy.invoke("InsertLocation", new Route(0, order_detail_id, latitude, longitude, null));
+//        MapsActivity mapsActivity = new MapsActivity();
+//        mapsActivity.updateMap(latitude, longitude);
     }
 
     public void disconnect(){

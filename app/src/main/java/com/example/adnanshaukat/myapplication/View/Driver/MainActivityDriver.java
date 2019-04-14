@@ -48,6 +48,11 @@ import com.example.adnanshaukat.myapplication.RetrofitInterfaces.RetrofitManager
 import com.example.adnanshaukat.myapplication.TrackingService;
 import com.example.adnanshaukat.myapplication.View.LoginActivity;
 import com.example.adnanshaukat.myapplication.View.MapsActivity;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -74,6 +79,9 @@ public class MainActivityDriver extends AppCompatActivity implements NavigationV
 
     private static final int REQUEST_LOCATION = 1;
     LocationManager locationManager;
+
+    Intent serviceIntent;
+    SignalrTrackingManager signalrTrackingManager;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -157,6 +165,31 @@ public class MainActivityDriver extends AppCompatActivity implements NavigationV
             }
         }
         getNotification();
+
+        signalrTrackingManager = SignalrTrackingManager.SignalrTrackingManager();
+        signalrTrackingManager.setContext(getApplicationContext());
+        signalrTrackingManager.connectToSignalR(user.getUser_id(), 1);
+
+//        LocationRequest request = new LocationRequest();
+//        request.setInterval(5000);
+//        request.setFastestInterval(5000);
+//        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+//        FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(this);
+//        int permission = ContextCompat.checkSelfPermission(this,
+//                android.Manifest.permission.ACCESS_FINE_LOCATION);
+//        if (permission == PackageManager.PERMISSION_GRANTED) {
+//            // Request location updates and when an update is
+//            // received, store the location in Firebase
+//            client.requestLocationUpdates(request, new LocationCallback() {
+//                @Override
+//                public void onLocationResult(LocationResult locationResult) {
+//                    Location location = locationResult.getLastLocation();
+//                    if (location != null) {
+//                        Log.d("UPDATE LOCATION", location.toString());
+//                    }
+//                }
+//            }, null);
+//        }
     }
 
     @Override
@@ -332,7 +365,7 @@ public class MainActivityDriver extends AppCompatActivity implements NavigationV
                     LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
                     if (!lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                         Toast.makeText(getApplicationContext(), "Please enable location services", Toast.LENGTH_SHORT).show();
-                        finish();
+                        //finish();
                     }
 
                     // Check location permission is granted - if it is, start
@@ -348,8 +381,12 @@ public class MainActivityDriver extends AppCompatActivity implements NavigationV
                     }
 
                 } else {
-                    Toast.makeText(getApplication(), "Tracking Stopped", Toast.LENGTH_SHORT)
-                            .show();
+                    Intent intent = new Intent(getApplicationContext(), TrackingService.class);
+
+                    if(intent != null){
+                        stopService(serviceIntent);
+                        Toast.makeText(getApplication(), "Tracking Stopped", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
@@ -357,20 +394,21 @@ public class MainActivityDriver extends AppCompatActivity implements NavigationV
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[]
-            grantResults) {
-        if (requestCode == PERMISSIONS_REQUEST && grantResults.length == 1
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        if (requestCode == PERMISSIONS_REQUEST && grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             // Start the service when the permission is granted
             startTrackerService();
         } else {
-            finish();
+            //finish();
         }
     }
 
     private void startTrackerService() {
-        startService(new Intent(this, TrackingService.class));
-        finish();
+        SignalrTrackingManager signalrTrackingManager = SignalrTrackingManager.SignalrTrackingManager();
+        serviceIntent = new Intent(this, TrackingService.class);
+        serviceIntent.putExtra("order_detail_id", "1");
+        startService(serviceIntent);
+        //finish();
     }
 
     public void getNotification(){

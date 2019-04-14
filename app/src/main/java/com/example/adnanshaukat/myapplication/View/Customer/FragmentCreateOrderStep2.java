@@ -2,6 +2,7 @@ package com.example.adnanshaukat.myapplication.View.Customer;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.app.Application;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -23,6 +24,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.adnanshaukat.myapplication.GlobalClasses.MyApplication;
 import com.example.adnanshaukat.myapplication.GlobalClasses.ProgressDialogManager;
 import com.example.adnanshaukat.myapplication.Modals.Cargo;
 import com.example.adnanshaukat.myapplication.Modals.Container;
@@ -31,9 +33,11 @@ import com.example.adnanshaukat.myapplication.Modals.Location;
 import com.example.adnanshaukat.myapplication.Modals.MeasurementUnit;
 import com.example.adnanshaukat.myapplication.Modals.Order;
 import com.example.adnanshaukat.myapplication.Modals.PaymentType;
+import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.Modals.WeightCatagory;
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.IOrder;
+import com.example.adnanshaukat.myapplication.View.LoginActivity;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.jaredrummler.materialspinner.MaterialSpinner;
@@ -85,12 +89,14 @@ public class FragmentCreateOrderStep2 extends Fragment {
     int labour_quantity;
     float labour_cost, cargoVolume;
     String description;
+    User mUser;
 
     ProgressDialog progressDialog;
 
     int FCL_20FT_LABOUR_COST = 4000;
     int FCL_40FT_LABOUR_COST = 7000;
     int LCL_CM3_LABOUR_COST = 200;
+    String TAG = this.getTag();
 
     @Nullable
     @Override
@@ -98,8 +104,9 @@ public class FragmentCreateOrderStep2 extends Fragment {
         view = inflater.inflate(R.layout.fragment_create_order_step2, container, false);
 
         Bundle argument = getArguments();
-        //populateUI();
+        mUser = (User)argument.getSerializable("user");
 
+        //populateUI();
         if (argument != null) {
             String paymentTypeString = argument.getString("paymentType");
             Log.e("PAYMENT TYPE STIRING", paymentTypeString);
@@ -199,6 +206,7 @@ public class FragmentCreateOrderStep2 extends Fragment {
                 catch (Exception ex){
                     labour_quantity = 0;
                 }
+                Log.e(TAG, "Customer_id " + mUser.getUser_id());
 
                 is_labour_required = chkLabourReq.isChecked();
                 paymentType = (PaymentType) spinPaymentType.getItems().get(spinPaymentType.getSelectedIndex());
@@ -207,7 +215,7 @@ public class FragmentCreateOrderStep2 extends Fragment {
                 Order order = new Order(-1, cargoType.getCargo_type_id(), containerType.getContainer_type_id(),
                         containerSize.getVehicle_type_id(), weightCatagory.getWeight_id(), cargoVolume, measurementUnit.unit_id,
                         source.getLocation_id(), destination.getLocation_id(), is_labour_required, labour_cost, labour_quantity,
-                        description, paymentType.payment_type_id, "", "");
+                        description, paymentType.payment_type_id, "", "", mUser.getUser_id());
 
                 Gson gson = new Gson();
                 String order_json = gson.toJson(order);
@@ -255,6 +263,7 @@ public class FragmentCreateOrderStep2 extends Fragment {
                         Bundle bundle =new Bundle();
                         Gson gson = new Gson();
                         bundle.putSerializable("order", gson.toJson(response_order));
+                        bundle.putString("show_wrt_order_id", "false");
 
                         FragmentListDriverWRTOrder fragment_list_driver = new FragmentListDriverWRTOrder();
                         fragment_list_driver.setArguments(bundle);

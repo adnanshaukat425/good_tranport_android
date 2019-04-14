@@ -33,4 +33,7 @@ public interface IDriver {
 
     @GET("get_driver_details_for_customer")
     Call<Object> get_driver_details_for_customer(@Query("driver_id") String driver_id);
+
+    @GET("get_driver_wrt_order_id")
+    Call<Object> get_driver_wrt_order_id(@Query("order_id") String order_id);
 }
