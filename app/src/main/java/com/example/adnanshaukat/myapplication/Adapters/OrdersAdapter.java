@@ -59,6 +59,9 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.MyViewHold
                 Order ord = new Order();
 
                 ord.setOrder_id(Integer.parseInt(mOrders.get(position).get("order_id").toString()));
+                ord.setContainer_type_id(Integer.parseInt(mOrders.get(position).get("container_type_id").toString()));
+                ord.setVehicle_type_id(Integer.parseInt(mOrders.get(position).get("vehicle_type_id").toString()));
+                ord.setSource_id(Integer.parseInt(mOrders.get(position).get("source_id").toString()));
 
                 bundle.putSerializable("order", ord);
                 bundle.putString("show_wrt_order_id", "true");

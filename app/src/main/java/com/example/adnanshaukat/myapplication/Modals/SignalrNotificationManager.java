@@ -121,7 +121,7 @@ public class SignalrNotificationManager {
             signalRFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
-            Log.e("SignalR", e.toString());
+            Log.e("Notification SignalR", e.toString());
             return;
         }
     }

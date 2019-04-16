@@ -41,7 +41,7 @@ public class SignalrTrackingManager implements Serializable {
     private HubProxy hubProxy;
     private Handler mHandler = new Handler();
     private Context context;
-    private String CHANNEL_ID = "111";
+    private String CHANNEL_ID = "1112";
     private static SignalrTrackingManager signalrTrackingManager = new SignalrTrackingManager();
 
     private SignalrTrackingManager(){
@@ -111,14 +111,17 @@ public class SignalrTrackingManager implements Serializable {
             signalRFuture.get();
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
-            Log.e("SignalR", e.toString());
+            Log.e("Tracking SignalR", e.toString());
             return;
         }
     }
 
     public void insertLocation(String latitude, String longitude, int order_detail_id){
-        Log.e("SignalR", "Invoking Method InsertLocation");
+        Log.e("Tracking SignalR", "Invoking Method InsertLocation");
         hubProxy.invoke("InsertLocation", new Route(0, order_detail_id, latitude, longitude, null));
+        MapsActivity mapsActivity = new MapsActivity();
+        mapsActivity.updateMap(latitude, longitude);
+
 //        MapsActivity mapsActivity = new MapsActivity();
 //        mapsActivity.updateMap(latitude, longitude);
     }

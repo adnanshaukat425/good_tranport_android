@@ -100,12 +100,15 @@ public class FragmentOrderListForCustomer extends Fragment {
                             Log.e("Array Size", json_array.size() + "");
                             for (int i = 0; i < json_array.size(); i++) {
                                 HashMap<String, String> or = new HashMap<String, String>();
-                                or.put("order_id",json_array.get(i).getAsJsonObject().get("order_id") != null ? json_array.get(i).getAsJsonObject().get("order_id").toString() : "");
-                                or.put("creation_datetime",json_array.get(i).getAsJsonObject().get("creation_datetime") != null ? json_array.get(i).getAsJsonObject().get("creation_datetime").toString() : "");
-                                or.put("source", json_array.get(i).getAsJsonObject().get("Source") != null ? json_array.get(i).getAsJsonObject().get("Source").toString() : "");
-                                or.put("destination", json_array.get(i).getAsJsonObject().get("Destination") != null ? json_array.get(i).getAsJsonObject().get("Destination").toString() : "");
-                                or.put("status", json_array.get(i).getAsJsonObject().get("status_type") != null ? json_array.get(i).getAsJsonObject().get("status_type").toString() : "");
+                                or.put("order_id",json_array.get(i).getAsJsonObject().get("order_id") != null ? json_array.get(i).getAsJsonObject().get("order_id").toString() : "0");
+                                or.put("creation_datetime",json_array.get(i).getAsJsonObject().get("creation_datetime") != null ? json_array.get(i).getAsJsonObject().get("creation_datetime").toString() : "0");
+                                or.put("source", json_array.get(i).getAsJsonObject().get("Source") != null ? json_array.get(i).getAsJsonObject().get("Source").toString() : "0");
+                                or.put("destination", json_array.get(i).getAsJsonObject().get("Destination") != null ? json_array.get(i).getAsJsonObject().get("Destination").toString() : "0");
+                                or.put("status", json_array.get(i).getAsJsonObject().get("status_type") != null ? json_array.get(i).getAsJsonObject().get("status_type").toString() : "0");
 
+                                or.put("container_type_id", json_array.get(i).getAsJsonObject().get("container_type_id") != null ? json_array.get(i).getAsJsonObject().get("container_type_id").toString() : "0");
+                                or.put("vehicle_type_id", json_array.get(i).getAsJsonObject().get("vehicle_type_id") != null ? json_array.get(i).getAsJsonObject().get("vehicle_type_id").toString() : "0");
+                                or.put("source_id", json_array.get(i).getAsJsonObject().get("source_id") != null ? json_array.get(i).getAsJsonObject().get("source_id").toString() : "0");
                                 order.add(or);
                             }
 

@@ -177,7 +177,7 @@ public class FragmentDriverProfileForCustomer extends Fragment {
         }
     }
 
-    private void requestDriverForOrder(String driver_id, String order_id) {
+    private void requestDriverForOrder(final String driver_id, String order_id) {
         progressDialog = ProgressDialogManager.showProgressDialogWithTitle(getContext(), "Loading Driver Details", "Please wait");
         try {
             OkHttpClient.Builder client = new OkHttpClient.Builder();
@@ -202,8 +202,7 @@ public class FragmentDriverProfileForCustomer extends Fragment {
                     Log.e("RESPONSE MESSAGE", response.message());
                     if (response_json != null) {
                         Notification notification = new Notification(0, "New order from " + mUser.getFirst_name() + " " +
-                                mUser.getLast_name(),
-                                mUser.getUser_id(), 0, 0, "FragmentOrdersListForDriver", "driver", "New Order For You");
+                                mUser.getLast_name(), Integer.parseInt(driver_id), 0, 0, "FragmentOrdersListForDriver", "driver", "New Order For You");
                         notification.pushNotification(getContext());
                         Toast.makeText(getContext(), "Driver notified Successfully!!!", Toast.LENGTH_SHORT).show();
 

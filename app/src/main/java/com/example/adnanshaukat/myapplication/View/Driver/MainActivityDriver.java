@@ -39,6 +39,7 @@ import android.widget.Toast;
 import com.example.adnanshaukat.myapplication.GlobalClasses.LocationController;
 import com.example.adnanshaukat.myapplication.GlobalClasses.MyApplication;
 import com.example.adnanshaukat.myapplication.Modals.Notification;
+import com.example.adnanshaukat.myapplication.Modals.Route;
 import com.example.adnanshaukat.myapplication.Modals.SQLiteDBUsersHandler;
 import com.example.adnanshaukat.myapplication.Modals.SignalrTrackingManager;
 import com.example.adnanshaukat.myapplication.Modals.User;
@@ -384,7 +385,7 @@ public class MainActivityDriver extends AppCompatActivity implements NavigationV
                     Intent intent = new Intent(getApplicationContext(), TrackingService.class);
 
                     if(intent != null){
-                        stopService(serviceIntent);
+                        stopService(intent);
                         Toast.makeText(getApplication(), "Tracking Stopped", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -405,6 +406,7 @@ public class MainActivityDriver extends AppCompatActivity implements NavigationV
 
     private void startTrackerService() {
         SignalrTrackingManager signalrTrackingManager = SignalrTrackingManager.SignalrTrackingManager();
+        //signalrTrackingManager.insertLocation("24.8615715", "67.0732217", 1);
         serviceIntent = new Intent(this, TrackingService.class);
         serviceIntent.putExtra("order_detail_id", "1");
         startService(serviceIntent);

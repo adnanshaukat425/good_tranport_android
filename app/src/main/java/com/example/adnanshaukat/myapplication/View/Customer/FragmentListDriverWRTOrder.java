@@ -53,7 +53,6 @@ public class FragmentListDriverWRTOrder extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_list_driver_wrt_order, container, false);
-        getActivity().setTitle("Drivers");
 
         populateUI();
         Bundle argument = getArguments();
@@ -66,29 +65,23 @@ public class FragmentListDriverWRTOrder extends Fragment {
                 Log.e("order_details", order_details);
                 Gson gson = new Gson();
                 order = gson.fromJson(order_details, Order.class);
+                getActivity().setTitle("Recommended Drivers");
             }
             else if(show_wrt_order_id == "true"){
                 order = (Order)argument.getSerializable("order");
+                getActivity().setTitle("Drivers");
             }
         }
 
         if(show_wrt_order_id == "true"){
-            final FragmentListDriverWRTOrder fragmentListDriverWRTOrder = new FragmentListDriverWRTOrder();
-            view.findViewById(R.id.fab_driver_list_assing_new_driver).setVisibility(View.VISIBLE);
-
             FloatingActionButton fab = (FloatingActionButton)view.findViewById(R.id.fab_driver_list_assing_new_driver);
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    getFragmentManager().beginTransaction().
-                            setCustomAnimations(R.anim.fade_in, R.anim.fade_out, R.anim.fade_in, R.anim.fade_out).
-                            replace(R.id.main_content_frame_transporter_container, fragmentListDriverWRTOrder).
-                            addToBackStack(null).
-                            commit();
+                    getActivity().setTitle("Recommended Drivers");
+                    getDriversWrtOrder(order, "false");
                 }
             });
-
-
         }
         else if(show_wrt_order_id == "false"){
             view.findViewById(R.id.fab_driver_list_assing_new_driver).setVisibility(View.GONE);
