@@ -1,31 +1,12 @@
-package com.example.adnanshaukat.myapplication.View;
+package com.example.adnanshaukat.myapplication.View.Common;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.os.Handler;
-import android.provider.SyncStateContract;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.example.adnanshaukat.myapplication.R;
 import com.viksaa.sssplash.lib.activity.AwesomeSplash;
 import com.viksaa.sssplash.lib.cnst.Flags;
 import com.viksaa.sssplash.lib.model.ConfigSplash;
-
-import java.util.concurrent.ExecutionException;
-
-import microsoft.aspnet.signalr.client.Credentials;
-import microsoft.aspnet.signalr.client.Platform;
-import microsoft.aspnet.signalr.client.SignalRFuture;
-import microsoft.aspnet.signalr.client.http.Request;
-import microsoft.aspnet.signalr.client.http.android.AndroidPlatformComponent;
-import microsoft.aspnet.signalr.client.hubs.HubConnection;
-import microsoft.aspnet.signalr.client.hubs.HubProxy;
-import microsoft.aspnet.signalr.client.hubs.SubscriptionHandler1;
-import microsoft.aspnet.signalr.client.transport.ClientTransport;
-import microsoft.aspnet.signalr.client.transport.ServerSentEventsTransport;
 
 public class SplashScreenActivity extends AwesomeSplash {
 

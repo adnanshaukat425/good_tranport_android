@@ -28,4 +28,6 @@ public interface IOrder {
 
     @GET("get_all_orders_of_customer")
     Call<Object> get_all_orders_of_customer(@Query("customer_id") int customer_id);
+
+    Call<Object> get_driver_wrt_driver_id(@Query("driver_id") int driver_id, @Query("status_id") int status_id);
 }

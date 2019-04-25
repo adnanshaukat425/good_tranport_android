@@ -1,24 +1,13 @@
 package com.example.adnanshaukat.myapplication.Modals;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.location.*;
-import android.os.AsyncTask;
 import android.os.Handler;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.RetrofitManager;
-import com.example.adnanshaukat.myapplication.View.Driver.MainActivityDriver;
-import com.example.adnanshaukat.myapplication.View.MapsActivity;
+import com.example.adnanshaukat.myapplication.View.Common.MapsActivity;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.concurrent.ExecutionException;
 
 import microsoft.aspnet.signalr.client.Credentials;
@@ -71,7 +60,7 @@ public class SignalrTrackingManager implements Serializable {
         hubConnection.connected(new Runnable() {
             @Override
             public void run() {
-                Log.e("SignalR", "SignalR Running");
+                Log.e("Tracking SignalR", "SignalR Running");
             }
         });
         hubProxy = hubConnection.createHubProxy("trackingHub");
@@ -79,21 +68,25 @@ public class SignalrTrackingManager implements Serializable {
         SignalRFuture<Void> signalRFuture = hubConnection.start(clientTransport);
 
         String CLIENT_METHOD_BROADAST_MESSAGE = "UpdateLocation"; // get webAPI server methods
-        hubProxy.on(CLIENT_METHOD_BROADAST_MESSAGE, new SubscriptionHandler1<Route>() {
+        hubProxy.on(CLIENT_METHOD_BROADAST_MESSAGE, new SubscriptionHandler1<String>() {
             @Override
-            public void run(final Route route) {
+            public void run(final String data) {
                 // we added the list of connected users
-                Log.e("Route Id", route.getRoute_id() + "");
-                Log.e("Order Detail Id", route.getOrder_detail_id() + "");
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
+                        String latitude = data.split(";")[0];
+                        String longitude = data.split(";")[1];
+                        Log.e("Tracking SignalR", latitude);
+                        Log.e("Tracking SignalR", longitude);
+//                        Log.e("Route Id", route.getRoute_id() + "");
+//                        Log.e("Order Detail Id", route.getOrder_detail_id() + "");
                         MapsActivity mapsActivity = new MapsActivity();
-                        mapsActivity.updateMap(route.latitude, route.longitude);
+                        mapsActivity.updateMap(latitude, longitude, context);
                     }
                 });
             }
-        }, Route.class);
+        }, String.class);
 
 ////        hubProxy.on("sendMessage", new SubscriptionHandler2<String ,String>() {
 ////
@@ -120,7 +113,7 @@ public class SignalrTrackingManager implements Serializable {
         Log.e("Tracking SignalR", "Invoking Method InsertLocation");
         hubProxy.invoke("InsertLocation", new Route(0, order_detail_id, latitude, longitude, null));
         MapsActivity mapsActivity = new MapsActivity();
-        mapsActivity.updateMap(latitude, longitude);
+        //mapsActivity.updateMap(latitude, longitude);
 
 //        MapsActivity mapsActivity = new MapsActivity();
 //        mapsActivity.updateMap(latitude, longitude);

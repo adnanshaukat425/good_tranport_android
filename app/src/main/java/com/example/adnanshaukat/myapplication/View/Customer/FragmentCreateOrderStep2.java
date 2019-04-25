@@ -2,7 +2,6 @@ package com.example.adnanshaukat.myapplication.View.Customer;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.app.Application;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -20,11 +19,9 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.adnanshaukat.myapplication.GlobalClasses.MyApplication;
 import com.example.adnanshaukat.myapplication.GlobalClasses.ProgressDialogManager;
 import com.example.adnanshaukat.myapplication.Modals.Cargo;
 import com.example.adnanshaukat.myapplication.Modals.Container;
@@ -37,7 +34,6 @@ import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.Modals.WeightCatagory;
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.IOrder;
-import com.example.adnanshaukat.myapplication.View.LoginActivity;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.jaredrummler.materialspinner.MaterialSpinner;

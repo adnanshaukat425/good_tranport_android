@@ -1,4 +1,4 @@
-package com.example.adnanshaukat.myapplication.View;
+package com.example.adnanshaukat.myapplication.View.Common;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -15,7 +15,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.example.adnanshaukat.myapplication.GlobalClasses.ProgressDialogManager;
 import com.example.adnanshaukat.myapplication.Modals.SQLiteDBUsersHandler;
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
@@ -24,7 +23,6 @@ import com.example.adnanshaukat.myapplication.RetrofitInterfaces.ISignUp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;

@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -25,7 +23,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -39,21 +36,15 @@ import android.widget.Toast;
 import com.example.adnanshaukat.myapplication.GlobalClasses.LocationController;
 import com.example.adnanshaukat.myapplication.GlobalClasses.MyApplication;
 import com.example.adnanshaukat.myapplication.Modals.Notification;
-import com.example.adnanshaukat.myapplication.Modals.Route;
 import com.example.adnanshaukat.myapplication.Modals.SQLiteDBUsersHandler;
 import com.example.adnanshaukat.myapplication.Modals.SignalrTrackingManager;
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.INotification;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.RetrofitManager;
-import com.example.adnanshaukat.myapplication.TrackingService;
-import com.example.adnanshaukat.myapplication.View.LoginActivity;
-import com.example.adnanshaukat.myapplication.View.MapsActivity;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
+import com.example.adnanshaukat.myapplication.Services.TrackingService;
+import com.example.adnanshaukat.myapplication.View.Common.LoginActivity;
+import com.example.adnanshaukat.myapplication.View.Common.MapsActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -237,7 +228,6 @@ public class MainActivityDriver extends AppCompatActivity implements NavigationV
 
         }
         if(id == R.id.nav_d_view_current_location){
-
             locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
             if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
                 buildAlertMessageNoGps();

@@ -9,12 +9,12 @@
         <item
             android:id="@+id/nav_d_view_current_location"
             android:icon="@drawable/ic_location_marker"
-            android:title="Current Location"
+            android:title="Tracking"
             />
         <item
             android:id="@+id/nav_d_view_all_orders"
             android:icon="@drawable/ic_order"
-            android:title="Drivers" />
+            android:title="Order" />
         <item
             android:id="@+id/nav_d_logout"
             android:icon="@drawable/logout"

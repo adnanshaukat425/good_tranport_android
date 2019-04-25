@@ -22,7 +22,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".View.SplashScreenActivity">
+        <activity android:name=".View.Common.SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -30,10 +30,10 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".View.LoginActivity"
+            android:name=".View.Common.LoginActivity"
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
         <activity
-            android:name=".View.SignUpActivity"
+            android:name=".View.Common.SignUpActivity"
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
         <activity
             android:name=".View.Customer.MainActivityCustomer"
@@ -44,7 +44,7 @@
             android:label="@string/title_activity_main_driver"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".View.CaptureImageActivity"
+            android:name=".View.Common.CaptureImageActivity"
             android:label="Capture Image" />
         <activity
             android:name=".View.Transporter.MainActivityTransporter"
@@ -64,7 +64,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".View.MapsActivity"
+            android:name=".View.Common.MapsActivity"
             android:label="@string/title_activity_maps" />
         <activity android:name=".View.NewDriverActivityTest" />
         <activity android:name=".View.SingalRTestingActivity">
@@ -76,7 +76,7 @@
         </activity>
 
         <service
-            android:name=".TrackingService"
+            android:name=".Services.TrackingService"
             android:enabled="true"
             android:exported="true"></service>
     </application>

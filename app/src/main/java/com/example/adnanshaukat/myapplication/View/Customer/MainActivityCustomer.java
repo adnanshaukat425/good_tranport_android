@@ -1,12 +1,8 @@
 package com.example.adnanshaukat.myapplication.View.Customer;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -26,9 +22,8 @@ import com.example.adnanshaukat.myapplication.Modals.SQLiteDBUsersHandler;
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.RetrofitManager;
-import com.example.adnanshaukat.myapplication.View.Driver.FragmentOrdersListForDriver;
-import com.example.adnanshaukat.myapplication.View.FragmentUserProfile;
-import com.example.adnanshaukat.myapplication.View.LoginActivity;
+import com.example.adnanshaukat.myapplication.View.Common.FragmentUserProfile;
+import com.example.adnanshaukat.myapplication.View.Common.LoginActivity;
 import com.squareup.picasso.Picasso;
 
 public class MainActivityCustomer extends AppCompatActivity

@@ -1,4 +1,4 @@
-package com.example.adnanshaukat.myapplication.View;
+package com.example.adnanshaukat.myapplication.View.Common;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,11 +8,14 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.annotation.DrawableRes;
 import android.support.multidex.MultiDex;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.Log;
 
 import com.example.adnanshaukat.myapplication.Modals.DirectionJSONParser;
@@ -26,6 +29,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -44,7 +48,9 @@ import java.util.List;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private static GoogleMap mMap;
+    private static Marker marker = null;
     ArrayList markerPoints= new ArrayList();
+    Context context;
 
     String latitude;
     String longitude;
@@ -60,19 +66,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        context = this;
     }
 
-    public void updateMap(String latitude, String longitude){
+    public void updateMap(String latitude, String longitude, Context _context){
         Log.e("MapsActivity", "UpdateMap: " + latitude + " " + longitude);
         double Lat =  Double.parseDouble(latitude);
         double Lng = Double.parseDouble(longitude);
         try{
             if(mMap != null){
                 LatLng Loc = new LatLng(Lat,Lng);
-                //mMap.clear();
-                mMap.addMarker(new MarkerOptions().position(Loc).title("Driver Location"));
+                if (marker == null){
+                    MarkerOptions markerOptions = new MarkerOptions();
+                    markerOptions.position(Loc).title("Driver Location");
+                    markerOptions.icon(getBitmapDescriptor(_context,  R.drawable.vehicle_icon));
+                    marker = mMap.addMarker(markerOptions);
+                }
+                else{
+                    marker.setPosition(Loc);
+                }
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(Loc));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f));
             }
             else{
                 Log.e("MapsActivity", "MAP OBJECT is empty");
@@ -283,15 +297,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return data;
     }
 
-//    private BitmapDescriptor bitmapDescriptorFromVector(Context context, @DrawableRes int vectorDrawableResourceId) {
-//        Drawable background = ContextCompat.getDrawable(context, R.drawable.vehicle_icon);
-//        background.setBounds(0, 0, background.getIntrinsicWidth(), background.getIntrinsicHeight());
-//        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorDrawableResourceId);
-//        vectorDrawable.setBounds(40, 20, vectorDrawable.getIntrinsicWidth() + 40, vectorDrawable.getIntrinsicHeight() + 20);
-//        Bitmap bitmap = Bitmap.createBitmap(background.getIntrinsicWidth(), background.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-//        Canvas canvas = new Canvas(bitmap);
-//        background.draw(canvas);
-//        vectorDrawable.draw(canvas);
-//        return BitmapDescriptorFactory.fromBitmap(bitmap);
-//    }
+    private BitmapDescriptor getBitmapDescriptor(Context context, @DrawableRes int id) {
+        Drawable vectorDrawable = ResourcesCompat.getDrawable(context.getResources(), id, null);
+        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(),
+                vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        vectorDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        vectorDrawable.draw(canvas);
+        return BitmapDescriptorFactory.fromBitmap(bitmap);
+    }
 }

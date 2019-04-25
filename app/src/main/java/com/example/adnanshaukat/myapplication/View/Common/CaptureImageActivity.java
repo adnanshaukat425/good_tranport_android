@@ -1,4 +1,4 @@
-package com.example.adnanshaukat.myapplication.View;
+package com.example.adnanshaukat.myapplication.View.Common;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
