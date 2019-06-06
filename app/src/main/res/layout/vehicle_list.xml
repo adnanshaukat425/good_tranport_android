@@ -27,17 +27,6 @@
             app:civ_border_color="@color/colorPrimary"
             app:civ_border_width="0.5sp" />
 
-        <!--<ImageView-->
-        <!--android:src="@drawable/offline_icon"-->
-        <!--android:layout_alignEnd="@id/driver_list_profile_image_view"-->
-        <!--android:layout_alignParentRight="@id/driver_list_profile_image_view"-->
-        <!--android:layout_alignBottom="@id/driver_list_profile_image_view"-->
-        <!--android:id="@+id/driver_list_status_image_view"-->
-        <!--android:layout_gravity="bottom"-->
-        <!--android:layout_width="12dp"-->
-        <!--android:layout_height="12dp"-->
-        <!--android:layout_alignRight="@id/driver_list_profile_image_view" />-->
-
     </RelativeLayout>
 
     <LinearLayout
@@ -68,4 +57,5 @@
             android:text="Driver name" />
 
     </LinearLayout>
+
 </LinearLayout>

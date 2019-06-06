@@ -207,7 +207,7 @@ public class FragmentMainTransporter extends Fragment{
             call.enqueue(new Callback<DashboardGraph>() {
                 @Override
                 public void onResponse(Call<DashboardGraph> call, Response<DashboardGraph> response) {
-                    Log.e("RESPONSE", response.toString());
+                    //Log.e("RESPONSE", response.toString());
                     DashboardGraph dashboardGraph = response.body();
                     if (dashboardGraph.getX_axis() != null && dashboardGraph.getY_axis().size() > 0) {
                         populate_chart(dashboardGraph.getX_axis(), dashboardGraph.getY_axis());

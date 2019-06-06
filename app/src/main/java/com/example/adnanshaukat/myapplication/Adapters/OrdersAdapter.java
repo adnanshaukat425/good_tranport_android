@@ -2,6 +2,8 @@ package com.example.adnanshaukat.myapplication.Adapters;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,10 +13,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.adnanshaukat.myapplication.Modals.Order;
+import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.View.Customer.FragmentListDriverWRTOrder;
 import com.example.adnanshaukat.myapplication.View.Customer.MainActivityCustomer;
-import com.google.gson.Gson;
+import com.example.adnanshaukat.myapplication.View.Driver.FragmentOrderDetailsWRTOrder;
+import com.example.adnanshaukat.myapplication.View.Driver.MainActivityDriver;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,9 +31,16 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.MyViewHold
 
     Context mContext;
     List<HashMap<String, String>> mOrders;
-    public OrdersAdapter(Context context, List<HashMap<String, String>> orders){
+    String from_user;
+    String orders_type;
+    User mUser;
+
+    public OrdersAdapter(Context context, List<HashMap<String, String>> orders, String from_user, String orders_type, User mUser){
         mContext = context;
         mOrders = orders;
+        this.from_user = from_user;
+        this.orders_type = orders_type;
+        this.mUser = mUser;
     }
 
     @Override
@@ -53,11 +64,10 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.MyViewHold
             @Override
             public void onClick(View view, int position) {
                 //Toast.makeText(mContext, mUsers.get(position).getFirst_name(), Toast.LENGTH_SHORT).show();
-                MainActivityCustomer activity = (MainActivityCustomer)mContext;
 
                 Bundle bundle = new Bundle();
                 Order ord = new Order();
-
+                Log.e("ORDER ID", mOrders.get(position).get("order_id").toString());
                 ord.setOrder_id(Integer.parseInt(mOrders.get(position).get("order_id").toString()));
                 ord.setContainer_type_id(Integer.parseInt(mOrders.get(position).get("container_type_id").toString()));
                 ord.setVehicle_type_id(Integer.parseInt(mOrders.get(position).get("vehicle_type_id").toString()));
@@ -65,14 +75,46 @@ public class OrdersAdapter extends RecyclerView.Adapter<OrdersAdapter.MyViewHold
 
                 bundle.putSerializable("order", ord);
                 bundle.putString("show_wrt_order_id", "true");
+                bundle.putString("order_type", orders_type);
 
-                FragmentListDriverWRTOrder fragment = new FragmentListDriverWRTOrder();
-                fragment.setArguments(bundle);
+                Fragment fragment = null;
+                if (from_user == "customer"){
+                    fragment = new FragmentListDriverWRTOrder();
+                    fragment.setArguments(bundle);
+                }
+                else{
+                    if(orders_type != "requested_order"){
+                        if (orders_type == "active_order"){
+                            bundle.putBoolean("is_order_request", true);
+                        }
+                        bundle.putBoolean("is_order_request", false);
+                    }
+                    else{
+                        bundle.putBoolean("is_order_request", true);
+                    }
+                    fragment = new FragmentOrderDetailsWRTOrder();
+                    bundle.putSerializable("order_details", mOrders.get(position));
+                    bundle.putSerializable("user", mUser);
+                    fragment.setArguments(bundle);
+                }
 
-                activity.getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right).
-                        replace(R.id.main_content_frame_customer_container, fragment).
-                        addToBackStack(null).
-                        commit();
+                AppCompatActivity activity = null;
+                if (from_user == "customer") {
+                    activity = (MainActivityCustomer)mContext;
+
+                    activity.getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right).
+                            replace(R.id.main_content_frame_customer_container, fragment).
+                            addToBackStack(null).
+                            commit();
+                }
+                else if(from_user == "driver"){
+                    activity = (MainActivityDriver)mContext;
+
+                    activity.getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right).
+                            replace(R.id.main_content_frame_driver_container, fragment).
+                            addToBackStack(null).
+                            commit();
+                }
             }
         });
     }

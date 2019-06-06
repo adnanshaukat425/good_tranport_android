@@ -114,7 +114,7 @@ public class FragmentOrderListForCustomer extends Fragment {
 
                             Log.e("order Size", order.size() + "");
 
-                            OrdersAdapter adapter = new OrdersAdapter(getContext(), order);
+                            OrdersAdapter adapter = new OrdersAdapter(getContext(), order, "customer", "", mUser);
                             final LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
                             layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                             recyclerView.setLayoutManager(layoutManager);

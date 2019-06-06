@@ -1,11 +1,15 @@
 package com.example.adnanshaukat.myapplication.View.Common;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -16,11 +20,22 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Toast;
 
+import com.example.adnanshaukat.myapplication.MapHelper.DataParser;
+import com.example.adnanshaukat.myapplication.MapHelper.FetchURL;
+import com.example.adnanshaukat.myapplication.MapHelper.MapsController;
+import com.example.adnanshaukat.myapplication.MapHelper.TaskLoadedCallback;
 import com.example.adnanshaukat.myapplication.Modals.DirectionJSONParser;
 import com.example.adnanshaukat.myapplication.R;
+import com.example.adnanshaukat.myapplication.Services.TrackingService;
 import com.google.android.gms.location.places.PlacesOptions;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.LocationSource;
@@ -28,9 +43,12 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONObject;
@@ -45,26 +63,65 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+import static com.example.adnanshaukat.myapplication.R.id.map;
+
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, TaskLoadedCallback {
 
     private static GoogleMap mMap;
-    private static Marker marker = null;
-    ArrayList markerPoints= new ArrayList();
+
+    MapsController mapsController;
+
+    List<Marker> marker_ = new ArrayList<>();
     Context context;
 
-    String latitude;
-    String longitude;
+    private static LatLng sourceLatLng, destinationLatLng;
+
+    Polyline currentPolyline;
+    PolylineOptions currentPolylineOptions;
+
+    List<MarkerOptions> markers_option = new ArrayList<>();
+    Marker current_marker;
+
+    LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         MultiDex.install(this);
         Intent intent = getIntent();
-        latitude = intent.getExtras().get("latitude").toString();
-        longitude = intent.getExtras().get("longitude").toString();
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+
+        mapsController = new MapsController(this, getString(R.string.google_maps_key));
+
+        Log.e("DESTINATION", intent.getExtras().get("destination").toString());
+
+        HashMap<String, LatLng> hashMap = getSourceDestinationLatLng(intent);
+        sourceLatLng = hashMap.get("source");
+        destinationLatLng = hashMap.get("destination");
+
+        Log.e(MapsActivity.class.toString() + "SLat", sourceLatLng.latitude + "");
+        Log.e(MapsActivity.class.toString() + "SLong", sourceLatLng.longitude + "");
+
+        Log.e(MapsActivity.class.toString() + "DLat", destinationLatLng.latitude + "");
+        Log.e(MapsActivity.class.toString() + "DLong", destinationLatLng.longitude + "");
+
+        MarkerOptions source = new MarkerOptions().position(sourceLatLng);
+        MarkerOptions destination = new MarkerOptions().position(destinationLatLng).title("Destination");
+
+        if (intent.getExtras().get("moving_to").toString().trim().toLowerCase().equals("pick_order")) {
+            source.title("Source(Your's Position)");
+        } else {
+            source.title("Source");
+        }
+
+        markers_option.add(source);
+        markers_option.add(destination);
+
+        String url = mapsController.getUrl(sourceLatLng, destinationLatLng, "driving");
+        Log.e(MapsActivity.class.toString() + "URL", url);
+        new FetchURL(MapsActivity.this).execute(url, "driving");
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(map);
         mapFragment.getMapAsync(this);
         context = this;
     }
@@ -73,237 +130,150 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.e("MapsActivity", "UpdateMap: " + latitude + " " + longitude);
         double Lat =  Double.parseDouble(latitude);
         double Lng = Double.parseDouble(longitude);
-        try{
+//        try{
             if(mMap != null){
+                if (mapsController == null){
+                    mapsController = new MapsController(_context, _context.getResources().getString(R.string.google_maps_key));
+                }
                 LatLng Loc = new LatLng(Lat,Lng);
-                if (marker == null){
-                    MarkerOptions markerOptions = new MarkerOptions();
-                    markerOptions.position(Loc).title("Driver Location");
-                    markerOptions.icon(getBitmapDescriptor(_context,  R.drawable.vehicle_icon));
-                    marker = mMap.addMarker(markerOptions);
+                if (current_marker == null){
+                    current_marker = mMap.addMarker(new MarkerOptions()
+                            .position(Loc)
+                            .icon(mapsController.getBitmapDescriptor(_context, R.drawable.vehicle_icon)).flat(true)
+                            //.infoWindowAnchor(1, 1)
+                            //.anchor(1, 1)
+                            //.snippet("Hi how are you")
+                            .title("Driver Location"));
+
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Loc, 16.0f));
                 }
                 else{
-                    marker.setPosition(Loc);
+                    Log.e("MapActivity", "SETTING MARKER");
+                    current_marker.setPosition(Loc);
+                    //current_marker.showInfoWindow();
                 }
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(Loc));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f));
+
+                if (sourceLatLng != null){
+                    CircleOptions circleOptions = new CircleOptions();
+                    circleOptions.center(sourceLatLng);
+                    circleOptions.radius(10);
+                    circleOptions.visible(false);
+                    mMap.addCircle(circleOptions);
+
+                    if(mapsController.isReachedDestination(circleOptions, current_marker.getPosition())){
+                        Intent trackingService = new Intent(_context, TrackingService.class);
+                        _context.stopService(trackingService);
+                        Toast.makeText(_context, "You have reached to the destination", Toast.LENGTH_SHORT).show();
+                        //setDialog(_context);
+                    }
+                }
             }
             else{
                 Log.e("MapsActivity", "MAP OBJECT is empty");
             }
-        }
-        catch (Exception ex) {
-            Log.e("MapsActivity", ex.toString());
-        }
+//        }
+//        catch (Exception ex) {
+//            Log.e("MapsActivity", ex.toString());
+//        }
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.e("MapsActivity", "creating map object");
         mMap = googleMap;
 
-//        LatLng KIET = new LatLng(24.8617575,67.0712855);
-//        mMap.addMarker(new MarkerOptions().position(KIET).title("Marker in PAF-KIET"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(KIET));
-//        mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
-//
-////        LatLng sydney = new LatLng(-34, 151);
-////        //mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-////        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 17.0f));
-//
-//        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+        Log.e("MapsActivity", "Adding Markers");
+        for (int i = 0; i < markers_option.size(); i++) {
+            MarkerOptions mo = new MarkerOptions()
+                    .position(markers_option.get(i).getPosition())
+                    .title(markers_option.get(i).getTitle());
+
+            if (mo.getTitle().equals("Your's Position")) {
+                mo.icon(mapsController.getBitmapDescriptor(this, R.drawable.vehicle_icon)).flat(true);
+            }
+            marker_.add(mMap.addMarker(mo));
+        }
+    }
+
+    @Override
+    public void onTaskDone(Object... values) {
+        PolylineOptions polyLine = (PolylineOptions) values[0];
+        placePolyLine(polyLine);
+    }
+
+    public HashMap<String, LatLng> getSourceDestinationLatLng(Intent intent) {
+        LatLng destination_latLng, source_latLng;
+        HashMap<String, LatLng> hashMap = new HashMap<>();
+
+        if((boolean)intent.getExtras().get("string_source")){
+            String source = intent.getExtras().get("source").toString();
+            source_latLng = mapsController.getLatLongFromLocation(source);
+        }
+        else{
+            Double latitude = Double.parseDouble(intent.getExtras().get("source_latitude").toString());
+            Double longitude = Double.parseDouble(intent.getExtras().get("source_longitude").toString());
+            source_latLng = new LatLng(latitude, longitude);
+        }
+
+        if((boolean)intent.getExtras().get("string_destination")){
+            String destination = intent.getExtras().get("destination").toString();
+            destination_latLng = mapsController.getLatLongFromLocation(destination);
+        }
+        else{
+            Double latitude = Double.parseDouble(intent.getExtras().get("destination_latitude").toString());
+            Double longitude = Double.parseDouble(intent.getExtras().get("destination_longitude").toString());
+            destination_latLng = new LatLng(latitude, longitude);
+        }
+
+        hashMap.put("source", source_latLng);
+        hashMap.put("destination", destination_latLng);
+
+        return hashMap;
+    }
+
+    private void placePolyLine(PolylineOptions polyLine) {
+        if (currentPolyline != null)
+            currentPolyline.remove();
+
+        currentPolyline = mMap.addPolyline(polyLine);
+        currentPolyline.getPoints();
+
+        for (LatLng item : currentPolyline.getPoints()) {
+            builder.include(item);
+        }
+
+        int padding = 200;
+        LatLngBounds bounds = builder.build();
+
+        final CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, padding);
+        mMap.animateCamera(cu);
+    }
+
+    private void setDialog(Context context){
+        LayoutInflater alert_layout_inflater = LayoutInflater.from(context);
+        View alertLayout = alert_layout_inflater.inflate(R.layout.order_completion_alert_layout, null);
+        showDialog(alertLayout, context);
+    }
+
+    private void showDialog(View alertLayout,final Context _context) {
+        AlertDialog.Builder alert = new AlertDialog.Builder(_context);
+        alert.setTitle("You're going to ?");
+        alert.setView(alertLayout);
+        alert.setCancelable(false);
+//        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 //            @Override
-//            public void onMapClick(LatLng latLng) {
-//
-//                if (markerPoints.size() > 1) {
-//                    markerPoints.clear();
-//                    mMap.clear();
-//                }
-//
-//                // Adding new item to the ArrayList
-//                markerPoints.add(latLng);
-//
-//                // Creating MarkerOptions
-//                MarkerOptions options = new MarkerOptions();
-//
-//                // Setting the position of the marker
-//                options.position(latLng);
-//
-//                if (markerPoints.size() == 1) {
-//                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-//                } else if (markerPoints.size() == 2) {
-//                    options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-//                }
-//
-//                // Add new marker to the Google Map Android API V2
-//                mMap.addMarker(options);
-//
-//                // Checks, whether start and end locations are captured
-//                if (markerPoints.size() >= 2) {
-//                    LatLng origin = (LatLng) markerPoints.get(0);
-//                    LatLng dest = (LatLng) markerPoints.get(1);
-//
-//                    // Getting URL to the Google Directions API
-//                    String url = getDirectionsUrl(origin, dest);
-//
-//                    DownloadTask downloadTask = new DownloadTask();
-//
-//                    // Start downloading json data from Google Directions API
-//                    downloadTask.execute(url);
-//                }
-//
+//            public void onClick(DialogInterface dialog, int which) {
+//                Toast.makeText(_context, "Thank you", Toast.LENGTH_SHORT).show();
 //            }
 //        });
-    }
 
-    private class DownloadTask extends AsyncTask<String,Void,String> {
-        @Override
-        protected String doInBackground(String... url) {
-
-            String data = "";
-
-            try {
-                data = downloadUrl(url[0]);
-            } catch (Exception e) {
-                Log.d("Background Task", e.toString());
+        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(_context, "Thank you", Toast.LENGTH_SHORT).show();
             }
-            return data;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-            ParserTask parserTask = new ParserTask();
-            parserTask.execute(result);
-        }
-    }
-
-    private class ParserTask extends AsyncTask<Object, Object, List<List<HashMap<String, String>>>> {
-        // Parsing the data in non-ui thread
-        @Override
-        protected List<List<HashMap<String, String>>> doInBackground(Object... jsonData) {
-            JSONObject jObject;
-            List<List<HashMap<String, String>>> routes = null;
-
-            try {
-                jObject = new JSONObject((String) jsonData[0]);
-                DirectionJSONParser parser = new DirectionJSONParser();
-
-                routes = parser.parse(jObject);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return routes;
-        }
-
-        @Override
-        protected void onPostExecute(List<List<HashMap<String, String>>> result) {
-            ArrayList points = null;
-            PolylineOptions lineOptions = new PolylineOptions();
-            MarkerOptions markerOptions = new MarkerOptions();
-
-            for (int i = 0; i < result.size(); i++) {
-                points = new ArrayList();
-                lineOptions = new PolylineOptions();
-
-                List<HashMap<String, String>> path = result.get(i);
-
-                for (int j = 0; j < path.size(); j++) {
-                    HashMap point = path.get(j);
-
-                    double lat = Double.parseDouble((String) point.get("lat"));
-                    double lng = Double.parseDouble((String) point.get("lng"));
-                    LatLng position = new LatLng(lat, lng);
-
-                    points.add(position);
-                }
-
-                lineOptions.addAll(points);
-                lineOptions.width(12);
-                lineOptions.color(Color.RED);
-                lineOptions.geodesic(true);
-
-            }
-            // Drawing polyline in the Google Map for the i-th route
-            mMap.addPolyline(lineOptions);
-        }
-    }
-
-    private String getDirectionsUrl(LatLng origin, LatLng dest) {
-
-        // Origin of route
-        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
-
-        // Destination of route
-        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
-
-        // Sensor enabled
-        String sensor = "sensor=false";
-        String mode = "mode=driving";
-
-        // Building the parameters to the web service
-        String parameters = str_origin + "&" + str_dest + "&" + sensor + "&" + mode;
-
-        // Output format
-        String output = "json";
-
-        // Building the url to the web service
-        String url = "https://maps.googleapis.com/maps/api/directions/" + output + "?" + parameters;
-
-        return url;
-    }
-
-    private String downloadUrl(String strUrl) throws IOException {
-        String data = "";
-        InputStream iStream = null;
-        HttpURLConnection urlConnection = null;
-        try {
-            URL url = new URL(strUrl);
-
-            urlConnection = (HttpURLConnection) url.openConnection();
-
-            urlConnection.connect();
-
-            iStream = urlConnection.getInputStream();
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
-
-            StringBuffer sb = new StringBuffer();
-
-            String line = "";
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-            }
-
-            data = sb.toString();
-
-            br.close();
-
-        } catch (Exception e) {
-            Log.d("Exception", e.toString());
-        } finally {
-            iStream.close();
-            urlConnection.disconnect();
-        }
-        return data;
-    }
-
-    private BitmapDescriptor getBitmapDescriptor(Context context, @DrawableRes int id) {
-        Drawable vectorDrawable = ResourcesCompat.getDrawable(context.getResources(), id, null);
-        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(),
-                vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        vectorDrawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        vectorDrawable.draw(canvas);
-        return BitmapDescriptorFactory.fromBitmap(bitmap);
+        });
+        AlertDialog dialog = alert.create();
+        dialog.show();
     }
 }

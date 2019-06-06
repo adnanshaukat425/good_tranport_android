@@ -29,6 +29,7 @@ import com.example.adnanshaukat.myapplication.Modals.SQLiteDBUsersHandler;
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.RetrofitManager;
+import com.example.adnanshaukat.myapplication.View.Common.AboutActivity;
 import com.example.adnanshaukat.myapplication.View.Driver.MainActivityDriver;
 import com.example.adnanshaukat.myapplication.View.Common.FragmentUserProfile;
 import com.example.adnanshaukat.myapplication.View.Common.LoginActivity;
@@ -257,6 +258,11 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
                     replace(R.id.main_content_frame_transporter_container, fragment).
                     addToBackStack(null).
                     commit();
+        }
+
+        if(id == R.id.nav_t_about){
+            Intent intent = new Intent(this, AboutActivity.class);
+            startActivity(intent);
         }
 
         if(id == R.id.nav_t_logout){

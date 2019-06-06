@@ -36,4 +36,16 @@ public interface IDriver {
 
     @GET("get_driver_wrt_order_id")
     Call<Object> get_driver_wrt_order_id(@Query("order_id") String order_id);
+
+    @POST("update_driver_source_destination")
+    Call<Object> update_driver_source_destination(@Query("driver_id") Integer driver_id, @Query("source") String source, @Query("destination") String destination, @Query("status") String status);
+
+    @GET("get_driver_source_destination")
+    Call<Object> get_driver_source_destination(@Query("driver_id") Integer driver_id);
+
+    @POST("update_driver_status")
+    Call<Object> update_driver_status(@Query("status") int status, @Query("driver_id") int driver_id);
+
+    @GET("get_driver_status")
+    Call<Object> get_driver_status(@Query("driver_id") int driver_id);
 }

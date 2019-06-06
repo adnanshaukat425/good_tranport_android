@@ -29,11 +29,6 @@
         android:id="@+id/nav_c_separator1"
         android:checkableBehavior="none">
         <item
-            android:id="@+id/nav_c_help"
-            android:icon="@drawable/ic_help"
-            android:title="Help"
-            />
-        <item
             android:id="@+id/nav_c_about"
             android:icon="@drawable/ic_about"
             android:title="About"

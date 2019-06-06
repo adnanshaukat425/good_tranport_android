@@ -28,24 +28,35 @@ public class FragmentOrdersListForDriver extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_list_driver_wrt_order, container, false);
-
-        ViewPager viewPager = (ViewPager) view.findViewById(R.id.fragment_list_of_order_for_driver_viewpager);
-        setupViewPager(viewPager);
+        view = inflater.inflate(R.layout.fragment_orders_list_for_driver, container, false);
 
         Bundle argument = getArguments();
         mUser = (User)argument.getSerializable("user");
 
+        ViewPager viewPager = (ViewPager) view.findViewById(R.id.fragment_list_of_order_for_driver_viewpager);
+        setupViewPager(viewPager);
+
+
         TabLayout tabs = (TabLayout) view.findViewById(R.id.fragment_list_of_order_for_driver_tab_layout);
         tabs.setupWithViewPager(viewPager);
 
-        return super.onCreateView(inflater, container, savedInstanceState);
+        return view;
     }
 
     private void setupViewPager(ViewPager viewPager) {
         FragmentTabAdapter adapter = new FragmentTabAdapter(getChildFragmentManager());
-        adapter.addFragment(new FragmentListOfVehicleWRTTransTabAllVehicle(), "Current Orders");
-        adapter.addFragment(new FragmentListOfVehicleWRTTransTabAssignedVehicle(), "Previous Orders");
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("user", mUser);
+
+        FragmentListOfAllOrdersWRTDriver all_orders = new FragmentListOfAllOrdersWRTDriver();
+        all_orders.setArguments(bundle);
+
+        FragmentListOfActiveOrdersWRTDriver active_orders = new FragmentListOfActiveOrdersWRTDriver();
+        active_orders.setArguments(bundle);
+
+        adapter.addFragment(active_orders, "Active Orders");
+        adapter.addFragment(all_orders, "Completed Orders");
         viewPager.setAdapter(adapter);
     }
 }

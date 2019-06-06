@@ -120,7 +120,7 @@ public class LoginActivity extends AppCompatActivity {
                         Log.e("USER TYPE FROM LOGIN", user_type_id + "");
                         if (user_id != 0) {
 //                            if (storeCredentialsToSQLite(user)) {
-                                ((MyApplication) LoginActivity.this.getApplication()).setGlobalUser(user);
+                            ((MyApplication) LoginActivity.this.getApplication()).setGlobalUser(user);
                             SignalrNotificationManager signalrNotificationManager = new SignalrNotificationManager(getApplicationContext());
                             signalrNotificationManager.connectToSignalR(user.getUser_id());
 
@@ -226,10 +226,8 @@ public class LoginActivity extends AppCompatActivity {
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Drawable errorIcon = getResources().getDrawable(R.drawable.ic_error);
                 errorIcon.setBounds(new Rect(0, 0, errorIcon.getIntrinsicWidth(), errorIcon.getIntrinsicHeight()));
-
 
                 if (TextUtils.isEmpty(et_email.getText())) {
                     //Toast.makeText(LoginActivity.this, "Email required", Toast.LENGTH_SHORT).show();

@@ -560,7 +560,7 @@ public class FragmentAddDriverWETTransporter extends Fragment {
 
     private void uploadImage() {
         if (imageUri == null) {
-            Toast.makeText(getContext(), "Please take photo first", Toast.LENGTH_LONG).show();
+            //Toast.makeText(getContext(), "Please take photo first", Toast.LENGTH_LONG).show();
             return;
         }
         try{

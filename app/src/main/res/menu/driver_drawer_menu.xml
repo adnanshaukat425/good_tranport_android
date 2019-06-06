@@ -7,14 +7,18 @@
             android:title="Dashboard"
             />
         <item
-            android:id="@+id/nav_d_view_current_location"
-            android:icon="@drawable/ic_location_marker"
-            android:title="Tracking"
-            />
-        <item
             android:id="@+id/nav_d_view_all_orders"
             android:icon="@drawable/ic_order"
-            android:title="Order" />
+            android:title="Order">
+
+        </item>
+
+        <item
+            android:id="@+id/nav_d_order_request"
+            android:icon="@drawable/ic_order"
+            android:title="Requested Orders"
+            />
+
         <item
             android:id="@+id/nav_d_logout"
             android:icon="@drawable/logout"
@@ -24,11 +28,6 @@
     <group
         android:id="@+id/nav_t_separator1"
         android:checkableBehavior="none">
-        <item
-            android:id="@+id/nav_d_help"
-            android:icon="@drawable/ic_help"
-            android:title="Help"
-            />
         <item
             android:id="@+id/nav_d_about"
             android:icon="@drawable/ic_about"

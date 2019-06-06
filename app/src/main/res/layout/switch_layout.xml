@@ -4,9 +4,12 @@
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal" >
-    <Switch
+    <ToggleButton
         android:id="@+id/switchAB"
-        android:textOff="tracking stopped"
+        android:textOff="Inactive"
+        android:textOn="Active"
+        android:elevation="5dp"
+        android:translationZ="5dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"

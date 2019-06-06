@@ -78,7 +78,9 @@
         <service
             android:name=".Services.TrackingService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <activity android:name=".View.Common.AboutActivity"></activity>
     </application>
 
 </manifest>

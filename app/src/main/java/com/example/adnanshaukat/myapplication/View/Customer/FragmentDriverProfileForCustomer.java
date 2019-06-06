@@ -202,7 +202,7 @@ public class FragmentDriverProfileForCustomer extends Fragment {
                     Log.e("RESPONSE MESSAGE", response.message());
                     if (response_json != null) {
                         Notification notification = new Notification(0, "New order from " + mUser.getFirst_name() + " " +
-                                mUser.getLast_name(), Integer.parseInt(driver_id), 0, 0, "FragmentOrdersListForDriver", "driver", "New Order For You");
+                                mUser.getLast_name(), Integer.parseInt(driver_id), 0, 0, "FragmentOrdersListForDriver", "driver", "New Order For You", "broadcast", -1);
                         notification.pushNotification(getContext());
                         Toast.makeText(getContext(), "Driver notified Successfully!!!", Toast.LENGTH_SHORT).show();
 

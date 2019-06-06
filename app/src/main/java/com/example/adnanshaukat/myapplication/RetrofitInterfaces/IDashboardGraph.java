@@ -17,4 +17,7 @@ public interface IDashboardGraph {
 
     @GET("top_driver_wrt_transporter")
     Call<DashboardGraph> top_driver_wrt_transporter(@Query("period") String period, @Query("transporter_id") int transporter_id, @Query("date_from") String date_from, @Query("date_to") String date_to);
+
+    @GET("get_last_six_month_order_of_driver")
+    Call<DashboardGraph> get_last_six_month_order_of_driver(@Query("driver_id") int driver_id);
 }

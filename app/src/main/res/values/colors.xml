@@ -9,4 +9,5 @@
     <color name="colorOnline">#0f0</color>
     <color name="colorSplash">#1BCA90</color>
     <color name="primaryTextColor">#A5A5A5</color>
+    <color name="mapRouteColor">#669df6</color>
 </resources>

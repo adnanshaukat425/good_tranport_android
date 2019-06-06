@@ -6,6 +6,7 @@ import android.widget.Toast;
 
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.INotification;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -27,8 +28,13 @@ public class Notification {
     String redirected_page;
     String notification_for;
     String notification_title;
+    String notification_type;
+    int notification_for_user_id;
 
-    public Notification(int notification_id, String notification_message, int user_id, int is_seen, int is_pushed, String redirected_page, String notification_for, String notification_title) {
+    public Notification(){}
+
+    public Notification(int notification_id, String notification_message, int user_id, int is_seen, int is_pushed, String redirected_page,
+                        String notification_for, String notification_title, String notification_type, int notification_for_user_id) {
         this.notification_id = notification_id;
         this.notification_message = notification_message;
         this.user_id = user_id;
@@ -37,6 +43,8 @@ public class Notification {
         this.redirected_page = redirected_page;
         this.notification_for = notification_for;
         this.notification_title = notification_title;
+        this.notification_type = notification_type;
+        this.notification_for_user_id = notification_for_user_id;
     }
 
     public int getNotification_id() {
@@ -107,6 +115,22 @@ public class Notification {
         InsertNotification(this, context);
     }
 
+    public String getNotification_type() {
+        return notification_type;
+    }
+
+    public void setNotification_type(String notification_type) {
+        this.notification_type = notification_type;
+    }
+
+    public int getNotification_for_user_id() {
+        return notification_for_user_id;
+    }
+
+    public void setNotification_for_user_id(int notification_for_user_id) {
+        this.notification_for_user_id = notification_for_user_id;
+    }
+
     public void InsertNotification(Notification notification, final Context mContext){
         try {
             OkHttpClient.Builder client = new OkHttpClient.Builder();
@@ -130,6 +154,46 @@ public class Notification {
                     Log.e("RESPONSE BODY", response.message());
                     Log.e("RESPONSE BODY", response + "");
                     Toast.makeText(mContext, "Driver will be notified!", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Log.e("FAILURE", t.getMessage());
+                    Log.e("FAILURE", t.toString());
+                    Toast.makeText(mContext, "Failure: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                    //ProgressDialogManager.closeProgressDialog(progressDialog);
+                }
+            });
+        } catch (Exception ex) {
+            Log.e("ERROR", ex.toString());
+            //ProgressDialogManager.closeProgressDialog(progressDialog);
+            Toast.makeText(mContext, "Some error occour, please try again", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void ChangeNotificationToPushed(ArrayList<Integer> notification_ids, final Context mContext){
+        try {
+            OkHttpClient.Builder client = new OkHttpClient.Builder();
+            client.connectTimeout(30, TimeUnit.SECONDS);
+            client.readTimeout(30, TimeUnit.SECONDS);
+            client.writeTimeout(30, TimeUnit.SECONDS);
+
+            retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(INotification.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(client.build())
+                    .build();
+
+            INotification api = retrofit.create(INotification.class);
+
+            Call<Void> call = api.set_notification_to_pushed(notification_ids);
+
+            call.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    Log.e("PushedNotification", response.message());
+                    Log.e("PushedNotification", response + "");
+                    //Toast.makeText(mContext, "Driver will be notified!", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override

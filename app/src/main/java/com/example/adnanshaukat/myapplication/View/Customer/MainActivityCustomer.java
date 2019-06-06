@@ -1,7 +1,10 @@
 package com.example.adnanshaukat.myapplication.View.Customer;
 
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.text.TextUtils;
 import android.util.Log;
 import android.support.design.widget.NavigationView;
@@ -18,13 +21,27 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.adnanshaukat.myapplication.GlobalClasses.MyApplication;
+import com.example.adnanshaukat.myapplication.Modals.Notification;
 import com.example.adnanshaukat.myapplication.Modals.SQLiteDBUsersHandler;
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
+import com.example.adnanshaukat.myapplication.RetrofitInterfaces.INotification;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.RetrofitManager;
+import com.example.adnanshaukat.myapplication.View.Common.AboutActivity;
 import com.example.adnanshaukat.myapplication.View.Common.FragmentUserProfile;
 import com.example.adnanshaukat.myapplication.View.Common.LoginActivity;
+import com.example.adnanshaukat.myapplication.View.Driver.MainActivityDriver;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivityCustomer extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -32,6 +49,8 @@ public class MainActivityCustomer extends AppCompatActivity
     User user;
     private long backPressedTime;
     private Toast backToast;
+    String CHANNEL_ID = "111";
+    ArrayList<Integer> notification_ids = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +119,7 @@ public class MainActivityCustomer extends AppCompatActivity
         txt_id.setTitle("Customer ID: " + user_id);
 
         getSupportFragmentManager().beginTransaction().replace(R.id.main_content_frame_customer_container, new FragmentMainCustomer()).commit();
+        getNotification();
     }
 
     @Override
@@ -204,6 +224,12 @@ public class MainActivityCustomer extends AppCompatActivity
                     addToBackStack(null).
                     commit();
         }
+
+        if(id == R.id.nav_c_about){
+            Intent intent = new Intent(this, AboutActivity.class);
+            startActivity(intent);
+        }
+
         else if(id == R.id.nav_c_logout){
             if(logout()){
                 Toast.makeText(this, "Logged out Successfully", Toast.LENGTH_SHORT).show();
@@ -238,5 +264,78 @@ public class MainActivityCustomer extends AppCompatActivity
                 replace(R.id.main_content_frame_customer_container, fragment).
                 addToBackStack(null).
                 commit();
+    }
+
+    public void getNotification(){
+        try {
+            OkHttpClient.Builder client = new OkHttpClient.Builder();
+            client.connectTimeout(30, TimeUnit.SECONDS);
+            client.readTimeout(30, TimeUnit.SECONDS);
+            client.writeTimeout(30, TimeUnit.SECONDS);
+
+            retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(INotification.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(client.build())
+                    .build();
+
+            INotification api = retrofit.create(INotification.class);
+
+            Call<List<Notification>> call = api.get_broadcast_notification(user.getUser_id());
+
+            call.enqueue(new Callback<List<Notification>>() {
+                @Override
+                public void onResponse(Call<List<Notification>> call, Response<List<Notification>> response) {
+                    Log.e("CRESPONSE BODY", response.message());
+                    Log.e("CRESPONSE BODY", response + "");
+                    List<Notification> notification = response.body();
+                    if(notification != null && notification.size() > 0){
+                        for (int i = 0; i < notification.size(); i++) {
+                            Intent intent = new Intent(getApplicationContext(), MainActivityCustomer.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            intent.putExtra("user", user);
+                            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
+
+                            NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                                    .setSmallIcon(R.drawable.ic_order)
+                                    .setContentTitle("Hi " + user.getFirst_name())
+                                    .setContentText(notification.get(i).getNotification_message())
+                                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                                    .setContentIntent(pendingIntent)
+                                    .setAutoCancel(true);
+
+                            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getApplicationContext());
+                            //notificationId is a unique int for each notification that you must define
+                            notificationManager.notify(notification.get(i).getNotification_id(), builder.build());
+                            notification_ids.add(notification.get(i).getNotification_id());
+                        }
+
+                        setNotificationToPushed(notification_ids);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<Notification>> call, Throwable t) {
+                    Log.e("FAILURE", t.getMessage());
+                    Log.e("FAILURE", t.toString());
+                    //Toast.makeText(mContext, "Failure: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                    //ProgressDialogManager.closeProgressDialog(progressDialog);
+                }
+            });
+        } catch (Exception ex) {
+            Log.e("ERROR", ex.toString());
+            //ProgressDialogManager.closeProgressDialog(progressDialog);
+            //Toast.makeText(mContext, "Some error occour, please try again", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void setNotificationToPushed(final ArrayList<Integer> notification_id){
+        new Thread(new Runnable() {
+            public void run() {
+                Log.e("MainDriver", "From SetNotificationToPushed" + notification_id.size());
+                Notification notification = new Notification();
+                notification.ChangeNotificationToPushed(notification_ids, getApplicationContext());
+            }
+        }).start();
     }
 }

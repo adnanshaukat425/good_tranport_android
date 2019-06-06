@@ -8,6 +8,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -21,29 +22,39 @@ import com.example.adnanshaukat.myapplication.Modals.SQLiteDBUsersHandler;
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.ISignUp;
+import com.example.adnanshaukat.myapplication.RetrofitInterfaces.IUploadFiles;
 import com.example.adnanshaukat.myapplication.View.Customer.MainActivityCustomer;
+import com.example.adnanshaukat.myapplication.View.Transporter.MainActivityTransporter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static java.security.AccessController.getContext;
+
 public class CaptureImageActivity extends AppCompatActivity {
 
     Button btn_caputre_image, btn_gallery_image, btn_signup;
     TextView tvSkip;
+    private String savedFileDestination;
+    Uri imageUri;
     ImageView profile_image;
     static final int REQUEST_CAMERA_CAPTURE = 1;
     static final int REQUEST_GALLERY_CAPTURE = 2;
-
+    Bitmap bitmap_image;
     String mCurrentPhotoPath;
     ProgressDialog progressDialog;
     User user;
@@ -134,35 +145,31 @@ public class CaptureImageActivity extends AppCompatActivity {
         return image;
     }
 
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CAMERA_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            profile_image.setImageBitmap(imageBitmap);
-            String encodedImage = "";
-            try{
-                encodedImage = encodeImage(imageBitmap);
-                user.setProfile_picture(encodedImage);
-                Log.e(CaptureImageActivity.class.toString(), encodedImage);
-            }
-            catch(Exception ex) {
-                Log.e(CaptureImageActivity.class.toString(), ex.toString());
-            }
-
-        }
-        if (requestCode == REQUEST_GALLERY_CAPTURE && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            Uri uri = data.getData();
-            String encodedImage = "";
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Long tsLong = System.currentTimeMillis()/1000;
+        if(data != null){
+            if (requestCode == REQUEST_CAMERA_CAPTURE) {
+                Bundle extras = data.getExtras();
+                imageUri = data.getData();
+                Log.e("IMageURI", imageUri.toString());
+                Bitmap imageBitmap = (Bitmap) extras.get("data");
+                Bitmap bitmap = Bitmap.createScaledBitmap(imageBitmap, 500, 500, true);
                 profile_image.setImageBitmap(bitmap);
-                encodedImage = encodeImage(bitmap);
-                user.setProfile_picture(encodedImage);
-            } catch (IOException e) {
-                e.printStackTrace();
+                bitmap_image = bitmap;
+                savedFileDestination = tsLong.toString();
             }
-            catch(Exception ex) {
-                Log.e(CaptureImageActivity.class.toString(), ex.toString());
+            if (requestCode == REQUEST_GALLERY_CAPTURE && data != null && data.getData() != null) {
+                imageUri = data.getData();
+                try {
+                    Bitmap imageBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+                    Bitmap bitmap = Bitmap.createScaledBitmap(imageBitmap, 500, 500, true);
+                    profile_image.setImageBitmap(bitmap);
+                    bitmap_image = bitmap;
+                    savedFileDestination = tsLong.toString();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -170,9 +177,9 @@ public class CaptureImageActivity extends AppCompatActivity {
     private void getSignup(User user) {
         try {
             OkHttpClient.Builder client = new OkHttpClient.Builder();
-            client.connectTimeout(30, TimeUnit.SECONDS);
-            client.readTimeout(30, TimeUnit.SECONDS);
-            client.writeTimeout(30, TimeUnit.SECONDS);
+            client.connectTimeout(60, TimeUnit.SECONDS);
+            client.readTimeout(60, TimeUnit.SECONDS);
+            client.writeTimeout(60, TimeUnit.SECONDS);
 
             retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
                     .baseUrl(ISignUp.BASE_URL)
@@ -181,6 +188,10 @@ public class CaptureImageActivity extends AppCompatActivity {
                     .build();
 
             ISignUp api = retrofit.create(ISignUp.class);
+
+            if(!TextUtils.isEmpty(savedFileDestination)){
+                user.setProfile_picture(savedFileDestination+"_user.png");
+            }
 
             Call<User> call = api.get_signup(user);
 
@@ -191,11 +202,17 @@ public class CaptureImageActivity extends AppCompatActivity {
                     int user_id = user.getUser_id();
                     if (user_id != 0) {
                         Toast.makeText(CaptureImageActivity.this, "Welcome " + user.getFirst_name().toString(), Toast.LENGTH_LONG).show();
-
+                        uploadImage();
                         SQLiteDBUsersHandler sqLiteDBUsersHandler = new SQLiteDBUsersHandler(CaptureImageActivity.this);
                         sqLiteDBUsersHandler.storeCredentialsToSQLite(user);
+                        Intent intent = null;
 
-                        Intent intent = new Intent(CaptureImageActivity.this, MainActivityCustomer.class);
+                        if(user.getUser_type_id() == 1){
+                            intent = new Intent(CaptureImageActivity.this, MainActivityCustomer.class);
+                        }
+                        else if(user.getUser_type_id() == 3){
+                            intent = new Intent(CaptureImageActivity.this, MainActivityTransporter.class);
+                        }
                         intent.putExtra("user", user);
                         startActivity(intent);
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
@@ -228,5 +245,62 @@ public class CaptureImageActivity extends AppCompatActivity {
         String encImage = Base64.encodeToString(b, Base64.DEFAULT);
 
         return encImage;
+    }
+
+    private void uploadImage() {
+        if (imageUri == null) {
+            //Toast.makeText(this, "Please take photo first", Toast.LENGTH_LONG).show();
+            return;
+        }
+        try{
+            File file = new File(this.getCacheDir(), savedFileDestination + "_user.png");
+            file.createNewFile();
+
+            Bitmap bitmap = bitmap_image;
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
+            byte[] bitmapdata = bos.toByteArray();
+
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(bitmapdata);
+            fos.flush();
+            fos.close();
+
+            RequestBody requestFile = RequestBody.create(MediaType.parse("multipart/form-data"), file);
+            MultipartBody.Part body = MultipartBody.Part.createFormData("uploaded_file", file.getName(), requestFile);
+
+            OkHttpClient.Builder client = new OkHttpClient.Builder();
+            client.connectTimeout(30, TimeUnit.SECONDS);
+            client.readTimeout(30, TimeUnit.SECONDS);
+            client.writeTimeout(30, TimeUnit.SECONDS);
+
+            retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(IUploadFiles.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(client.build())
+                    .build();
+
+            IUploadFiles api = retrofit.create(IUploadFiles.class);
+
+            Call<Void> call = api.upload(body);
+
+            call.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    Log.e("RESPONSE FROM API", response.toString());
+                    //Toast.makeText(getContext(), "Image upload successfully", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Log.e("FAILURE", t.getMessage());
+                    Log.e("FAILURE", t.toString());
+                }
+            });
+        }
+        catch (Exception ex){
+            Log.e(getContext().toString(), ex.getMessage());
+            Log.e(getContext().toString(), "Exception in Upload");
+        }
     }
 }

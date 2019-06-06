@@ -111,8 +111,8 @@ public class FragmentListDriverWRTOrder extends Fragment {
 
             IDriver api = retrofit.create(IDriver.class);
 
-            Call<Object> call = null;
-            if(show_wrt_order_id == "false"){
+            Call<Object> call;
+            if(show_wrt_order_id.equals("false")){
                 call = api.get_driver_wrt_order(order);
             }
             else{
@@ -172,6 +172,6 @@ public class FragmentListDriverWRTOrder extends Fragment {
     }
 
     private void populateUI(){
-        rv = (RecyclerView)view.findViewById(R.id.fragment_list_driver_wrt_order_recycler_view);
+        rv = view.findViewById(R.id.fragment_list_driver_wrt_order_recycler_view);
     }
 }

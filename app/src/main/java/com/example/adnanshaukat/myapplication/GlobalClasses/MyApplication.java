@@ -27,6 +27,7 @@ import microsoft.aspnet.signalr.client.transport.ServerSentEventsTransport;
 public class MyApplication extends Application {
     private static int user_id;
     private static User globalUser;
+    private static int is_active;
 
     public int get_user_id() {
         return user_id;
@@ -40,5 +41,13 @@ public class MyApplication extends Application {
 
     public void setGlobalUser(User globalUser) {
         this.globalUser = globalUser;
+    }
+
+    public void setIs_active(int active_status){
+        is_active = active_status;
+    }
+
+    public int getIs_active(){
+        return is_active;
     }
 }

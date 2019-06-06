@@ -31,4 +31,11 @@
     <string name="status_error">We found a problem: %1$s</string>
     <string name="not_open_file">Could not open file</string>
 
+    <string name="about">
+        Smart Transport App is a smart application to manage all the transportation of the containers . In our application different transporters can get registered and upload the information about the different services they provides.
+        -Create a direct link between customer and driver.
+        -It provides real time tracking for both customer and transportor.
+        -Find nearest recommended driver.
+        -Analyze your activities using graph and charts.
+    </string>
 </resources>
