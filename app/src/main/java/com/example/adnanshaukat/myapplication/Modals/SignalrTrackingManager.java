@@ -6,6 +6,8 @@ import android.util.Log;
 
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.RetrofitManager;
 import com.example.adnanshaukat.myapplication.View.Common.MapsActivity;
+import com.example.adnanshaukat.myapplication.View.Transporter.MapTrackDriverActivity;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.io.Serializable;
 import java.util.concurrent.ExecutionException;
@@ -52,7 +54,7 @@ public class SignalrTrackingManager implements Serializable {
             @Override
             public void prepareRequest(Request request) {
                 request.addHeader("user_id", user_id + "");
-                request.addHeader("user_id", order_detail_id + "");
+                request.addHeader("order_detail_id", order_detail_id + "");
             }
         };
         hubConnection = new HubConnection(serverUrl);
@@ -75,31 +77,52 @@ public class SignalrTrackingManager implements Serializable {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        String latitude = data.split(";")[0];
-                        String longitude = data.split(";")[1];
-                        Log.e("Tracking SignalR", latitude);
-                        Log.e("Tracking SignalR", longitude);
+                        try{
+                            String latitude = data.split(";")[0];
+                            String longitude = data.split(";")[1];
+                            Log.e("Tracking SignalR", latitude);
+                            Log.e("Tracking SignalR", longitude);
 //                        Log.e("Route Id", route.getRoute_id() + "");
 //                        Log.e("Order Detail Id", route.getOrder_detail_id() + "");
-                        MapsActivity mapsActivity = new MapsActivity();
-                        mapsActivity.updateMap(latitude, longitude, context);
+                            MapsActivity mapsActivity = new MapsActivity();
+                            mapsActivity.updateMap(latitude, longitude, context);
+                        }
+                        catch(Exception ex){
+                            ex.printStackTrace();
+                        }
                     }
                 });
             }
         }, String.class);
 
-////        hubProxy.on("sendMessage", new SubscriptionHandler2<String ,String>() {
-////
-////            @Override
-////            public void run(final String s, final String s2) {
-////                mHandler.post(new Runnable() {
-////                    @Override
-////                    public void run() {
-////                        send_message.setText(send_message.getText()+"\n"+s2+" : "+s);
-////                    }
-////                });
-////            }
-////        },String.class,String.class);
+        String CLIENT_METHOD_BROADAST_MESSAGE_2 = "UpdateDriverLocationForTransporter"; // get webAPI server methods
+        hubProxy.on(CLIENT_METHOD_BROADAST_MESSAGE_2, new SubscriptionHandler1<String>() {
+            @Override
+            public void run(final String data) {
+                // we added the list of connected users
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        try{
+                            String latitude = data.split(";")[0];
+                            String longitude = data.split(";")[1];
+                            String driver_id = data.split(";")[2];
+                            String driver_name = data.split(";")[2];
+                            Log.e("Tracking SignalR Driver", latitude);
+                            Log.e("Tracking SignalR Driver", longitude);
+
+                            MapTrackDriverActivity mapsActivity = new MapTrackDriverActivity();
+                            mapsActivity.update_marker(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)),
+                                    Integer.parseInt(driver_id), driver_name, context);
+                        }
+                        catch(Exception ex){
+                            ex.printStackTrace();
+                        }
+                    }
+                });
+            }
+        }, String.class);
+
         try {
             signalRFuture.get();
         } catch (InterruptedException | ExecutionException e) {

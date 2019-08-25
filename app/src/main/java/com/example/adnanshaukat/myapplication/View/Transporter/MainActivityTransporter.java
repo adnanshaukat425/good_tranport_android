@@ -26,9 +26,11 @@ import android.widget.Toast;
 
 import com.example.adnanshaukat.myapplication.GlobalClasses.MyApplication;
 import com.example.adnanshaukat.myapplication.Modals.SQLiteDBUsersHandler;
+import com.example.adnanshaukat.myapplication.Modals.SignalrTrackingManager;
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.RetrofitManager;
+import com.example.adnanshaukat.myapplication.Services.TrackingService;
 import com.example.adnanshaukat.myapplication.View.Common.AboutActivity;
 import com.example.adnanshaukat.myapplication.View.Driver.MainActivityDriver;
 import com.example.adnanshaukat.myapplication.View.Common.FragmentUserProfile;
@@ -260,6 +262,17 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
                     commit();
         }
 
+        if(id == R.id.nav_t_track_drivers){
+
+//            SignalrTrackingManager signalrTrackingManager = SignalrTrackingManager.SignalrTrackingManager();
+//            signalrTrackingManager.setContext(getApplicationContext());
+//            signalrTrackingManager.connectToSignalR(user.getUser_id(), -1);
+
+            Intent intent = new Intent(this, MapTrackDriverActivity.class);
+            intent.putExtra("user", user);
+            startActivity(intent);
+        }
+
         if(id == R.id.nav_t_about){
             Intent intent = new Intent(this, AboutActivity.class);
             startActivity(intent);
@@ -267,6 +280,10 @@ public class MainActivityTransporter extends AppCompatActivity implements Naviga
 
         if(id == R.id.nav_t_logout){
             if(logout()){
+                Intent tracking_intent = new Intent(this, TrackingService.class);
+                stopService(tracking_intent);
+                SignalrTrackingManager.SignalrTrackingManager().disconnect();
+
                 Toast.makeText(this, "Logged out Successfully", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MainActivityTransporter.this, LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

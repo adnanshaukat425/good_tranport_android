@@ -151,10 +151,16 @@ public class FragmentMainDriver extends Fragment {
                         populate_chart(dashboardGraph.getX_axis(), dashboardGraph.getY_axis());
                     }
                     else {
-                        populate_chart(new ArrayList<Object>(), new ArrayList<Object>());
-                        //Toast.makeText(getContext(), "No Data Available", Toast.LENGTH_SHORT).show();
-                        Snackbar snackbar = Snackbar.make(root_view, "No Data Available", Snackbar.LENGTH_LONG);
-                        snackbar.show();
+                        populate_chart(new ArrayList<>(), new ArrayList<>());
+
+                        try {
+                            Toast.makeText(getContext(), "No Data Available", Toast.LENGTH_SHORT).show();
+//                        Snackbar snackbar = Snackbar.make(root_view, "No Data Available", Snackbar.LENGTH_LONG);
+//                        snackbar.show();
+                        }
+                        catch(Exception ex){
+                            ex.printStackTrace();
+                        }
                     }
                 }
 

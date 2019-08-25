@@ -22,10 +22,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class LocationController {
 
-    ProgressDialog progressDialog;
-
-    public void update_lat_long(final Context context, int user_id, String latitude, String longitude){
-        //progressDialog = ProgressDialogManager.showProgressDialogWithTitle(context, "Please Wait", "Loading");
+    public void update_lat_long(final Context context, int driver_id, String latitude, String longitude,
+                                String driver_name, int transporter_id){
         try {
             OkHttpClient.Builder client = new OkHttpClient.Builder();
             client.connectTimeout(30, TimeUnit.SECONDS);
@@ -40,12 +38,13 @@ public class LocationController {
 
             ILocation api = retrofit.create(ILocation.class);
 
-            Call<Object> call = api.update_current_lat_long(user_id, latitude, longitude);
+            Call<Object> call = api.update_current_lat_long(driver_id, latitude, longitude, driver_name, transporter_id);
 
             call.enqueue(new Callback<Object>() {
                 @Override
                 public void onResponse(Call<Object> call, Response<Object> response) {
                     Object response_object = response.body();
+                    Log.e("LocationController", response.toString());
                     if (response_object != null) {
                         String message = "";
                         Log.e("Location updated", response_object.toString());
@@ -58,8 +57,8 @@ public class LocationController {
 
                 @Override
                 public void onFailure(Call<Object> call, Throwable t) {
-                    Log.e("FAILURE", t.getMessage());
-                    Log.e("FAILURE", t.toString());
+                    Log.e("AAFAILURE", t.getMessage());
+                    Log.e("AAFAILURE", t.toString());
                     Toast.makeText(context.getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
                     //ProgressDialogManager.closeProgressDialog(progressDialog);
                 }

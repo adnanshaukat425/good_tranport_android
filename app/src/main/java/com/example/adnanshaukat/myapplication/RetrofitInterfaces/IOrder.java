@@ -34,4 +34,7 @@ public interface IOrder {
 
     @GET("confirm_order")
     Call<Object> confirm_order(@Query("driver_id") int driver_id, @Query("order_id") int order_id);
+
+    @GET("get_order_cost")
+    Call<Object> get_order_cost(@Query("source_id") String source_id, @Query("destination_id") String destination_id);
 }

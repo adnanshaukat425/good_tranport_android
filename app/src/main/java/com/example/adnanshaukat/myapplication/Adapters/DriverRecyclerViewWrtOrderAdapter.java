@@ -22,11 +22,13 @@ import com.example.adnanshaukat.myapplication.Modals.Order;
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.INotification;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.IOrder;
+import com.example.adnanshaukat.myapplication.RetrofitInterfaces.RetrofitManager;
 import com.example.adnanshaukat.myapplication.View.Customer.FragmentDriverProfileForCustomer;
 import com.example.adnanshaukat.myapplication.View.Customer.FragmentListDriverWRTOrder;
 import com.example.adnanshaukat.myapplication.View.Customer.MainActivityCustomer;
 import com.example.adnanshaukat.myapplication.View.Driver.MainActivityDriver;
 import com.google.gson.Gson;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -61,14 +63,21 @@ public class DriverRecyclerViewWrtOrderAdapter extends RecyclerView.Adapter<Driv
     @Override
     public void onBindViewHolder(DriverRecyclerViewWrtOrderAdapter.MyViewHolder holder, int position) {
         Log.e("USER Name", mDriver.get(position).getFirst_name());
-        String encodedImage = mDriver.get(position).getProfile_picture();
-        if (encodedImage.isEmpty()) {
-            holder.profile_image.setImageResource(R.drawable.default_profile_image);
-        } else {
-            byte[] decodedString = Base64.decode(encodedImage, Base64.DEFAULT);
-            Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-
-            holder.profile_image.setImageBitmap(decodedByte);
+        String image_path = mDriver.get(position).getProfile_picture();
+        try{
+            if (image_path == null || image_path.isEmpty()) {
+                holder.profile_image.setImageResource(R.drawable.default_profile_image_2);
+            } else {
+                //new DownloadImageTask(holder.profile_image).execute(image_path);
+                image_path =  "http://" + RetrofitManager.ip + "/" + RetrofitManager.domain + "/Images/AppImages/" + image_path;
+                Picasso
+                        .with(mContext)
+                        .load(image_path)
+                        .into(holder.profile_image);
+            }
+        }
+        catch(Exception ex){
+            holder.profile_image.setImageResource(R.drawable.default_profile_image_2);
         }
         holder.driver_status_image.setImageResource(R.drawable.online_icon);
         holder.tv_driver_name.setText(mDriver.get(position).getFirst_name() + " " + mDriver.get(position).getLast_name());

@@ -39,6 +39,7 @@ import com.example.adnanshaukat.myapplication.GlobalClasses.LocationController;
 import com.example.adnanshaukat.myapplication.GlobalClasses.MyApplication;
 import com.example.adnanshaukat.myapplication.Modals.Notification;
 import com.example.adnanshaukat.myapplication.Modals.SQLiteDBUsersHandler;
+import com.example.adnanshaukat.myapplication.Modals.SignalrNotificationManager;
 import com.example.adnanshaukat.myapplication.Modals.SignalrTrackingManager;
 import com.example.adnanshaukat.myapplication.Modals.Status;
 import com.example.adnanshaukat.myapplication.Modals.User;
@@ -46,6 +47,7 @@ import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.IDriver;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.INotification;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.RetrofitManager;
+import com.example.adnanshaukat.myapplication.Services.SaveLastLocationService;
 import com.example.adnanshaukat.myapplication.Services.TrackingService;
 import com.example.adnanshaukat.myapplication.View.Common.AboutActivity;
 import com.example.adnanshaukat.myapplication.View.Common.FragmentUserProfile;
@@ -79,9 +81,7 @@ public class MainActivityDriver extends AppCompatActivity implements NavigationV
     ToggleButton switch_tracking;
     private static final int PERMISSIONS_REQUEST = 1;
     private static final int REQUEST_LOCATION = 1;
-    LocationManager locationManager;
 
-    Intent serviceIntent;
     SignalrTrackingManager signalrTrackingManager;
     ArrayList<Integer> notification_ids = new ArrayList<>();
 
@@ -98,34 +98,30 @@ public class MainActivityDriver extends AppCompatActivity implements NavigationV
         user = (User)i.getSerializableExtra("user");
         Object fragment_from_notification = i.getExtras().get("fragment_from_notification");
 
-//        latitude = i.getExtras().get("latitude").toString();
-//        longitude = i.getExtras().get("longitude").toString();
-
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.driver_toolbar);
+        Toolbar toolbar = findViewById(R.id.driver_toolbar);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.driver_drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.driver_drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.driver_nav_view);
+        NavigationView navigationView = findViewById(R.id.driver_nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         View view = navigationView.inflateHeaderView(R.layout.nav_header_main);
-        ImageView profile_image =  (ImageView)view.findViewById(R.id.drawer_profile_image);
+        ImageView profile_image = view.findViewById(R.id.drawer_profile_image);
 
-        TextView driver_name = (TextView)view.findViewById(R.id.drawer_name);
-        TextView driver_email = (TextView)view.findViewById(R.id.drawer_email);
+        TextView driver_name = view.findViewById(R.id.drawer_name);
+        TextView driver_email = view.findViewById(R.id.drawer_email);
 
         driver_name.setText(user.getFirst_name() + " " + user.getLast_name());
         driver_email.setText(user.getEmail());
 
         Menu menu = navigationView.getMenu();
 
-        MenuItem txt_id = (MenuItem) menu.findItem(R.id.nav_d_id);
+        MenuItem txt_id = menu.findItem(R.id.nav_d_id);
         String user_id = user.getUser_id() + "";
 
         if(user_id.length() == 1){
@@ -166,7 +162,7 @@ public class MainActivityDriver extends AppCompatActivity implements NavigationV
                         replace(R.id.main_content_frame_driver_container, fragment).
                         addToBackStack(null).
                         commit();
-                DrawerLayout drawer = (DrawerLayout) findViewById(R.id.driver_drawer_layout);
+                DrawerLayout drawer = findViewById(R.id.driver_drawer_layout);
                 drawer.closeDrawer(GravityCompat.START);
             }
         });
@@ -192,26 +188,16 @@ public class MainActivityDriver extends AppCompatActivity implements NavigationV
         signalrTrackingManager = SignalrTrackingManager.SignalrTrackingManager();
         signalrTrackingManager.setContext(getApplicationContext());
         signalrTrackingManager.connectToSignalR(user.getUser_id(), 1);
-//        LocationRequest request = new LocationRequest();
-//        request.setInterval(5000);
-//        request.setFastestInterval(5000);
-//        request.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-//        FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(this);
-//        int permission = ContextCompat.checkSelfPermission(this,
-//                android.Manifest.permission.ACCESS_FINE_LOCATION);
-//        if (permission == PackageManager.PERMISSION_GRANTED) {
-//            // Request location updates and when an update is
-//            // received, store the location in Firebase
-//            client.requestLocationUpdates(request, new LocationCallback() {
-//                @Override
-//                public void onLocationResult(LocationResult locationResult) {
-//                    Location location = locationResult.getLastLocation();
-//                    if (location != null) {
-//                        Log.d("UPDATE LOCATION", location.toString());
-//                    }
-//                }
-//            }, null);
-//        }
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission
+                (this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+        }
+        else{
+            startLocationUpdateService();
+            //buildAlertMessageNoGps();
+        }
     }
 
     public void onBackPressed() {
@@ -295,6 +281,10 @@ public class MainActivityDriver extends AppCompatActivity implements NavigationV
 
         if(id == R.id.nav_d_logout){
             if(logout()){
+                stopLocationUpdateService();
+                Intent tracking_intent = new Intent(this, TrackingService.class);
+                stopService(tracking_intent);
+                SignalrTrackingManager.SignalrTrackingManager().disconnect();
                 Toast.makeText(this, "Logged out Successfully", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(MainActivityDriver.this, LoginActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -328,49 +318,6 @@ public class MainActivityDriver extends AppCompatActivity implements NavigationV
         return sqLiteDBUsersHandler.update_logged_in_status(0, user);
     }
 
-    private boolean getLocation() {
-        if (ActivityCompat.checkSelfPermission(MainActivityDriver.this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission
-                (MainActivityDriver.this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-            ActivityCompat.requestPermissions(MainActivityDriver.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
-            return false;
-        } else {
-            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-
-            Location location1 = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-            Location location2 = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
-
-            if (location != null) {
-                double latti = location.getLatitude();
-                double longi = location.getLongitude();
-                latitude = String.valueOf(latti);
-                longitude = String.valueOf(longi);
-
-            } else if (location1 != null) {
-                double latti = location1.getLatitude();
-                double longi = location1.getLongitude();
-                latitude = String.valueOf(latti);
-                longitude = String.valueOf(longi);
-
-            } else if (location2 != null) {
-                double latti = location2.getLatitude();
-                double longi = location2.getLongitude();
-                latitude = String.valueOf(latti);
-                longitude = String.valueOf(longi);
-
-            } else {
-                Toast.makeText(MainActivityDriver.this,"Unable to Trace your location",Toast.LENGTH_SHORT).show();
-                buildAlertMessageNoGps();
-                return false;
-            }
-            Log.e("Driver Latitude", latitude + "");
-            Log.e("Driver Longitude", longitude + "");
-            return true;
-        }
-    }
-
     protected void buildAlertMessageNoGps() {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Please Turn ON your mobile Location")
@@ -383,6 +330,7 @@ public class MainActivityDriver extends AppCompatActivity implements NavigationV
                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(final DialogInterface dialog, final int id) {
                         dialog.cancel();
+                        buildAlertMessageNoGps();
                     }
                 });
         final AlertDialog alert = builder.create();
@@ -405,12 +353,14 @@ public class MainActivityDriver extends AppCompatActivity implements NavigationV
                 if (isChecked) {
                     Toast.makeText(MainActivityDriver.this, "You're now Active", Toast.LENGTH_SHORT).show();
                     status.update_status(1, user.getUser_id());
+                    startLocationUpdateService();
                 } else {
                     Intent intent = new Intent(getApplicationContext(), TrackingService.class);
                     Toast.makeText(MainActivityDriver.this, "You're now Inactive, You will not receive order requests now.", Toast.LENGTH_SHORT).show();
                     stopService(intent);
-                    Toast.makeText(MainActivityDriver.this, "Tracking Stopped", Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(MainActivityDriver.this, "Tracking Stopped", Toast.LENGTH_SHORT).show();
                     status.update_status(7, user.getUser_id());
+                    stopLocationUpdateService();
                 }
             }
         });
@@ -420,20 +370,33 @@ public class MainActivityDriver extends AppCompatActivity implements NavigationV
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         if (requestCode == PERMISSIONS_REQUEST && grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            // Start the service when the permission is granted
-            startTrackerService();
-        } else {
-            //finish();
+
+            int permission = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
+            if (permission == PackageManager.PERMISSION_GRANTED) {
+                startLocationUpdateService();
+            }
+            else{
+                buildAlertMessageNoGps();
+            }
+         } else {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission
+                    (this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+            }
+            else{
+                startLocationUpdateService();
+            }
         }
     }
 
-    private void startTrackerService() {
-        SignalrTrackingManager signalrTrackingManager = SignalrTrackingManager.SignalrTrackingManager();
-        //signalrTrackingManager.insertLocation("24.8615715", "67.0732217", 1);
-        serviceIntent = new Intent(this, TrackingService.class);
-        serviceIntent.putExtra("order_detail_id", "1");
-        startService(serviceIntent);
-        //finish();
+    private void startLocationUpdateService() {
+        getTransporterId(user.getUser_id());
+    }
+
+    private void stopLocationUpdateService() {
+        Intent serviceIntent = new Intent(this, SaveLastLocationService.class);
+        stopService(serviceIntent);
     }
 
     public void getNotification(){
@@ -556,6 +519,57 @@ public class MainActivityDriver extends AppCompatActivity implements NavigationV
             });
         } catch (Exception ex) {
             Log.e("ERROR D", ex.toString());
+        }
+    }
+
+    private void getTransporterId(int driver_id){
+        try {
+            OkHttpClient.Builder client = new OkHttpClient.Builder();
+            client.connectTimeout(30, TimeUnit.SECONDS);
+            client.readTimeout(30, TimeUnit.SECONDS);
+            client.writeTimeout(30, TimeUnit.SECONDS);
+
+            retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(IDriver.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(client.build())
+                    .build();
+
+            IDriver api = retrofit.create(IDriver.class);
+
+            Call<Object> call = api.get_driver_transporter_id(driver_id);
+
+            call.enqueue(new Callback<Object>() {
+                @Override
+                public void onResponse(Call<Object> call, Response<Object> response) {
+                    try {
+                        Log.e("RESPONSE BODY", response.message());
+                        Log.e("RESPONSE BODY", response + "");
+
+                        JSONObject response_obj = new JSONObject(response.body().toString());
+                        if((boolean)response_obj.get("success")) {
+                            int transporter_id = Integer.parseInt(response_obj.get("data").toString());
+                            Intent serviceIntent = new Intent(MainActivityDriver.this, SaveLastLocationService.class);
+                            serviceIntent.putExtra("driver_id", user.getUser_id());
+                            serviceIntent.putExtra("driver_name", user.getFirst_name() + " " + user.getLast_name());
+                            serviceIntent.putExtra("transporter_id", transporter_id);
+                            startService(serviceIntent);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Object> call, Throwable t) {
+                    Log.e("FAILURE", t.getMessage());
+                    Log.e("FAILURE", t.toString());
+                }
+            });
+        }
+        catch(Exception ex){
+            Log.e("ERROR", ex.getMessage());
+            Log.e("ERROR", ex.toString());
         }
     }
 }

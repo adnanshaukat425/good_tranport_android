@@ -20,6 +20,11 @@ public interface ILocation {
     @GET("get_all_destination_wrt_source")
     Call<List<Location>> get_all_destination_wrt_source(@Query("source_id") int source_id);
 
-    @POST("update_current_lat_long")
-    Call<Object> update_current_lat_long(@Query("user_id") int user_id, @Query("latitude") String latitude, @Query("longitude") String longitude);
+    @GET("update_current_lat_long")
+    Call<Object> update_current_lat_long(@Query("driver_id") int driver_id, @Query("latitude") String latitude,
+                                         @Query("longitude") String longitude, @Query("driver_name") String driver_name,
+                                         @Query("transporter_id") int transporter_id);
+
+    @GET("get_driver_latLng_from_transporter_id")
+    Call<Object> get_driver_latLng_from_transporter_id(@Query("transporter_id") int transporter_id);
 }

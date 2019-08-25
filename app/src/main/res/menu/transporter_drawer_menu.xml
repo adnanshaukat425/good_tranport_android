@@ -23,6 +23,12 @@
             android:id="@+id/nav_t_add_vehicles"
             android:icon="@drawable/vehicle_icon"
             android:title="Add Vehicle" />
+
+        <item
+            android:id="@+id/nav_t_track_drivers"
+            android:icon="@drawable/ic_map_marker"
+            android:title="Track drivers"
+            />
         <item
             android:id="@+id/nav_t_logout"
             android:icon="@drawable/logout"

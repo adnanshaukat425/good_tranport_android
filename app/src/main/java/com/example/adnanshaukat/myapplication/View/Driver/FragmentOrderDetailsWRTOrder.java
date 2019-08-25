@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -24,7 +25,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RadioButton;
+import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.example.adnanshaukat.myapplication.Adapters.OrdersAdapter;
@@ -33,6 +36,7 @@ import com.example.adnanshaukat.myapplication.GlobalClasses.ProgressDialogManage
 import com.example.adnanshaukat.myapplication.Modals.Notification;
 import com.example.adnanshaukat.myapplication.Modals.Order;
 import com.example.adnanshaukat.myapplication.Modals.SignalrTrackingManager;
+import com.example.adnanshaukat.myapplication.Modals.Status;
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.IDriver;
@@ -82,8 +86,9 @@ public class FragmentOrderDetailsWRTOrder extends Fragment {
     boolean is_order_request;
 
     ImageView customerImage;
-    EditText order_id, order_by, source, destination, description, price;
+    EditText order_id, order_by, source, destination, description, total_cost, labour_quantity, labour_cost, order_cost;
     Button btn_accept_order_or_complete_order;
+    LinearLayout root_view;
 
     RadioButton rb_picking_order, rb_delivering_order;
 
@@ -110,15 +115,14 @@ public class FragmentOrderDetailsWRTOrder extends Fragment {
         order_type = argument.getString("order_type");
 
         populateUI();
-
-        setValues();
+        getOrderCost(order_details.get("source_id"), order_details.get("destination_id"));
 
         if (is_order_request) {
             //btn_accept_order_or_complete_order.setBackground(getResources().getDrawable(R.drawable.button_ripple_effect));
             btn_accept_order_or_complete_order.setText("Accept Order");
             btn_accept_order_or_complete_order.setVisibility(View.VISIBLE);
         } else {
-            if (order_type == "active_order") {
+            if (order_type.equals("active_order")) {
                 btn_accept_order_or_complete_order.setText("Track Order");
                 btn_accept_order_or_complete_order.setVisibility(View.VISIBLE);
             } else {
@@ -129,19 +133,27 @@ public class FragmentOrderDetailsWRTOrder extends Fragment {
         btn_accept_order_or_complete_order.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (btn_accept_order_or_complete_order.getText() == "Accept Order") {
+                if (btn_accept_order_or_complete_order.getText().toString().trim().equals("Accept Order")) {
                     //Accept Order
-                    confirmOrder(order.getOrder_id(), mUser.getUser_id());
-                } else if (btn_accept_order_or_complete_order.getText() == "Track Order") {
+                    Status status = new Status();
+                    if(status.getStatus() == 1){
+                        confirmOrder(order.getOrder_id(), mUser.getUser_id());
+                    }
+                    else{
+                        Snackbar snackbar = Snackbar.make(root_view, "Can't Accept Order, You Are Currently Inactive", Snackbar.LENGTH_LONG);
+                        snackbar.show();
+                        //Toast.makeText(getContext(), "Can't Accept Order, You Are Currently Inactive", Toast.LENGTH_LONG).show();
+                    }
+                } else if (btn_accept_order_or_complete_order.getText().toString().trim().equals("Track Order")) {
                     //Resume Tracking
-                    getDriverSourceDestinaton(mUser.getUser_id());
-                } else if (btn_accept_order_or_complete_order.getText() == "Start tracking") {
+                    getDriverSourceDestination(mUser.getUser_id());
+                } else if (btn_accept_order_or_complete_order.getText().toString().trim().equals("Start Tracking")) {
                     //Start Tracking
+                    Log.e(TAG, "inside start tracking");
                     LayoutInflater alert_layout_inflater = getLayoutInflater();
                     View alertLayout = alert_layout_inflater.inflate(R.layout.tracking_status_alert_layout, null);
                     rb_picking_order = alertLayout.findViewById(R.id.alert_dialog_picking_order);
                     rb_delivering_order = alertLayout.findViewById(R.id.alert_dialog_delivering_order);
-
                     showDialog(alertLayout);
                 }
             }
@@ -151,12 +163,16 @@ public class FragmentOrderDetailsWRTOrder extends Fragment {
     }
 
     private void populateUI() {
+        root_view = view.findViewById(R.id.order_details_root_view);
         customerImage = view.findViewById(R.id.customer_image_for_order_details);
         order_id = view.findViewById(R.id.order_details_order_id);
         order_by = view.findViewById(R.id.order_details_order_by);
         source = view.findViewById(R.id.order_details_source);
         destination = view.findViewById(R.id.order_details_destination);
-        price = view.findViewById(R.id.order_details_price);
+        total_cost = view.findViewById(R.id.order_details_total_cost);
+        labour_quantity = view.findViewById(R.id.order_details_labour_quantity);
+        labour_cost = view.findViewById(R.id.order_details_labour_cost);
+        order_cost = view.findViewById(R.id.order_details_order_cost);
         description = view.findViewById(R.id.order_details_description);
         btn_accept_order_or_complete_order = view.findViewById(R.id.btn_order_details_accept_order);
     }
@@ -180,13 +196,17 @@ public class FragmentOrderDetailsWRTOrder extends Fragment {
         order_id.setText(order_details.get("order_id"));
         order_by.setText(order_details.get("customer_name"));
         source.setText(order_details.get("source"));
-        price.setText(order_details.get("labour_cost"));
+        labour_cost.setText(order_details.get("labour_cost"));
+        labour_quantity.setText(order_details.get("labour_quantity"));
         destination.setText(order_details.get("destination"));
         if (order_details.get("description").isEmpty()) {
             description.setText("No description available");
         } else {
             description.setText(order_details.get("description"));
         }
+
+        float total_cost_order = Float.parseFloat(order_details.get("labour_cost")) + Float.parseFloat(order_cost.getText().toString());
+        total_cost.setText(Float.toString(total_cost_order));
     }
 
     private void confirmOrder(int order_id, int driver_id) {
@@ -212,25 +232,32 @@ public class FragmentOrderDetailsWRTOrder extends Fragment {
             call.enqueue(new Callback<Object>() {
                 @Override
                 public void onResponse(Call<Object> call, Response<Object> response) {
-                    Log.e("DriverResponse", response.toString());
+                    Log.e("ConfirmResponse", response.toString());
                     Object response_json = response.body();
 
                     if (response_json != null) {
-                        Log.e("Response Driver", response_json.toString());
+                        Log.e("ConfirmDriver", response_json.toString());
                         Gson gson = new Gson();
                         try {
                             JsonArray json_object = gson.fromJson(response_json.toString(), JsonArray.class);
-                            Log.e("response", json_object.get(0).getAsJsonObject().get("output").toString().replace("\"", ""));
-                            if (json_object.get(0).getAsJsonObject().get("output").toString().replace("\"", "").equals("Order request expires")) {
+                            String output = json_object.get(0).getAsJsonObject().get("output").toString().trim().replace("\"", "");
+                            Log.e("Confirm", output);
+                            if (output.equals("Order request expires")) {
                                 Toast.makeText(getContext(), "Order request expires", Toast.LENGTH_SHORT).show();
                                 btn_accept_order_or_complete_order.setEnabled(false);
-                            } else if (json_object.get(0).getAsJsonObject().get("output").toString().trim().replace("\"", "").equals("Order accepted, Customer will be notified")) {
+                            } else if (output.equals("Order accepted, Customer will be notified")) {
                                 Toast.makeText(getContext(), "Order accepted, Customer will be notified", Toast.LENGTH_SHORT).show();
                                 Log.e("RESPONSE!!", "OK");
                                 notifyCustomer();
+                                Log.e(TAG, "tracking order starting");
                                 btn_accept_order_or_complete_order.setText("Start Tracking");
                                 btn_accept_order_or_complete_order.setVisibility(View.VISIBLE);
                                 btn_accept_order_or_complete_order.callOnClick();
+                            }
+                            else if(output.equals("Can not accept order, You already have active order")){
+                                Snackbar snackbar = Snackbar.make(root_view, output, Snackbar.LENGTH_LONG);
+                                snackbar.show();
+                                //Toast.makeText(getContext(), output, Toast.LENGTH_SHORT).show();
                             }
 
                         } catch (Exception ex) {
@@ -440,7 +467,7 @@ public class FragmentOrderDetailsWRTOrder extends Fragment {
         }
     }
 
-    public void getDriverSourceDestinaton(Integer driver_id) {
+    public void getDriverSourceDestination(Integer driver_id) {
         try {
             OkHttpClient.Builder client = new OkHttpClient.Builder();
             client.connectTimeout(30, TimeUnit.SECONDS);
@@ -559,5 +586,80 @@ public class FragmentOrderDetailsWRTOrder extends Fragment {
         Intent serviceIntent = new Intent(getContext(), TrackingService.class);
         serviceIntent.putExtra("order_detail_id", order_details.get("order_detail_id"));
         getActivity().startService(serviceIntent);
+    }
+
+    private void getOrderCost(String source_id, String destination_id){
+        try {
+            OkHttpClient.Builder client = new OkHttpClient.Builder();
+            client.connectTimeout(30, TimeUnit.SECONDS);
+            client.readTimeout(30, TimeUnit.SECONDS);
+            client.writeTimeout(30, TimeUnit.SECONDS);
+
+            retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(IOrder.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(client.build())
+                    .build();
+
+            IOrder api = retrofit.create(IOrder.class);
+            Log.e("SOURCE", source_id + " a");
+            Log.e("DESTINATION", destination_id + " a");
+
+            Call<Object> call = api.get_order_cost(source_id, destination_id);
+
+            call.enqueue(new Callback<Object>() {
+                @Override
+                public void onResponse(Call<Object> call, Response<Object> response) {
+                    Log.e("AllOrderResponse", response.toString());
+                    Object response_json = response.body();
+
+                    if (response_json != null)
+                    {
+                        Log.e("Response Driver Dtls", response_json.toString());
+                        try {
+                            JSONObject temp_obj = new JSONObject(response_json.toString());
+                            boolean success = (boolean)temp_obj.get("success");
+                            String price = "0";
+                            if (success){
+                                JSONObject obj = new JSONArray(temp_obj.get("data").toString()).getJSONObject(0);
+                                if (order_details.get("container_type_id").equals("1")){
+                                    price = obj.get("lcl_price").toString();
+                                }
+                                else{
+                                    if (order_details.get("vehicle_type_id").equals("1")){
+                                        price = obj.get("20ft_price").toString();
+                                    }
+                                    else{
+                                        price = obj.get("40ft_price").toString();
+                                    }
+                                }
+                            }
+                            else{
+
+                            }
+                            order_cost.setText(price);
+                            setValues();
+                        } catch (Exception ex) {
+                            Log.e("OrderDetails", ex.toString() + ex.getStackTrace());
+                        }
+                    } else
+                    {
+                        order_cost.setText("0");
+                        setValues();
+                    }
+                }
+                @Override
+                public void onFailure(Call<Object> call, Throwable t) {
+                    Log.e("OrderDetails FAILURE", t.getMessage());
+                    Log.e("OrderDetails FAILURE", t.toString());
+                    Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+                    ProgressDialogManager.closeProgressDialog(progressDialog);
+                }
+            });
+        }
+        catch (Exception ex){
+            ProgressDialogManager.closeProgressDialog(progressDialog);
+            Log.e("OrderDetails ERROR", ex.toString());
+        }
     }
 }

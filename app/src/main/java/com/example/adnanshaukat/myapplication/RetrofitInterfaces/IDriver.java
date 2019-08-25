@@ -48,4 +48,7 @@ public interface IDriver {
 
     @GET("get_driver_status")
     Call<Object> get_driver_status(@Query("driver_id") int driver_id);
+
+    @GET("get_driver_transporter_id")
+    Call<Object> get_driver_transporter_id(@Query("driver_id") int driver_id);
 }

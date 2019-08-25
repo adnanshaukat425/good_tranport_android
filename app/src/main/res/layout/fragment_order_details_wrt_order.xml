@@ -7,6 +7,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/order_details_root_view"
         android:background="@color/colorAccent"
         android:orientation="vertical"
         android:paddingBottom="@dimen/activity_vertical_margin"
@@ -136,29 +137,117 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:background="@null"
+            android:enabled="false"
+            android:layout_weight="1"
+            android:text="Total Cost: "
+            android:textColor="#000" />
+
+        <EditText
+            android:id="@+id/order_details_total_cost"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:enabled="false"
+            android:text="TOTAL COST"
+            android:textColor="#000" />
+
+    </LinearLayout>
+
+
+        <LinearLayout
             android:layout_marginBottom="20dp"
             android:layout_marginTop="10dp"
-            android:orientation="horizontal">
+            android:layout_marginLeft="16dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
             <EditText
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:background="@null"
                 android:enabled="false"
-                android:text="Price: "
+                android:layout_weight="1"
+                android:text="Labour Quantity: "
                 android:textColor="#000" />
 
             <EditText
-                android:id="@+id/order_details_price"
+                android:id="@+id/order_details_labour_quantity"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@null"
                 android:enabled="false"
-                android:text="PRICE"
+                android:text="LABOUR QUANTITY"
+                android:textColor="#000" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="16dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:enabled="false"
+                android:layout_weight="1"
+                android:text="Labour Cost: "
+                android:textColor="#000" />
+
+            <EditText
+                android:id="@+id/order_details_labour_cost"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@null"
+                android:enabled="false"
+                android:text="LABOUR COST"
+                android:textColor="#000" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="16dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:enabled="false"
+                android:layout_weight="1"
+                android:text="Order Cost: "
+                android:textColor="#000" />
+
+            <EditText
+                android:id="@+id/order_details_order_cost"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@null"
+                android:enabled="false"
+                android:text="ORDER PRICE"
                 android:textColor="#000" />
 
         </LinearLayout>

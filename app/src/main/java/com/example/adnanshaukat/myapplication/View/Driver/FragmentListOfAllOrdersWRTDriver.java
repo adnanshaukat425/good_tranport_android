@@ -115,6 +115,7 @@ public class FragmentListOfAllOrdersWRTDriver extends Fragment {
                                 or.put("container_type_id", json_array.get(i).getAsJsonObject().get("container_type_id") != null ? json_array.get(i).getAsJsonObject().get("container_type_id").toString().replace("\"", "") : "0");
                                 or.put("vehicle_type_id", json_array.get(i).getAsJsonObject().get("vehicle_type_id") != null ? json_array.get(i).getAsJsonObject().get("vehicle_type_id").toString().replace("\"", "") : "0");
                                 or.put("source_id", json_array.get(i).getAsJsonObject().get("source_id") != null ? json_array.get(i).getAsJsonObject().get("source_id").toString().replace("\"", "") : "0");
+                                or.put("destination_id", json_array.get(i).getAsJsonObject().get("destination_id") != null ? json_array.get(i).getAsJsonObject().get("destination_id").toString().replace("\"", "") : "0");
                                 order.add(or);
                             }
 

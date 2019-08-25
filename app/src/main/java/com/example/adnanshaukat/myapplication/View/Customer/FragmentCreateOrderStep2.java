@@ -166,6 +166,7 @@ public class FragmentCreateOrderStep2 extends Fragment {
                             tvLabourCost.setText(Integer.toString(Integer.parseInt(s.toString()) * FCL_20FT_LABOUR_COST));
                         }
                         else{
+                            Log.e("Labour Quantity", s.toString() + "aa");
                             tvLabourCost.setText(Integer.toString(Integer.parseInt(s.toString()) * FCL_40FT_LABOUR_COST));
                         }
                     }
@@ -189,7 +190,6 @@ public class FragmentCreateOrderStep2 extends Fragment {
             @Override
             public void onClick(View v) {
                 String temp_labour_cost = tvLabourCost.getText().toString();
-                String temp_labour_quantity  = etLabourQuantity.getText().toString();
                 try{
                     labour_cost = Float.parseFloat(temp_labour_cost.isEmpty() ? "0" : temp_labour_cost);
                 }
@@ -222,13 +222,13 @@ public class FragmentCreateOrderStep2 extends Fragment {
     }
 
     public void populateUI(){
-        spinPaymentType = (MaterialSpinner)view.findViewById(R.id.spin_payment_type);
-        chkLabourReq = (CheckBox)view.findViewById(R.id.chk_labour_required);
-        tvLabourCost = (TextView)view.findViewById(R.id.tv_labour_cost);
-        tilLabourQuantity = (TextInputLayout)view.findViewById(R.id.til_labour_quantity);
-        etLabourQuantity = (EditText)view.findViewById(R.id.et_labour_quantity);
-        etDescription = (TextInputEditText)view.findViewById(R.id.et_description_id);
-        placeOrder = (Button)view.findViewById(R.id.btn_place_order);
+        spinPaymentType = view.findViewById(R.id.spin_payment_type);
+        chkLabourReq = view.findViewById(R.id.chk_labour_required);
+        tvLabourCost = view.findViewById(R.id.tv_labour_cost);
+        tilLabourQuantity = view.findViewById(R.id.til_labour_quantity);
+        etLabourQuantity = view.findViewById(R.id.et_labour_quantity);
+        etDescription = view.findViewById(R.id.et_description_id);
+        placeOrder = view.findViewById(R.id.btn_place_order);
     }
 
     private void placeOrder(Order order) {

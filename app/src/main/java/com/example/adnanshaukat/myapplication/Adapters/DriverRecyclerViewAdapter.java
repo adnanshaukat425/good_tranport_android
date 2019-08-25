@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.RetrofitManager;
+import com.example.adnanshaukat.myapplication.View.Transporter.FragmentListOfOrderWRTTransporter;
 import com.example.adnanshaukat.myapplication.View.Transporter.FragmentUserProfileForDriverFromTransporter;
 import com.example.adnanshaukat.myapplication.View.Transporter.MainActivityTransporter;
 import com.squareup.picasso.Picasso;
@@ -50,7 +51,7 @@ public class DriverRecyclerViewAdapter extends RecyclerView.Adapter<DriverRecycl
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(MyViewHolder holder, final int position) {
         if (mStatus != -1){
             Log.e("USER STATUS",Integer.toString(mStatus));
             Log.e("USER Name", mUsers.get(position).getFirst_name());
@@ -111,6 +112,25 @@ public class DriverRecyclerViewAdapter extends RecyclerView.Adapter<DriverRecycl
             holder.tv_driver_phone_no.setText(mUsers.get(position).getPhone_number());
         }
 
+        holder.get_driver_order_details.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MainActivityTransporter activity = (MainActivityTransporter)mContext;
+
+                Bundle bundle = new Bundle();
+                User user = mUsers.get(position);
+                bundle.putSerializable("user_from_driver_list", user);
+                bundle.putString("transporter_id", transporter_id);
+                FragmentListOfOrderWRTTransporter fragment = new FragmentListOfOrderWRTTransporter();
+                fragment.setArguments(bundle);
+
+                activity.getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in_right, R.anim.slide_out_left, R.anim.slide_in_left, R.anim.slide_out_right).
+                        replace(R.id.main_content_frame_transporter_container, fragment).
+                        addToBackStack(null).
+                        commit();
+            }
+        });
+
         holder.setItemClickListner(new ItemClickListner() {
             @Override
             public void onClick(View view, int position) {
@@ -137,36 +157,10 @@ public class DriverRecyclerViewAdapter extends RecyclerView.Adapter<DriverRecycl
         return mUsers.size();
     }
 
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-
-        public DownloadImageTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                mIcon11 = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.default_profile_image);
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-        }
-    }
-
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         LinearLayout linearLayout;
-        ImageView profile_image, driver_status_image;
+        ImageView profile_image, driver_status_image, get_driver_order_details;
         TextView tv_driver_name, tv_driver_email, tv_driver_phone_no;
         ItemClickListner itemClickListner;
 
@@ -178,6 +172,8 @@ public class DriverRecyclerViewAdapter extends RecyclerView.Adapter<DriverRecycl
             tv_driver_name = (TextView)v.findViewById(R.id.driver_list_driver_name);
             tv_driver_email = (TextView)v.findViewById(R.id.driver_list_driver_email);
             tv_driver_phone_no = (TextView)v.findViewById(R.id.driver_list_driver_phone_no);
+            get_driver_order_details = v.findViewById(R.id.get_driver_order_details);
+
             v.setOnClickListener(this);
         }
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="100dp"
+    android:layout_height="100dp"
+    android:orientation="vertical"
+    android:background="@drawable/transparent"
+    >
+
+
+    <ImageView
+        android:id="@+id/main_image"
+        android:src="@drawable/vehicle_icon"
+        android:layout_width="20dp"
+        android:layout_height="20dp"/>
+</LinearLayout>
