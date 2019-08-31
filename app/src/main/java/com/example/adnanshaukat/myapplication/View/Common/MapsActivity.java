@@ -1,25 +1,10 @@
 package com.example.adnanshaukat.myapplication.View.Common;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
-import android.os.AsyncTask;
-import android.os.Build;
-import android.support.annotation.DrawableRes;
-import android.support.multidex.MultiDex;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.multidex.MultiDex;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -27,22 +12,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.adnanshaukat.myapplication.MapHelper.DataParser;
 import com.example.adnanshaukat.myapplication.MapHelper.FetchURL;
 import com.example.adnanshaukat.myapplication.MapHelper.MapsController;
 import com.example.adnanshaukat.myapplication.MapHelper.TaskLoadedCallback;
-import com.example.adnanshaukat.myapplication.Modals.DirectionJSONParser;
+import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
+import com.example.adnanshaukat.myapplication.RetrofitInterfaces.IOrder;
+import com.example.adnanshaukat.myapplication.RetrofitInterfaces.ISignUp;
 import com.example.adnanshaukat.myapplication.Services.TrackingService;
-import com.google.android.gms.location.places.PlacesOptions;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.LocationSource;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -51,17 +33,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import static com.example.adnanshaukat.myapplication.R.id.map;
 
@@ -75,13 +56,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     Context context;
 
     private static LatLng sourceLatLng, destinationLatLng;
-
-    Polyline currentPolyline;
+    private static String move_to = "";
+    private static Polyline currentPolyline;
     PolylineOptions currentPolylineOptions;
 
     List<MarkerOptions> markers_option = new ArrayList<>();
-    Marker current_marker;
-
+    private static Marker current_marker;
+    private static Intent static_intent;
     LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
     @Override
@@ -90,7 +71,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_maps);
         MultiDex.install(this);
         Intent intent = getIntent();
-
+        static_intent = intent;
         mapsController = new MapsController(this, getString(R.string.google_maps_key));
 
         Log.e("DESTINATION", intent.getExtras().get("destination").toString());
@@ -108,6 +89,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         MarkerOptions source = new MarkerOptions().position(sourceLatLng);
         MarkerOptions destination = new MarkerOptions().position(destinationLatLng).title("Destination");
 
+        move_to = intent.getExtras().get("moving_to").toString();
         if (intent.getExtras().get("moving_to").toString().trim().toLowerCase().equals("pick_order")) {
             source.title("Source(Your's Position)");
         } else {
@@ -137,6 +119,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
                 LatLng Loc = new LatLng(Lat,Lng);
                 if (current_marker == null){
+                    Log.e("MAPS ACTIVITY", "Adding new marker");
                     current_marker = mMap.addMarker(new MarkerOptions()
                             .position(Loc)
                             .icon(mapsController.getBitmapDescriptor(_context, R.drawable.vehicle_icon)).flat(true)
@@ -144,26 +127,37 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             //.anchor(1, 1)
                             //.snippet("Hi how are you")
                             .title("Driver Location"));
-
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Loc, 16.0f));
                 }
                 else{
                     Log.e("MapActivity", "SETTING MARKER");
                     current_marker.setPosition(Loc);
                     //current_marker.showInfoWindow();
                 }
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(Loc, 16.0f));
 
                 if (sourceLatLng != null){
                     CircleOptions circleOptions = new CircleOptions();
-                    circleOptions.center(sourceLatLng);
+                    circleOptions.center(destinationLatLng);
                     circleOptions.radius(10);
                     circleOptions.visible(false);
                     mMap.addCircle(circleOptions);
 
                     if(mapsController.isReachedDestination(circleOptions, current_marker.getPosition())){
-                        Intent trackingService = new Intent(_context, TrackingService.class);
-                        _context.stopService(trackingService);
                         Toast.makeText(_context, "You have reached to the destination", Toast.LENGTH_SHORT).show();
+                        if (move_to.trim().toLowerCase().equals("pick_order")) {
+                            Log.e("MAPS ACTIVITY", "Updating map with new route");
+                            Log.e("MAPS ACTIVITY", static_intent.getExtras().getString("order_destination"));
+                            LatLng order_destination = mapsController.getLatLongFromLocation(static_intent.getExtras().getString("order_destination"));
+                            reloadMapWithNewRoute(destinationLatLng, order_destination);
+                            move_to = "deliver_order";
+                        }
+                        else{
+                            Intent trackingService = new Intent(_context, TrackingService.class);
+                            _context.stopService(trackingService);
+                            Log.e("MAPS ACTIVITY", "DONE WITH DELIVERING ORDER");
+                            setOrderCompletion(static_intent.getExtras().getString("order_detail_id"));
+                        }
+
                         //setDialog(_context);
                     }
                 }
@@ -275,5 +269,72 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
         AlertDialog dialog = alert.create();
         dialog.show();
+    }
+
+    private void reloadMapWithNewRoute(LatLng source, LatLng destination){
+        Log.e("ReLoading MAP ROUTE", source.toString());
+        Log.e("ReLoading MAP ROUTE", destination.toString());
+        MarkerOptions source_option = new MarkerOptions().position(source).title("Source");
+        MarkerOptions destination_option = new MarkerOptions().position(destination).title("Destination");
+
+        markers_option = new ArrayList<>();
+        markers_option.add(source_option);
+        markers_option.add(destination_option);
+        addMarkers(markers_option);
+        sourceLatLng = source;
+        destinationLatLng = destination;
+        String url = mapsController.getUrl(source, destination, "driving");
+        Log.e(MapsActivity.class.toString() + "URL", url);
+        new FetchURL(MapsActivity.this).execute(url, "driving");
+    }
+
+    private void addMarkers(List<MarkerOptions> markers_options){
+        for (int i = 0; i < markers_options.size(); i++) {
+            MarkerOptions mo = new MarkerOptions()
+                    .position(markers_options.get(i).getPosition())
+                    .title(markers_options.get(i).getTitle());
+
+            if (mo.getTitle().equals("Your's Position")) {
+                mo.icon(mapsController.getBitmapDescriptor(this, R.drawable.vehicle_icon)).flat(true);
+            }
+            marker_.clear();
+            marker_.add(mMap.addMarker(mo));
+        }
+    }
+
+    private void setOrderCompletion(String order_detail_id){
+        try{
+            OkHttpClient.Builder client = new OkHttpClient.Builder();
+            client.connectTimeout(30, TimeUnit.SECONDS);
+            client.readTimeout(30, TimeUnit.SECONDS);
+            client.writeTimeout(30, TimeUnit.SECONDS);
+
+            retrofit2.Retrofit retrofit = new retrofit2.Retrofit.Builder()
+                    .baseUrl(IOrder.BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(client.build())
+                    .build();
+
+            IOrder api = retrofit.create(IOrder.class);
+            Call<Object> call = api.set_order_completion(order_detail_id);
+
+            call.enqueue(new Callback<Object>() {
+                @Override
+                public void onResponse(Call<Object> call, Response<Object> response) {
+                    Object obj = response.body();
+                    Log.e("RESPONSE", response.toString());
+
+                }
+
+                @Override
+                public void onFailure(Call<Object> call, Throwable t) {
+                    Log.e("FAILURE", t.getMessage());
+                    Log.e("FAILURE", t.toString());
+                }
+            });
+        } catch (Exception ex) {
+            Log.e("ERROR", ex.toString());
+            Toast.makeText(getApplicationContext(), "Some error occour, please try again", Toast.LENGTH_SHORT).show();
+        }
     }
 }

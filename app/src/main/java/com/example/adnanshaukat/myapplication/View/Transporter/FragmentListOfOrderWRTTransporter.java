@@ -29,7 +29,7 @@ public class FragmentListOfOrderWRTTransporter extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_list_of_order_wrt_transporter, container, false);
         mUser = (User)getArguments().getSerializable("user_from_driver_list");
-        transporter_id = (int)getArguments().get("transporter_id");
+        transporter_id = Integer.parseInt(getArguments().get("transporter_id").toString());
         populateView();
 
         get_orders_wrt_transporter();

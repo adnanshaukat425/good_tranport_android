@@ -1,6 +1,7 @@
 package com.example.adnanshaukat.myapplication.View.Driver;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,7 +18,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,15 +27,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
-import android.widget.ScrollView;
 import android.widget.Toast;
 
-import com.example.adnanshaukat.myapplication.Adapters.OrdersAdapter;
-import com.example.adnanshaukat.myapplication.GlobalClasses.LocationController;
 import com.example.adnanshaukat.myapplication.GlobalClasses.ProgressDialogManager;
 import com.example.adnanshaukat.myapplication.Modals.Notification;
 import com.example.adnanshaukat.myapplication.Modals.Order;
-import com.example.adnanshaukat.myapplication.Modals.SignalrTrackingManager;
 import com.example.adnanshaukat.myapplication.Modals.Status;
 import com.example.adnanshaukat.myapplication.Modals.User;
 import com.example.adnanshaukat.myapplication.R;
@@ -44,13 +40,8 @@ import com.example.adnanshaukat.myapplication.RetrofitInterfaces.IOrder;
 import com.example.adnanshaukat.myapplication.RetrofitInterfaces.RetrofitManager;
 import com.example.adnanshaukat.myapplication.Services.TrackingService;
 import com.example.adnanshaukat.myapplication.View.Common.MapsActivity;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -146,6 +137,9 @@ public class FragmentOrderDetailsWRTOrder extends Fragment {
                     }
                 } else if (btn_accept_order_or_complete_order.getText().toString().trim().equals("Track Order")) {
                     //Resume Tracking
+                    if(!isMyServiceRunning(TrackingService.class, getContext())){
+                        startTrackerService();
+                    }
                     getDriverSourceDestination(mUser.getUser_id());
                 } else if (btn_accept_order_or_complete_order.getText().toString().trim().equals("Start Tracking")) {
                     //Start Tracking
@@ -316,11 +310,13 @@ public class FragmentOrderDetailsWRTOrder extends Fragment {
                         intent.putExtra("string_source", true);
                         intent.putExtra("string_destination", true);
                         intent.putExtra("moving_to", "deliver_order");
-
+                        intent.putExtra("order_detail_id", order_details.get("order_detail_id"));
                         updateDriverSourceDestination(order_details.get("source"), order_details.get("destination"), "deliver_order");
 
                         startActivity(intent);
-                        startTrackerService();
+                        if(!isMyServiceRunning(TrackingService.class, getContext())){
+                            startTrackerService();
+                        }
                     }
                 }
             }
@@ -381,8 +377,9 @@ public class FragmentOrderDetailsWRTOrder extends Fragment {
                 intent.putExtra("string_source", false);
                 intent.putExtra("string_destination", true);
                 intent.putExtra("destination", order_details.get("source"));
+                intent.putExtra("order_destination", order_details.get("destination"));
                 intent.putExtra("moving_to", "pick_order");
-
+                intent.putExtra("order_detail_id", order_details.get("order_detail_id"));
                 updateDriverSourceDestination(current_latitude + "|" + current_longitude, order_details.get("source"), "pick_order");
 
                 Log.e("Driver Latitude", current_latitude + "");
@@ -390,7 +387,9 @@ public class FragmentOrderDetailsWRTOrder extends Fragment {
                 Log.e("SOURCE", order_details.get("source"));
 
                 startActivity(intent);
-                startTrackerService();
+                if(!isMyServiceRunning(TrackingService.class, getContext())){
+                    startTrackerService();
+                }
             }
             return true;
         }
@@ -509,14 +508,17 @@ public class FragmentOrderDetailsWRTOrder extends Fragment {
                                 intent.putExtra("source_latitude", sources.get(0));
                                 intent.putExtra("source_longitude", sources.get(1));
                                 intent.putExtra("destination", destination);
+                                intent.putExtra("order_destination", order_details.get("destination"));
                                 intent.putExtra("string_source", false);
                                 intent.putExtra("string_destination", true);
+                                intent.putExtra("order_detail_id", order_details.get("order_detail_id"));
                             }
                             else{
                                 intent.putExtra("source", source);
                                 intent.putExtra("destination", destination);
                                 intent.putExtra("string_source", true);
                                 intent.putExtra("string_destination", true);
+                                intent.putExtra("order_detail_id", order_details.get("order_detail_id"));
                             }
 
                             startActivity(intent);
@@ -661,5 +663,17 @@ public class FragmentOrderDetailsWRTOrder extends Fragment {
             ProgressDialogManager.closeProgressDialog(progressDialog);
             Log.e("OrderDetails ERROR", ex.toString());
         }
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass,Context context) {
+        ActivityManager manager = (ActivityManager)context. getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                Log.i("Service already","running");
+                return true;
+            }
+        }
+        Log.i("Service not","running");
+        return false;
     }
 }

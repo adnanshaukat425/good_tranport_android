@@ -553,6 +553,9 @@ public class MainActivityDriver extends AppCompatActivity implements NavigationV
                             serviceIntent.putExtra("driver_id", user.getUser_id());
                             serviceIntent.putExtra("driver_name", user.getFirst_name() + " " + user.getLast_name());
                             serviceIntent.putExtra("transporter_id", transporter_id);
+
+                            Intent intent = new Intent(getApplicationContext(), TrackingService.class);
+
                             startService(serviceIntent);
                         }
                     } catch (JSONException e) {

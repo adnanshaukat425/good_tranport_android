@@ -82,8 +82,6 @@ public class SignalrTrackingManager implements Serializable {
                             String longitude = data.split(";")[1];
                             Log.e("Tracking SignalR", latitude);
                             Log.e("Tracking SignalR", longitude);
-//                        Log.e("Route Id", route.getRoute_id() + "");
-//                        Log.e("Order Detail Id", route.getOrder_detail_id() + "");
                             MapsActivity mapsActivity = new MapsActivity();
                             mapsActivity.updateMap(latitude, longitude, context);
                         }
